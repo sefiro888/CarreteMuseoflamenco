@@ -57,9 +57,28 @@ const altPath =
 <script>
   const toggle = document.getElementById('nav-toggle');
   const list = document.getElementById('nav-list');
+
+  function setOpen(open: boolean) {
+    list?.setAttribute('data-open', String(open));
+    toggle?.setAttribute('aria-expanded', String(open));
+  }
+
   toggle?.addEventListener('click', () => {
-    const isOpen = list?.getAttribute('data-open') === 'true';
-    list?.setAttribute('data-open', String(!isOpen));
-    toggle.setAttribute('aria-expanded', String(!isOpen));
+    setOpen(list?.getAttribute('data-open') !== 'true');
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && list?.getAttribute('data-open') === 'true') {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (list?.getAttribute('data-open') !== 'true') return;
+    const target = event.target as Node;
+    if (!list.contains(target) && !toggle?.contains(target)) {
+      setOpen(false);
+    }
   });
 </script>

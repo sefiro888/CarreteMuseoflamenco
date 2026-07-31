@@ -96,6 +96,8 @@ const performances = defineCollection({
     venue: z.string().optional(),
     description: z.string(),
     peopleRefs: z.array(reference('people')).default([]),
+    /** Fecha ISO (YYYY-MM-DD) de una actuación futura confirmada, para la agenda. */
+    upcomingDate: z.string().date().optional(),
   }),
 });
 
@@ -123,7 +125,8 @@ const media = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/media' }),
   schema: provenance.extend({
     title: z.string(),
-    type: z.enum(['photo', 'video', 'audio', 'document']),
+    /** "object" cubre piezas físicas de vitrina: premios, zapatos, sombreros, bastones, carteles, programas. */
+    type: z.enum(['photo', 'video', 'audio', 'document', 'object']),
     dateApprox: z.string().optional(),
     placeRef: reference('places').optional(),
     peopleRefs: z.array(reference('people')).default([]),

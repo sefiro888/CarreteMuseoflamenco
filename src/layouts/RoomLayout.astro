@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import { getRoomNeighbors } from '../lib/rooms';
 import { t, localizedPath, type Locale } from '../lib/i18n';
+import { breadcrumbJsonLd } from '../lib/seo';
 
 interface Props {
   slug: string;
@@ -16,9 +17,15 @@ interface Props {
 const { slug, eyebrow, title, summary, description, locale = 'es', image } = Astro.props;
 const dict = t(locale);
 const { prev, next } = getRoomNeighbors(slug);
+
+const breadcrumb = breadcrumbJsonLd([
+  { name: locale === 'es' ? 'Inicio' : 'Home', url: new URL(localizedPath('/', locale), Astro.site).toString() },
+  { name: title, url: new URL(localizedPath(slug, locale), Astro.site).toString() },
+]);
 ---
 
 <BaseLayout title={title} description={description ?? summary} locale={locale} image={image}>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
   <article class="room">
     <header class="room__hero container">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
