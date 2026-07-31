@@ -1,0 +1,12 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import StoryContent from '../components/StoryContent.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('stories', 'gracia');
+if (!entry) throw new Error('Falta el contenido de gracia');
+---
+
+<RoomLayout slug="/gracia" eyebrow="La gracia" title={entry.data.title} summary={entry.data.summary}>
+  <StoryContent entry={entry} />
+</RoomLayout>

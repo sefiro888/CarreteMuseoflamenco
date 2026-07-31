@@ -1,0 +1,77 @@
+---
+import { getCollection, getEntries } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VerifyBadge from '../../components/VerifyBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+import ProvisionalNote from '../../components/ProvisionalNote.astro';
+
+export async function getStaticPaths() {
+  const monotonas = await getCollection('monotonas');
+  return monotonas.map((item) => ({
+    params: { id: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const people = item.data.peopleRefs.length ? await getEntries(item.data.peopleRefs) : [];
+---
+
+<BaseLayout title={item.data.title} description={item.data.summary}>
+  <section class="section container prose">
+    <p class="eyebrow">Monótona</p>
+    <h1>{item.data.title}</h1>
+    <p><VerifyBadge level={item.data.verification} /></p>
+
+    {
+      item.data.videoAvailable && item.data.videoUrl ? (
+        <video controls preload="none" style="width:100%; border-radius: var(--radius-md);">
+          <source src={item.data.videoUrl} />
+          {item.data.transcript && <track kind="captions" label="Español" default />}
+        </video>
+      ) : (
+        <ProvisionalNote>
+          El vídeo de esta monótona todavía no se ha incorporado al archivo.
+        </ProvisionalNote>
+      )
+    }
+
+    <p>{item.data.summary}</p>
+
+    {
+      item.data.transcript && (
+        <details>
+          <summary>Transcripción</summary>
+          <p>{item.data.transcript}</p>
+        </details>
+      )
+    }
+
+    {
+      item.data.translationEn && (
+        <details>
+          <summary>English translation</summary>
+          <p>{item.data.translationEn}</p>
+        </details>
+      )
+    }
+
+    {
+      people.length > 0 && (
+        <>
+          <h2>Personas relacionadas</h2>
+          <ul>
+            {people.map((person) => (
+              <li>
+                <a href={`/personas/${person.id}`}>{person.data.name}</a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+
+    <SourceList sourceRefs={item.data.sourceRefs} />
+    <p><a href="/monotonas">← Volver a las monótonas</a></p>
+  </section>
+</BaseLayout>

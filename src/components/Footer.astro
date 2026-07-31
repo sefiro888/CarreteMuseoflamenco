@@ -1,0 +1,23 @@
+---
+import { t, localizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'es' } = Astro.props;
+const dict = t(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p>{dict.footerRights}</p>
+    <p>
+      <a href={localizedPath('/creditos', locale)}>
+        {locale === 'es' ? 'Colaboradores, créditos y fuentes' : 'Collaborators, credits and sources'}
+      </a>
+    </p>
+    <p>© {year} Archivo familiar Losada · José Losada Santiago, «Carrete de Málaga»</p>
+  </div>
+</footer>

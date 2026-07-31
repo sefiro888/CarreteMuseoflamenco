@@ -1,0 +1,32 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import SourceList from '../../components/SourceList.astro';
+import Timeline from '../../components/Timeline.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('stories', 'yo-no-se-la-eda-que-tengo');
+if (!entry) throw new Error('Falta el contenido de yo-no-se-la-eda-que-tengo');
+const { Content } = await render(entry);
+---
+
+<RoomLayout
+  slug="/vida/yo-no-se-la-eda-que-tengo"
+  eyebrow="La vida — 1 de 5"
+  title="Yo no sé la edá que tengo"
+  summary={entry.data.summary}
+>
+  <div class="prose">
+    <Content />
+  </div>
+
+  <SourceList sourceRefs={entry.data.sourceRefs} />
+
+  <div class="section--tight">
+    <h2>Línea temporal interactiva</h2>
+    <p class="prose">
+      Explora los hitos conocidos de su vida, filtrados por etapa. Cada fecha indica su
+      grado de certeza: exacta, aproximada, documentada o pendiente de confirmar.
+    </p>
+    <Timeline locale="es" />
+  </div>
+</RoomLayout>

@@ -1,0 +1,40 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import StoryContent from '../components/StoryContent.astro';
+import PersonCard from '../components/PersonCard.astro';
+import { getEntry, getCollection } from 'astro:content';
+
+const entry = await getEntry('stories', 'mundo');
+if (!entry) throw new Error('Falta el contenido de mundo');
+
+const internationalIds = [
+  'sean-connery',
+  'anthony-quinn',
+  'brigitte-bardot',
+  'ava-gardner',
+  'salvador-dali',
+  'frank-sinatra',
+  'familia-real-noruega',
+  'juan-carlos-i',
+  'juan-domingo-peron',
+  'eva-peron',
+];
+const internationalPeople = await getCollection('people', (item) => internationalIds.includes(item.id));
+internationalPeople.sort((a, b) => internationalIds.indexOf(a.id) - internationalIds.indexOf(b.id));
+---
+
+<RoomLayout slug="/mundo" eyebrow="De la Costa del Sol al mundo" title={entry.data.title} summary={entry.data.summary}>
+  <StoryContent entry={entry} />
+
+  <div class="section--tight">
+    <h2>Personalidades internacionales por investigar</h2>
+    <p class="prose">
+      La Costa del Sol de la época atrajo a numerosas personalidades internacionales.
+      Estos son los nombres señalados como líneas de investigación; casi ninguno
+      cuenta todavía con una relación documentada con Carrete.
+    </p>
+    <div class="card-grid">
+      {internationalPeople.map((person) => <PersonCard person={person} />)}
+    </div>
+  </div>
+</RoomLayout>

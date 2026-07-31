@@ -1,0 +1,12 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import StoryContent from '../components/StoryContent.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('stories', 'hoy');
+if (!entry) throw new Error('Falta el contenido de hoy');
+---
+
+<RoomLayout slug="/hoy" eyebrow="Carrete hoy" title={entry.data.title} summary={entry.data.summary}>
+  <StoryContent entry={entry} />
+</RoomLayout>

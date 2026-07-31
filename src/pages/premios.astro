@@ -1,0 +1,31 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import VerifyBadge from '../components/VerifyBadge.astro';
+import { getCollection } from 'astro:content';
+
+const awards = await getCollection('awards');
+---
+
+<RoomLayout
+  slug="/premios"
+  eyebrow="Premios y homenajes"
+  title="Premios y homenajes"
+  summary="El reconocimiento a una trayectoria."
+>
+  <div class="card-grid">
+    {
+      awards.map((award) => (
+        <div class="card">
+          <h3>{award.data.title}</h3>
+          {award.data.grantor && <p class="eyebrow">{award.data.grantor}</p>}
+          <p>{award.data.description}</p>
+          <VerifyBadge level={award.data.verification} />
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="section--tight">
+    <a href="/estatua">Ver también: la estatua de Torremolinos →</a>
+  </p>
+</RoomLayout>

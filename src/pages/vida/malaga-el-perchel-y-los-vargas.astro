@@ -1,0 +1,17 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import StoryContent from '../../components/StoryContent.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('stories', 'malaga-el-perchel-y-los-vargas');
+if (!entry) throw new Error('Falta el contenido de malaga-el-perchel-y-los-vargas');
+---
+
+<RoomLayout
+  slug="/vida/malaga-el-perchel-y-los-vargas"
+  eyebrow="La vida — 3 de 5"
+  title={entry.data.title}
+  summary={entry.data.summary}
+>
+  <StoryContent entry={entry} />
+</RoomLayout>

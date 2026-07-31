@@ -1,0 +1,135 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import { getCollection } from 'astro:content';
+
+const sources = await getCollection('sources');
+const researchNotes = await getCollection('research-notes');
+
+const sourceTypeLabels: Record<string, string> = {
+  book: 'Libro',
+  article: 'Artículo',
+  web: 'Web',
+  institutional: 'Institucional',
+  oral: 'Fuente oral',
+};
+---
+
+<RoomLayout
+  slug="/creditos"
+  eyebrow="Colaboradores, créditos y fuentes"
+  title="Colaboradores, créditos y fuentes"
+  summary="Quién hace posible este museo y de dónde viene cada dato."
+>
+  <div class="prose">
+    <h2>Equipo del proyecto</h2>
+    <ul>
+      <li>
+        <strong>Bernardo Losada</strong> — dirección familiar, visión emocional, archivo
+        familiar, entrevistas y desarrollo de la web. Hijo de Carrete e impulsor de este
+        homenaje en vida.
+      </li>
+      <li>
+        <strong>Paco Roji</strong> — colaborador principal, asesor histórico y artístico,
+        amigo de Carrete, investigador y coautor, junto a Francis Mármol, del libro
+        «Carrete, al compás de la vida».
+      </li>
+      <li>
+        <strong>Carrete de Málaga (José Losada Santiago)</strong> — protagonista, narrador
+        y fuente oral principal de este archivo.
+      </li>
+    </ul>
+
+    <h2>Registro de fuentes</h2>
+    <p>
+      Toda afirmación histórica de este museo debe poder rastrearse hasta una fuente.
+      Esta es la lista completa de fuentes registradas hasta la fecha:
+    </p>
+  </div>
+
+  <ul class="source-registry section--tight">
+    {
+      sources.map((source) => (
+        <li>
+          <span class="source-registry__type">{sourceTypeLabels[source.data.sourceType]}</span>{' '}
+          {source.data.url ? (
+            <a href={source.data.url} target="_blank" rel="noopener noreferrer">
+              {source.data.title}
+            </a>
+          ) : (
+            <strong>{source.data.title}</strong>
+          )}
+          {source.data.authors.length > 0 && <span> — {source.data.authors.join(', ')}</span>}
+          {source.data.note && <p class="source-registry__note">{source.data.note}</p>}
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="prose section--tight">
+    <h2>Pistas de investigación abiertas</h2>
+    <p>
+      Este museo distingue de forma explícita entre lo documentado y lo que sigue
+      abierto. Estas son las cuestiones que, a día de hoy, no tienen una respuesta
+      cerrada:
+    </p>
+  </div>
+
+  <div class="card-grid">
+    {
+      researchNotes.map((note) => (
+        <div class="card">
+          <h3>{note.data.title}</h3>
+          <p>{note.data.question}</p>
+          <ul>
+            {note.data.versions.map((version) => (
+              <li>
+                {version.text} <em>(probabilidad: {version.likelihood})</em>
+              </li>
+            ))}
+          </ul>
+          {note.data.conclusion && <p><strong>Estado actual:</strong> {note.data.conclusion}</p>}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="prose section--tight">
+    <h2>Fuente bibliográfica esencial</h2>
+    <p>
+      «Carrete, al compás de la vida. Aventuras y desventuras de un bailaor diferente»,
+      de Francis Mármol y Paco Roji, es la columna vertebral de la investigación de
+      este museo. Por respeto a sus autores y editores, esta web no reproduce sus
+      capítulos ni sus fotografías: redacta textos originales a partir de él.
+    </p>
+
+    <h2>Aviso sobre el flamenco y la UNESCO</h2>
+    <p>
+      El flamenco, en su conjunto, está inscrito por la UNESCO como Patrimonio Cultural
+      Inmaterial de la Humanidad desde 2010. Esta distinción es colectiva del arte
+      flamenco y no constituye una declaración individual sobre Carrete de Málaga ni
+      sobre ningún artista en particular.
+    </p>
+  </div>
+</RoomLayout>
+
+<style>
+  .source-registry {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-sm);
+  }
+  .source-registry__type {
+    display: inline-block;
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-accent);
+    margin-right: var(--space-2xs);
+  }
+  .source-registry__note {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    margin: var(--space-2xs) 0 0;
+  }
+</style>

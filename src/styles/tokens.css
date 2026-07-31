@@ -1,0 +1,88 @@
+/**
+ * Sistema de diseño — Carrete de Málaga, museo digital.
+ * Dirección artística fija (catálogo editorial de museo + tablao antiguo),
+ * no conmuta con el modo claro/oscuro del sistema: es una decisión de
+ * identidad, no una preferencia de interfaz. Ver Plan Maestro, sección 9.
+ */
+:root {
+  /* Color — paleta orientativa del plan maestro */
+  --color-black-warm: #171310;
+  --color-charcoal: #221b17;
+  --color-ivory: #f6efe4;
+  --color-paper: #e9d9c3;
+  --color-bronze: #b6783b;
+  --color-gold-soft: #d5aa68;
+  --color-wine: #6f2925;
+
+  /* Roles semánticos */
+  --color-bg: var(--color-black-warm);
+  --color-bg-raised: var(--color-charcoal);
+  --color-text: var(--color-ivory);
+  --color-text-muted: color-mix(in srgb, var(--color-ivory) 72%, transparent);
+  --color-text-soft: color-mix(in srgb, var(--color-paper) 88%, transparent);
+  --color-border: color-mix(in srgb, var(--color-paper) 22%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--color-paper) 40%, transparent);
+  --color-accent: var(--color-gold-soft);
+  --color-accent-strong: var(--color-bronze);
+  --color-accent-danger: var(--color-wine);
+  --color-focus-ring: var(--color-gold-soft);
+
+  /* Estados de verificación editorial */
+  --color-verify-documented: #7fae86;
+  --color-verify-testimony: var(--color-gold-soft);
+  --color-verify-oral: var(--color-bronze);
+  --color-verify-approx: #c9a86a;
+  --color-verify-contradictory: #c97b6a;
+  --color-verify-pending: color-mix(in srgb, var(--color-paper) 55%, transparent);
+
+  /* Tipografía */
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Sans 3', Inter, system-ui, sans-serif;
+
+  --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.9rem);
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.15rem + 0.25vw, 1.4rem);
+  --step-2: clamp(1.5rem, 1.4rem + 0.5vw, 1.9rem);
+  --step-3: clamp(1.9rem, 1.7rem + 1vw, 2.6rem);
+  --step-4: clamp(2.4rem, 2rem + 2vw, 3.6rem);
+  --step-5: clamp(3rem, 2.4rem + 3vw, 5rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  /* Espaciado */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+  --space-3xl: 9rem;
+
+  /* Layout */
+  --content-max: 74rem;
+  --prose-max: 42rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+
+  /* Movimiento */
+  --duration-fast: 150ms;
+  --duration-base: 320ms;
+  --duration-slow: 640ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

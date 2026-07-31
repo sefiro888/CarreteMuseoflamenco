@@ -1,0 +1,55 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import PersonCard from '../components/PersonCard.astro';
+import { getCollection } from 'astro:content';
+
+const maestroIds = [
+  'nino-de-almeria',
+  'pepito-vargas',
+  'la-repompa',
+  'la-caneta',
+  'mariquilla',
+  'chiquito-de-la-calzada',
+  'paco-de-lucia',
+  'camaron-de-la-isla',
+  'enrique-morente',
+  'rocio-molina',
+  'carmen-amaya',
+  'antonio-el-bailarin',
+  'antonio-gades',
+  'farruco',
+  'estrella-morente',
+  'miguel-poveda',
+  'rafael-riqueni',
+  'pastora-galvan',
+  'mario-maya',
+  'el-guito',
+  'manolete',
+  'luisa-chicano',
+  'parrilla-hermanos',
+  'diego-carrasco',
+];
+
+const people = await getCollection('people', (entry) => maestroIds.includes(entry.id));
+people.sort((a, b) => maestroIds.indexOf(a.id) - maestroIds.indexOf(b.id));
+---
+
+<RoomLayout
+  slug="/maestros"
+  eyebrow="Carrete y los maestros"
+  title="Carrete y los maestros"
+  summary="Los artistas que marcaron su camino."
+>
+  <div class="prose">
+    <p>
+      Esta sala reúne a las figuras del flamenco que aparecen vinculadas a la vida de
+      Carrete: quienes lo formaron, quienes compartieron cartel con él y quienes,
+      años después, han reconocido su singularidad. Cada ficha indica con claridad
+      qué se sabe con certeza y qué sigue siendo una pista por confirmar.
+    </p>
+  </div>
+
+  <div class="card-grid section--tight">
+    {people.map((person) => <PersonCard person={person} />)}
+  </div>
+</RoomLayout>

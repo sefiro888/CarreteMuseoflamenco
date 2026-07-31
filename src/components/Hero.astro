@@ -1,0 +1,282 @@
+---
+import { t, localizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'es' } = Astro.props;
+const dict = t(locale);
+---
+
+<section class="hero" aria-label={locale === 'es' ? 'Apertura del museo' : 'Museum opening'}>
+  <div class="hero__reel" aria-hidden="true">
+    <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="300" cy="300" r="280" />
+      <circle cx="300" cy="300" r="220" />
+      <circle cx="300" cy="300" r="160" />
+      <circle cx="300" cy="300" r="60" />
+    </svg>
+  </div>
+
+  <div class="hero__content container">
+    <p class="hero__kicker">{locale === 'es' ? 'Museo digital de José Losada Santiago' : 'Digital museum of José Losada Santiago'}</p>
+    <h1 class="hero__name">{dict.siteName}</h1>
+    <p class="hero__tagline">{dict.tagline}</p>
+
+    <div class="hero__lines">
+      <p>{locale === 'es' ? 'Una vida bailada.' : 'A life danced.'}</p>
+      <p>
+        {
+          locale === 'es'
+            ? 'De las espigas de trigo a los grandes escenarios.'
+            : 'From the ears of wheat to the great stages.'
+        }
+      </p>
+    </div>
+
+    <div class="hero__steps" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="hero__actions">
+      <a class="btn btn-primary" href={localizedPath('/vida/yo-no-se-la-eda-que-tengo', locale)}>
+        {dict.enterMuseum}
+      </a>
+      <button class="btn hero__audio-btn" id="hero-audio-toggle" type="button" aria-pressed="false">
+        {dict.listenToCarrete}
+      </button>
+    </div>
+
+    <p class="hero__audio-status" id="hero-audio-status" role="status" aria-live="polite"></p>
+
+    <p class="hero__note">
+      {
+        locale === 'es'
+          ? 'El sonido solo se activa si lo pides. Esta web respeta tu preferencia de sistema de reducir el movimiento.'
+          : 'Sound only plays if you ask for it. This site respects your system preference for reduced motion.'
+      }
+    </p>
+  </div>
+</section>
+
+<audio id="hero-audio" preload="none">
+  <source src="/audio/carrete-intro.mp3" type="audio/mpeg" />
+</audio>
+
+<script define:vars={{ es: locale === 'es' }}>
+  const button = document.getElementById('hero-audio-toggle');
+  const audio = document.getElementById('hero-audio');
+  const status = document.getElementById('hero-audio-status');
+
+  const messages = es
+    ? {
+        pending: 'El audio de Carrete está pendiente de incorporación por la familia. Vuelve pronto.',
+        playing: 'Reproduciendo la voz de Carrete.',
+        paused: 'Audio pausado.',
+      }
+    : {
+        pending: "Carrete's audio is pending upload by the family. Check back soon.",
+        playing: "Playing Carrete's voice.",
+        paused: 'Audio paused.',
+      };
+
+  audio?.addEventListener('error', () => {
+    button?.setAttribute('aria-pressed', 'false');
+    if (status) status.textContent = messages.pending;
+  });
+
+  button?.addEventListener('click', async () => {
+    if (!audio || !(audio instanceof HTMLAudioElement)) return;
+
+    if (!audio.paused) {
+      audio.pause();
+      button.setAttribute('aria-pressed', 'false');
+      if (status) status.textContent = messages.paused;
+      return;
+    }
+
+    if (audio.error || audio.networkState === audio.NETWORK_NO_SOURCE) {
+      if (status) status.textContent = messages.pending;
+      return;
+    }
+
+    const safetyTimeout = window.setTimeout(() => {
+      if (audio.readyState === 0 || audio.error) {
+        audio.pause();
+        button.setAttribute('aria-pressed', 'false');
+        if (status) status.textContent = messages.pending;
+      }
+    }, 2500);
+
+    try {
+      await audio.play();
+      window.clearTimeout(safetyTimeout);
+      if (audio.readyState === 0) {
+        button.setAttribute('aria-pressed', 'false');
+        if (status) status.textContent = messages.pending;
+      } else {
+        button.setAttribute('aria-pressed', 'true');
+        if (status) status.textContent = messages.playing;
+      }
+    } catch {
+      window.clearTimeout(safetyTimeout);
+      if (status) status.textContent = messages.pending;
+    }
+  });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: radial-gradient(120% 120% at 50% 20%, var(--color-charcoal), var(--color-black-warm) 65%);
+  }
+
+  .hero__reel {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    opacity: 0.16;
+    pointer-events: none;
+  }
+
+  .hero__reel svg {
+    width: min(70vw, 46rem);
+    height: auto;
+  }
+
+  .hero__reel circle {
+    fill: none;
+    stroke: var(--color-gold-soft);
+    stroke-width: 0.75;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 46rem;
+    margin-inline: auto;
+    animation: hero-rise var(--duration-slow) var(--ease-standard) both;
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.25rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero__kicker {
+    font-size: var(--step--1);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__name {
+    font-size: var(--step-5);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .hero__tagline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-2);
+    color: var(--color-accent);
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero__lines {
+    font-size: var(--step-1);
+    color: var(--color-paper);
+    margin-bottom: var(--space-lg);
+    line-height: var(--leading-relaxed);
+  }
+
+  .hero__lines p {
+    margin: 0;
+  }
+
+  .hero__steps {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero__steps span {
+    width: 0.4rem;
+    height: 1.4rem;
+    background: var(--color-bronze);
+    border-radius: 999px;
+    animation: hero-step 1.6s var(--ease-standard) infinite;
+  }
+
+  .hero__steps span:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+  .hero__steps span:nth-child(3) {
+    animation-delay: 0.24s;
+  }
+  .hero__steps span:nth-child(4) {
+    animation-delay: 0.36s;
+  }
+  .hero__steps span:nth-child(5) {
+    animation-delay: 0.48s;
+  }
+
+  @keyframes hero-step {
+    0%,
+    100% {
+      transform: scaleY(0.5);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__content {
+      animation: none;
+    }
+    .hero__steps span {
+      animation: none;
+      transform: scaleY(0.8);
+      opacity: 0.8;
+    }
+  }
+
+  .hero__actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .hero__audio-status {
+    min-height: 1.4em;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .hero__note {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+</style>

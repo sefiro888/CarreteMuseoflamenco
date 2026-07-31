@@ -1,0 +1,17 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import StoryContent from '../../components/StoryContent.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('stories', 'el-nino-que-bailaba-sobre-el-trigo');
+if (!entry) throw new Error('Falta el contenido de el-nino-que-bailaba-sobre-el-trigo');
+---
+
+<RoomLayout
+  slug="/vida/el-nino-que-bailaba-sobre-el-trigo"
+  eyebrow="La vida — 2 de 5"
+  title={entry.data.title}
+  summary={entry.data.summary}
+>
+  <StoryContent entry={entry} />
+</RoomLayout>

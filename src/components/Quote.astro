@@ -1,0 +1,30 @@
+---
+import VerifyBadge from './VerifyBadge.astro';
+
+interface Props {
+  cite?: string;
+  context?: string;
+  verification?: 'documented' | 'testimony' | 'oral-memory' | 'approximate-date' | 'contradictory' | 'pending-research';
+}
+
+const { cite, context, verification } = Astro.props;
+---
+
+<figure class="quote">
+  <blockquote>
+    <p><slot /></p>
+  </blockquote>
+  {
+    (cite || context || verification) && (
+      <figcaption class="quote-cite">
+        {cite && <span>{cite}</span>}
+        {context && <span> · {context}</span>}
+        {verification && (
+          <span style="margin-left: 0.6em; display: inline-block;">
+            <VerifyBadge level={verification} />
+          </span>
+        )}
+      </figcaption>
+    )
+  }
+</figure>

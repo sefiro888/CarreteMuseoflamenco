@@ -1,0 +1,46 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import VerifyBadge from '../components/VerifyBadge.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const testimonials = await getCollection('testimonials');
+const withPeople = await Promise.all(
+  testimonials.map(async (item) => ({
+    item,
+    person: item.data.personRef ? await getEntry(item.data.personRef) : null,
+  })),
+);
+---
+
+<RoomLayout
+  slug="/voces"
+  eyebrow="Lo que dijeron de él"
+  title="Lo que dijeron de él"
+  summary="Testimonios de artistas y personalidades sobre Carrete."
+>
+  <div class="prose">
+    <p>
+      Estas son las frases que, según la memoria familiar, distintos artistas han
+      dedicado a Carrete a lo largo de los años. Ninguna se presenta como un hecho
+      cerrado: cada una indica su nivel de verificación, y muchas siguen esperando
+      una fuente publicada que las confirme de forma independiente.
+    </p>
+  </div>
+
+  <div class="card-grid section--tight">
+    {
+      withPeople.map(({ item, person }) => (
+        <figure class="card quote" style="border-left: none;">
+          <blockquote>
+            <p>«{item.data.quote}»</p>
+          </blockquote>
+          <figcaption class="quote-cite">
+            {person ? <a href={`/personas/${person.id}`}>{person.data.name}</a> : item.data.personNameFallback}
+            {item.data.context && <span> — {item.data.context}</span>}
+          </figcaption>
+          <VerifyBadge level={item.data.verification} />
+        </figure>
+      ))
+    }
+  </div>
+</RoomLayout>

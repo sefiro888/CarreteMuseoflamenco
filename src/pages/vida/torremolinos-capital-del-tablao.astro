@@ -1,0 +1,17 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import StoryContent from '../../components/StoryContent.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('stories', 'torremolinos-capital-del-tablao');
+if (!entry) throw new Error('Falta el contenido de torremolinos-capital-del-tablao');
+---
+
+<RoomLayout
+  slug="/vida/torremolinos-capital-del-tablao"
+  eyebrow="La vida — 4 de 5"
+  title={entry.data.title}
+  summary={entry.data.summary}
+>
+  <StoryContent entry={entry} />
+</RoomLayout>

@@ -1,0 +1,63 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import VerifyBadge from '../../components/VerifyBadge.astro';
+import ProvisionalNote from '../../components/ProvisionalNote.astro';
+import { getCollection } from 'astro:content';
+
+const monotonas = await getCollection('monotonas');
+---
+
+<RoomLayout
+  slug="/monotonas"
+  eyebrow="Las monótonas de Carrete"
+  title="Las monótonas de Carrete"
+  summary="Sus anécdotas, contadas por él mismo."
+>
+  <div class="prose">
+    <p>
+      Carrete llama «monótonas» a sus anécdotas. No son un anexo curioso a su
+      biografía: son una forma de contar el mundo tan personal como su manera de
+      bailar. Cada monótona, cuando exista, incluirá vídeo, audio original,
+      subtítulos literales, transcripción accesible y traducción al inglés sin
+      sustituir su voz.
+    </p>
+  </div>
+
+  <ProvisionalNote>
+    Todavía no se ha incorporado ninguna grabación real. Las fichas siguientes son
+    marcadores de posición que preparan la estructura del archivo para cuando la
+    familia pueda registrar y ceder el material.
+  </ProvisionalNote>
+
+  <div class="card-grid section--tight">
+    {
+      monotonas.map((item) => (
+        <a class="card archive-piece" href={`/monotonas/${item.id}`}>
+          <div class="archive-piece__media">
+            {item.data.videoAvailable ? 'Vídeo disponible' : 'Vídeo pendiente de incorporar'}
+          </div>
+          <h3 class="archive-piece__title">{item.data.title}</h3>
+          <p class="archive-piece__meta">{item.data.dateApprox}</p>
+          <VerifyBadge level={item.data.verification} />
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="section--tight prose">
+    <h2>El diccionario de Carrete</h2>
+    <p>
+      Junto a las monótonas, este museo prepara un futuro «Diccionario de Carrete»:
+      sus palabras, remates, expresiones y bendiciones propias. Todavía no existe
+      contenido verificado para esta sección — se irá construyendo a partir de las
+      grabaciones reales.
+    </p>
+  </div>
+</RoomLayout>
+
+<style>
+  .archive-piece {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>

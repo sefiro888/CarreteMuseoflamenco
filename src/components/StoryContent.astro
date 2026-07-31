@@ -1,0 +1,36 @@
+---
+import { getEntries, render } from 'astro:content';
+import SourceList from './SourceList.astro';
+import PersonCard from './PersonCard.astro';
+import type { CollectionEntry } from 'astro:content';
+import { t, type Locale } from '../lib/i18n';
+
+interface Props {
+  entry: CollectionEntry<'stories'>;
+  locale?: Locale;
+}
+
+const { entry, locale = 'es' } = Astro.props;
+const dict = t(locale);
+const { Content } = await render(entry);
+const people = entry.data.peopleRefs.length ? await getEntries(entry.data.peopleRefs) : [];
+---
+
+<div class="prose">
+  <Content />
+</div>
+
+{
+  people.length > 0 && (
+    <div class="section--tight">
+      <h3>{dict.relatedPeople}</h3>
+      <div class="card-grid">
+        {people.map((person) => (
+          <PersonCard person={person} locale={locale} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+<SourceList sourceRefs={entry.data.sourceRefs} locale={locale} />

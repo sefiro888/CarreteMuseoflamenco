@@ -1,0 +1,112 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { getRoomNeighbors } from '../lib/rooms';
+import { t, localizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  slug: string;
+  eyebrow?: string;
+  title: string;
+  summary?: string;
+  description?: string;
+  locale?: Locale;
+  image?: string;
+}
+
+const { slug, eyebrow, title, summary, description, locale = 'es', image } = Astro.props;
+const dict = t(locale);
+const { prev, next } = getRoomNeighbors(slug);
+---
+
+<BaseLayout title={title} description={description ?? summary} locale={locale} image={image}>
+  <article class="room">
+    <header class="room__hero container">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {summary && <p class="room__summary">{summary}</p>}
+    </header>
+
+    <div class="container room__body">
+      <slot />
+    </div>
+
+    <nav class="room__nav container" aria-label={locale === 'es' ? 'Navegación entre salas' : 'Room navigation'}>
+      {
+        prev && (
+          <a class="room__nav-link room__nav-link--prev" href={localizedPath(prev.slug, locale)}>
+            <span class="room__nav-label">{dict.previousRoom}</span>
+            <span class="room__nav-title">{prev.title[locale]}</span>
+          </a>
+        )
+      }
+      {
+        next && (
+          <a class="room__nav-link room__nav-link--next" href={localizedPath(next.slug, locale)}>
+            <span class="room__nav-label">{dict.nextRoom}</span>
+            <span class="room__nav-title">{next.title[locale]}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .room__hero {
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    max-width: var(--prose-max);
+  }
+  .room__summary {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--color-paper);
+    font-style: italic;
+  }
+  .room__body {
+    padding-bottom: var(--space-2xl);
+  }
+  .room__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    padding-block: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+  .room__nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    text-decoration: none;
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .room__nav-link:hover {
+    border-color: var(--color-accent);
+  }
+  .room__nav-link--next {
+    text-align: right;
+    grid-column: 2;
+  }
+  .room__nav-label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+  .room__nav-title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+  }
+  @media (max-width: 40rem) {
+    .room__nav {
+      grid-template-columns: 1fr;
+    }
+    .room__nav-link--next {
+      grid-column: 1;
+      text-align: left;
+    }
+  }
+</style>

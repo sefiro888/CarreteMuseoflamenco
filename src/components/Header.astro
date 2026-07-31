@@ -1,0 +1,65 @@
+---
+import { navItems, t, localizedPath, ENGLISH_ENABLED, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'es' } = Astro.props;
+const dict = t(locale);
+const currentPath = Astro.url.pathname;
+const altLocale: Locale = locale === 'es' ? 'en' : 'es';
+const altPath =
+  locale === 'es' ? `/en${currentPath === '/' ? '' : currentPath}` : currentPath.replace(/^\/en/, '') || '/';
+---
+
+<header class="site-nav">
+  <nav class="container site-nav__inner" aria-label={locale === 'es' ? 'Navegación principal' : 'Main navigation'}>
+    <a class="site-nav__brand" href={localizedPath('/', locale)}>{dict.siteName}</a>
+
+    <button
+      class="btn btn-ghost site-nav__toggle"
+      id="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-list"
+    >
+      {dict.menu}
+    </button>
+
+    <ul class="site-nav__list" id="nav-list" data-open="false">
+      {
+        navItems.map((item) => {
+          const href = localizedPath(item.href, locale);
+          const isCurrent = currentPath === href;
+          return (
+            <li>
+              <a href={href} aria-current={isCurrent ? 'page' : undefined}>
+                {item.label[locale]}
+              </a>
+            </li>
+          );
+        })
+      }
+      {
+        ENGLISH_ENABLED && (
+          <li>
+            <a href={altPath} hreflang={altLocale} rel="alternate">
+              {dict.languageSwitch}
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const list = document.getElementById('nav-list');
+  toggle?.addEventListener('click', () => {
+    const isOpen = list?.getAttribute('data-open') === 'true';
+    list?.setAttribute('data-open', String(!isOpen));
+    toggle.setAttribute('aria-expanded', String(!isOpen));
+  });
+</script>

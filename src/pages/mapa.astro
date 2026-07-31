@@ -1,0 +1,66 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import MapExplorer from '../components/MapExplorer.tsx';
+import VerifyBadge from '../components/VerifyBadge.astro';
+import { getCollection } from 'astro:content';
+
+const places = await getCollection('places');
+const withCoords = places.filter((p) => p.data.lat !== undefined && p.data.lng !== undefined);
+
+const mapPlaces = withCoords.map((p) => ({
+  id: p.id,
+  name: p.data.name,
+  kind: p.data.kind,
+  lat: p.data.lat as number,
+  lng: p.data.lng as number,
+  description: p.data.description,
+  verification: p.data.verification,
+}));
+---
+
+<RoomLayout
+  slug="/mapa"
+  eyebrow="Mapa interactivo"
+  title="Mapa interactivo"
+  summary="Los lugares de una vida bailada."
+>
+  <div class="prose">
+    <p>
+      Este mapa reúne los lugares documentados o citados en la vida de Carrete. Usa
+      mapas de OpenStreetMap y requiere conexión a internet para cargar el mosaico
+      visual; la lista de lugares, debajo, funciona siempre, con o sin JavaScript.
+    </p>
+  </div>
+
+  <MapExplorer client:visible places={mapPlaces} />
+
+  <h2 class="section--tight">Lista de lugares</h2>
+  <ul class="place-list">
+    {
+      places.map((place) => (
+        <li class="place-list__item">
+          <h3>{place.data.name}</h3>
+          <p class="eyebrow">{place.data.kind}</p>
+          <p>{place.data.description}</p>
+          <VerifyBadge level={place.data.verification} />
+        </li>
+      ))
+    }
+  </ul>
+</RoomLayout>
+
+<style>
+  .place-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  }
+  .place-list__item {
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm);
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import VerifyBadge from './VerifyBadge.astro';
+import type { Locale } from '../lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'es' } = Astro.props;
+
+const entries = await getCollection('timeline');
+entries.sort((a, b) => a.data.order - b.data.order);
+
+const withPlaces = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    place: entry.data.placeRef ? await getEntry(entry.data.placeRef) : null,
+  })),
+);
+
+const eras = [...new Set(entries.map((entry) => entry.data.era))];
+---
+
+<div class="timeline" data-timeline>
+  <div class="timeline__filters" role="group" aria-label={locale === 'es' ? 'Filtrar por etapa' : 'Filter by era'}>
+    <button class="timeline__filter is-active" data-era="all" type="button">
+      {locale === 'es' ? 'Todas las etapas' : 'All eras'}
+    </button>
+    {
+      eras.map((era) => (
+        <button class="timeline__filter" data-era={era} type="button">
+          {era}
+        </button>
+      ))
+    }
+  </div>
+
+  <ol class="timeline__list">
+    {
+      withPlaces.map(({ entry, place }) => (
+        <li class="timeline__item" data-era={entry.data.era}>
+          <details>
+            <summary>
+              <span class="timeline__date">{entry.data.dateExact ?? entry.data.dateApprox ?? entry.data.era}</span>
+              <span class="timeline__title">{entry.data.title}</span>
+            </summary>
+            <div class="timeline__detail">
+              <p>{entry.data.summary}</p>
+              {place && <p class="timeline__place">📍 {place.data.name}</p>}
+              <VerifyBadge level={entry.data.verification} locale={locale} />
+            </div>
+          </details>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<script>
+  const root = document.querySelector('[data-timeline]');
+  const buttons = root?.querySelectorAll<HTMLButtonElement>('.timeline__filter');
+  const items = root?.querySelectorAll<HTMLLIElement>('.timeline__item');
+
+  buttons?.forEach((button) => {
+    button.addEventListener('click', () => {
+      buttons.forEach((b) => b.classList.remove('is-active'));
+      button.classList.add('is-active');
+      const era = button.dataset.era;
+      items?.forEach((item) => {
+        const show = era === 'all' || item.dataset.era === era;
+        item.hidden = !show;
+      });
+    });
+  });
+</script>
+
+<style>
+  .timeline__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-lg);
+  }
+  .timeline__filter {
+    font-size: var(--step--1);
+    padding: 0.4em 0.9em;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-strong);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+  .timeline__filter.is-active,
+  .timeline__filter:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .timeline__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--color-border);
+  }
+  .timeline__item {
+    padding: 0 0 var(--space-md) var(--space-md);
+    position: relative;
+  }
+  .timeline__item::before {
+    content: '';
+    position: absolute;
+    left: -0.4rem;
+    top: 0.5rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+  .timeline__item summary {
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    align-items: baseline;
+  }
+  .timeline__date {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    min-width: 8rem;
+  }
+  .timeline__title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+  }
+  .timeline__detail {
+    margin-top: var(--space-2xs);
+    padding-left: calc(8rem + var(--space-xs));
+    color: var(--color-text-soft);
+  }
+  .timeline__place {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+  @media (max-width: 40rem) {
+    .timeline__detail {
+      padding-left: 0;
+    }
+  }
+</style>

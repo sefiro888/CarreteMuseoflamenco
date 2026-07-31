@@ -1,0 +1,30 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import StoryContent from '../components/StoryContent.astro';
+import { getEntry, getCollection } from 'astro:content';
+
+const entry = await getEntry('stories', 'estatua');
+if (!entry) throw new Error('Falta el contenido de estatua');
+const awards = (await getCollection('awards')).filter((a) => a.id === 'estatua-torremolinos');
+---
+
+<RoomLayout slug="/estatua" eyebrow="La estatua" title={entry.data.title} summary={entry.data.summary}>
+  <StoryContent entry={entry} />
+
+  {
+    awards.length > 0 && (
+      <div class="section--tight">
+        <h3>Ficha del homenaje</h3>
+        <div class="card-grid">
+          {awards.map((award) => (
+            <div class="card">
+              <h4>{award.data.title}</h4>
+              <p>{award.data.grantor}</p>
+              <p>{award.data.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</RoomLayout>

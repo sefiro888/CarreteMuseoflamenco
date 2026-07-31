@@ -1,0 +1,76 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { t, localizedPath, ENGLISH_ENABLED, type Locale } from '../lib/i18n';
+import { SITE_NAME, SITE_DESCRIPTION_ES, personJsonLd } from '../lib/seo';
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/components.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale?: Locale;
+  image?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description,
+  locale = 'es',
+  image = '/og-default.png',
+  noIndex = false,
+} = Astro.props;
+
+const dict = t(locale);
+const pageTitle = title === dict.siteName ? title : `${title} · ${dict.siteName}`;
+const pageDescription = description ?? (locale === 'es' ? SITE_DESCRIPTION_ES : SITE_DESCRIPTION_ES);
+const canonicalPath = Astro.url.pathname;
+const canonicalUrl = new URL(canonicalPath, Astro.site);
+const esUrl = new URL(canonicalPath.replace(/^\/en/, '') || '/', Astro.site);
+const enUrl = new URL(localizedPath(canonicalPath.replace(/^\/en/, '') || '/', 'en'), Astro.site);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonicalUrl} />
+    {
+      ENGLISH_ENABLED && (
+        <>
+          <link rel="alternate" hreflang="es" href={esUrl} />
+          <link rel="alternate" hreflang="en" href={enUrl} />
+          <link rel="alternate" hreflang="x-default" href={esUrl} />
+        </>
+      )
+    }
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personJsonLd())} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">{dict.skipToContent}</a>
+    <Header locale={locale} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

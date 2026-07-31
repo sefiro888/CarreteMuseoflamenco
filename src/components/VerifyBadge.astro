@@ -1,0 +1,14 @@
+---
+import { t, type Locale } from '../lib/i18n';
+
+interface Props {
+  level: 'documented' | 'testimony' | 'oral-memory' | 'approximate-date' | 'contradictory' | 'pending-research';
+  locale?: Locale;
+}
+
+const { level, locale = 'es' } = Astro.props;
+const dict = t(locale);
+const label = dict.verificationLevels[level];
+---
+
+<span class={`verify-badge verify-badge--${level}`}>{label}</span>

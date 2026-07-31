@@ -1,0 +1,27 @@
+---
+import RoomLayout from '../../layouts/RoomLayout.astro';
+import VerifyBadge from '../../components/VerifyBadge.astro';
+import { getCollection } from 'astro:content';
+
+const performances = await getCollection('performances');
+---
+
+<RoomLayout
+  slug="/espectaculos"
+  eyebrow="Espectáculos y obras"
+  title="Espectáculos y obras"
+  summary="Fichas de sus espectáculos principales."
+>
+  <div class="card-grid">
+    {
+      performances.map((show) => (
+        <a class="card" style="text-decoration:none; color:inherit;" href={`/espectaculos/${show.id}`}>
+          <h3>{show.data.title}</h3>
+          {show.data.venue && <p class="eyebrow">{show.data.venue}</p>}
+          <p>{show.data.description}</p>
+          <VerifyBadge level={show.data.verification} />
+        </a>
+      ))
+    }
+  </div>
+</RoomLayout>

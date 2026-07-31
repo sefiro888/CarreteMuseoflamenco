@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { rooms } from '../lib/rooms';
+---
+
+<BaseLayout title="Todas las salas" description="El plano completo del museo digital de Carrete de Málaga.">
+  <section class="section container">
+    <p class="eyebrow">Plano del museo</p>
+    <h1>Todas las salas</h1>
+    <p class="prose">
+      Diecinueve salas componen, de momento, este museo digital. Puedes recorrerlas
+      en orden, como si caminaras por un museo real, o ir directamente a la que te
+      interese.
+    </p>
+
+    <ol class="room-index">
+      {
+        rooms.map((room, index) => (
+          <li>
+            <a class="room-index__link" href={room.slug}>
+              <span class="room-index__number">{String(index + 1).padStart(2, '0')}</span>
+              <span>
+                <span class="room-index__title">{room.title.es}</span>
+                <span class="room-index__summary">{room.summary.es}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .room-index {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-lg);
+    display: grid;
+    gap: var(--space-sm);
+  }
+  .room-index__link {
+    display: flex;
+    gap: var(--space-md);
+    align-items: baseline;
+    text-decoration: none;
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .room-index__link:hover {
+    border-color: var(--color-accent);
+  }
+  .room-index__number {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--color-accent);
+    min-width: 2.5ch;
+  }
+  .room-index__title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+  }
+  .room-index__summary {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+</style>

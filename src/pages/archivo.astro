@@ -1,0 +1,133 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import VerifyBadge from '../components/VerifyBadge.astro';
+import ProvisionalNote from '../components/ProvisionalNote.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const media = await getCollection('media');
+const withPlaces = await Promise.all(
+  media.map(async (item) => ({
+    item,
+    place: item.data.placeRef ? await getEntry(item.data.placeRef) : null,
+  })),
+);
+
+const types = [...new Set(media.map((item) => item.data.type))];
+
+const typeLabels: Record<string, string> = {
+  photo: 'Fotografía',
+  video: 'Vídeo',
+  audio: 'Audio',
+  document: 'Documento',
+};
+---
+
+<RoomLayout
+  slug="/archivo"
+  eyebrow="Archivo fotográfico y audiovisual"
+  title="Archivo fotográfico y audiovisual"
+  summary="El material que documenta su vida."
+>
+  <ProvisionalNote>
+    El archivo real (fotografías, vídeos y documentos originales) todavía no se ha
+    incorporado. Estas fichas son marcadores de posición que muestran cómo funcionará
+    la búsqueda y los filtros una vez la familia aporte el material.
+  </ProvisionalNote>
+
+  <div class="archive-controls section--tight" data-archive>
+    <label class="archive-search-label" for="archive-search">Buscar en el archivo</label>
+    <input
+      id="archive-search"
+      type="search"
+      placeholder="Buscar por título o lugar…"
+      class="archive-search"
+      data-archive-search
+    />
+
+    <div class="timeline__filters" role="group" aria-label="Filtrar por tipo de material">
+      <button class="timeline__filter is-active" data-type="all" type="button">Todo</button>
+      {
+        types.map((type) => (
+          <button class="timeline__filter" data-type={type} type="button">
+            {typeLabels[type] ?? type}
+          </button>
+        ))
+      }
+    </div>
+
+    <ul class="card-grid" data-archive-list style="list-style:none; padding:0;">
+      {
+        withPlaces.map(({ item, place }) => (
+          <li
+            class="archive-piece"
+            data-type={item.data.type}
+            data-search={`${item.data.title} ${place?.data.name ?? ''}`.toLowerCase()}
+          >
+            <div class="archive-piece__media">{typeLabels[item.data.type]} pendiente de incorporar</div>
+            <h3 class="archive-piece__title">{item.data.title}</h3>
+            {place && <p class="archive-piece__meta">📍 {place.data.name}</p>}
+            {item.data.dateApprox && <p class="archive-piece__meta">{item.data.dateApprox}</p>}
+            <VerifyBadge level={item.data.verification} />
+            {item.data.rightsNote && <p class="archive-piece__meta">{item.data.rightsNote}</p>}
+          </li>
+        ))
+      }
+    </ul>
+    <p role="status" aria-live="polite" data-archive-empty hidden>
+      No se han encontrado piezas con ese criterio de búsqueda.
+    </p>
+  </div>
+</RoomLayout>
+
+<script>
+  const root = document.querySelector('[data-archive]');
+  const search = root?.querySelector<HTMLInputElement>('[data-archive-search]');
+  const buttons = root?.querySelectorAll<HTMLButtonElement>('.timeline__filter');
+  const items = root?.querySelectorAll<HTMLLIElement>('[data-archive-list] > li');
+  const emptyMessage = root?.querySelector<HTMLElement>('[data-archive-empty]');
+
+  let activeType = 'all';
+
+  function applyFilters() {
+    const query = (search?.value ?? '').trim().toLowerCase();
+    let visibleCount = 0;
+    items?.forEach((item) => {
+      const matchesType = activeType === 'all' || item.dataset.type === activeType;
+      const matchesQuery = !query || item.dataset.search?.includes(query);
+      const show = matchesType && matchesQuery;
+      item.hidden = !show;
+      if (show) visibleCount += 1;
+    });
+    if (emptyMessage) emptyMessage.hidden = visibleCount !== 0;
+  }
+
+  buttons?.forEach((button) => {
+    button.addEventListener('click', () => {
+      buttons.forEach((b) => b.classList.remove('is-active'));
+      button.classList.add('is-active');
+      activeType = button.dataset.type ?? 'all';
+      applyFilters();
+    });
+  });
+
+  search?.addEventListener('input', applyFilters);
+</script>
+
+<style>
+  .archive-search-label {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2xs);
+  }
+  .archive-search {
+    width: 100%;
+    max-width: 28rem;
+    padding: 0.6em 0.9em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg-raised);
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+  }
+</style>

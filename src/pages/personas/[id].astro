@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VerifyBadge from '../../components/VerifyBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+
+export async function getStaticPaths() {
+  const people = await getCollection('people');
+  return people.map((person) => ({
+    params: { id: person.id },
+    props: { person },
+  }));
+}
+
+const { person } = Astro.props;
+const testimonials = (await getCollection('testimonials')).filter(
+  (item) => item.data.personRef?.id === person.id,
+);
+---
+
+<BaseLayout title={person.data.name} description={person.data.summary}>
+  <section class="section container prose">
+    <p class="eyebrow">{person.data.role}</p>
+    <h1>{person.data.name}</h1>
+    <p><VerifyBadge level={person.data.verification} /></p>
+    <p>{person.data.summary}</p>
+    <p><strong>Relación con Carrete:</strong> {person.data.relationToCarrete}</p>
+
+    {
+      testimonials.length > 0 && (
+        <>
+          <h2>Testimonios</h2>
+          {testimonials.map((testimonial) => (
+            <blockquote class="quote">
+              <p>«{testimonial.data.quote}»</p>
+              {testimonial.data.context && <figcaption class="quote-cite">{testimonial.data.context}</figcaption>}
+              <VerifyBadge level={testimonial.data.verification} />
+            </blockquote>
+          ))}
+        </>
+      )
+    }
+
+    <SourceList sourceRefs={person.data.sourceRefs} />
+    <p><a href="/salas">← Volver al plano del museo</a></p>
+  </section>
+</BaseLayout>

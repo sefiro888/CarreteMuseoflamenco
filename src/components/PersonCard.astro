@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import VerifyBadge from './VerifyBadge.astro';
+import { localizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  person: CollectionEntry<'people'>;
+  locale?: Locale;
+}
+
+const { person, locale = 'es' } = Astro.props;
+---
+
+<a class="card person-card" href={`${localizedPath('/personas', locale)}/${person.id}`}>
+  <h3>{person.data.name}</h3>
+  <p class="person-card__role">{person.data.role}</p>
+  <p class="person-card__relation">{person.data.relationToCarrete}</p>
+  <VerifyBadge level={person.data.verification} locale={locale} />
+</a>
+
+<style>
+  .person-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .person-card__role {
+    color: var(--color-accent);
+    font-size: var(--step--1);
+    margin-bottom: var(--space-3xs);
+  }
+  .person-card__relation {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VerifyBadge from '../../components/VerifyBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+
+export async function getStaticPaths() {
+  const performances = await getCollection('performances');
+  return performances.map((show) => ({
+    params: { id: show.id },
+    props: { show },
+  }));
+}
+
+const { show } = Astro.props;
+---
+
+<BaseLayout title={show.data.title} description={show.data.description}>
+  <section class="section container prose">
+    <p class="eyebrow">Espectáculo</p>
+    <h1>{show.data.title}</h1>
+    {show.data.venue && <p><strong>Lugar:</strong> {show.data.venue}</p>}
+    {(show.data.dateExact || show.data.dateApprox) && (
+      <p><strong>Fecha:</strong> {show.data.dateExact ?? show.data.dateApprox}</p>
+    )}
+    <p><VerifyBadge level={show.data.verification} /></p>
+    <p>{show.data.description}</p>
+
+    <SourceList sourceRefs={show.data.sourceRefs} />
+    <p><a href="/espectaculos">← Volver a espectáculos y obras</a></p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import { rooms } from '../lib/rooms';
+
+const teaser = rooms.slice(1, 5);
+---
+
+<BaseLayout title="Carrete de Málaga · Al compás de una vida">
+  <Hero locale="es" />
+
+  <section class="section container">
+    <p class="eyebrow">El museo</p>
+    <h2>Un archivo vivo, no una biografía cerrada</h2>
+    <div class="prose">
+      <p>
+        José Losada Santiago, «Carrete de Málaga», es un bailaor flamenco ligado a Málaga y
+        Torremolinos, conocido también como «el Fred Astaire gitano». Este museo digital reúne su
+        biografía, su archivo y su voz, tal y como él mismo la cuenta: con gracia, con memoria y,
+        a veces, con más de una versión de los hechos.
+      </p>
+      <p>
+        Cada sala distingue con cuidado entre lo documentado, lo que Carrete recuerda y lo que
+        todavía está por confirmar. Es un proyecto impulsado por su hijo, Bernardo Losada, como
+        homenaje en vida, y está pensado para crecer durante años a medida que se incorpore el
+        archivo familiar real: fotografías, vídeos, documentos y testimonios.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight container">
+    <p class="eyebrow">Empieza a recorrer el museo</p>
+    <div class="card-grid">
+      {
+        teaser.map((room) => (
+          <a class="card teaser-card" href={room.slug}>
+            <h3>{room.title.es}</h3>
+            <p>{room.summary.es}</p>
+          </a>
+        ))
+      }
+    </div>
+    <p style="margin-top: var(--space-lg);">
+      <a class="btn" href="/salas">Ver el plano completo del museo (19 salas)</a>
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .teaser-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color var(--duration-fast) var(--ease-standard);
+  }
+  .teaser-card:hover {
+    border-color: var(--color-accent);
+  }
+  .teaser-card h3 {
+    color: var(--color-text);
+  }
+  .teaser-card p {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+</style>
