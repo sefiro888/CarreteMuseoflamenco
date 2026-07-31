@@ -2,6 +2,7 @@
 title: "Nota interna: posible colaboración fotográfica futura"
 question: "¿Podría alguien del entorno fotográfico local aportar material de archivo en el futuro?"
 status: open
+internal: true
 versions:
   - text: >
       Se ha mencionado internamente la posibilidad de contactar en el futuro con

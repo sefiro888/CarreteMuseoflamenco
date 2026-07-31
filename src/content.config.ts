@@ -171,6 +171,12 @@ const researchNotes = defineCollection({
       }),
     ),
     conclusion: z.string().optional(),
+    /**
+     * Notas de uso exclusivamente interno para el equipo del proyecto
+     * (p. ej. posibles contactos futuros sin confirmar). Nunca deben
+     * renderizarse en páginas públicas como /creditos.
+     */
+    internal: z.boolean().default(false),
   }),
 });
 

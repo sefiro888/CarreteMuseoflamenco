@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png?url';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png?url';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png?url';
 
 export interface MapPlace {
   id: string;
@@ -34,6 +34,10 @@ export default function MapExplorer({ places }: Props) {
         const L = (await import('leaflet')).default;
         if (cancelled || !containerRef.current) return;
 
+        // Leaflet's default icon always prepends an auto-detected asset path
+        // in front of iconUrl/shadowUrl; deleting the override makes it use
+        // the absolute bundler-provided URLs as-is.
+        delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
         L.Icon.Default.mergeOptions({
           iconUrl: markerIcon,
           iconRetinaUrl: markerIcon2x,

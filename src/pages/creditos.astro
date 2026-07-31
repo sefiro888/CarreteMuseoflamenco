@@ -3,7 +3,7 @@ import RoomLayout from '../layouts/RoomLayout.astro';
 import { getCollection } from 'astro:content';
 
 const sources = await getCollection('sources');
-const researchNotes = await getCollection('research-notes');
+const researchNotes = await getCollection('research-notes', (note) => !note.data.internal);
 
 const sourceTypeLabels: Record<string, string> = {
   book: 'Libro',
