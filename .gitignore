@@ -24,3 +24,7 @@ Thumbs.db
 
 # archivo real pendiente de ingesta (fotos, video, audio sin procesar)
 /media-source/
+
+# Manifiestos generados por los scripts de ingesta (se regeneran con node scripts/*)
+scripts/archive-manifest.json
+scripts/press-manifest.json

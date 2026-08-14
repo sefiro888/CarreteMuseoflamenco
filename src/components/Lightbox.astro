@@ -1,0 +1,268 @@
+---
+/**
+ * Visor de ampliación del archivo.
+ *
+ * Se monta una sola vez por página y lo abren los elementos que lleven
+ * `data-lightbox-item`, leyendo sus atributos `data-full`, `data-caption`,
+ * `data-meta` y `data-download`. Es accesible con teclado: Escape cierra,
+ * las flechas recorren las piezas y el foco queda retenido dentro del visor.
+ */
+---
+
+<div class="lightbox" data-lightbox hidden>
+  <div class="lightbox__backdrop" data-lightbox-close></div>
+
+  <div
+    class="lightbox__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Pieza del archivo ampliada"
+    data-lightbox-dialog
+  >
+    <figure class="lightbox__figure">
+      <img data-lightbox-img alt="" />
+      <figcaption class="lightbox__caption">
+        <p class="lightbox__title" data-lightbox-caption></p>
+        <p class="lightbox__meta" data-lightbox-meta></p>
+        <a class="lightbox__download" data-lightbox-download hidden>Ver el documento original (PDF)</a>
+      </figcaption>
+    </figure>
+
+    <button class="lightbox__btn lightbox__btn--prev" type="button" data-lightbox-prev aria-label="Pieza anterior">
+      <span aria-hidden="true">←</span>
+    </button>
+    <button class="lightbox__btn lightbox__btn--next" type="button" data-lightbox-next aria-label="Pieza siguiente">
+      <span aria-hidden="true">→</span>
+    </button>
+    <button class="lightbox__btn lightbox__btn--close" type="button" data-lightbox-close aria-label="Cerrar el visor">
+      <span aria-hidden="true">✕</span>
+    </button>
+
+    <p class="lightbox__counter" data-lightbox-counter aria-live="polite"></p>
+  </div>
+</div>
+
+<script>
+  const lightboxRoot = document.querySelector<HTMLElement>('[data-lightbox]');
+  if (lightboxRoot) {
+    const root: HTMLElement = lightboxRoot;
+    const dialog = root.querySelector<HTMLElement>('[data-lightbox-dialog]')!;
+    const img = root.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const caption = root.querySelector<HTMLElement>('[data-lightbox-caption]')!;
+    const meta = root.querySelector<HTMLElement>('[data-lightbox-meta]')!;
+    const download = root.querySelector<HTMLAnchorElement>('[data-lightbox-download]')!;
+    const counter = root.querySelector<HTMLElement>('[data-lightbox-counter]')!;
+    const btnPrev = root.querySelector<HTMLButtonElement>('[data-lightbox-prev]')!;
+    const btnNext = root.querySelector<HTMLButtonElement>('[data-lightbox-next]')!;
+
+    let items: HTMLElement[] = [];
+    let index = 0;
+    let lastFocused: HTMLElement | null = null;
+
+    /** Solo recorre las piezas visibles: respeta los filtros activos. */
+    function collect() {
+      items = Array.from(document.querySelectorAll<HTMLElement>('[data-lightbox-item]')).filter(
+        (el) => el.offsetParent !== null,
+      );
+    }
+
+    function show(i: number) {
+      if (!items.length) return;
+      index = (i + items.length) % items.length;
+      const el = items[index];
+      img.src = el.dataset.full || '';
+      img.alt = el.dataset.alt || '';
+      caption.textContent = el.dataset.caption || '';
+      meta.textContent = el.dataset.meta || '';
+      const pdf = el.dataset.download;
+      if (pdf) {
+        download.href = pdf;
+        download.hidden = false;
+      } else {
+        download.hidden = true;
+      }
+      counter.textContent = `${index + 1} de ${items.length}`;
+      const multiple = items.length > 1;
+      btnPrev.hidden = !multiple;
+      btnNext.hidden = !multiple;
+    }
+
+    function open(el: HTMLElement) {
+      collect();
+      lastFocused = document.activeElement as HTMLElement;
+      const i = items.indexOf(el);
+      show(i === -1 ? 0 : i);
+      root.hidden = false;
+      document.body.style.overflow = 'hidden';
+      dialog.focus();
+    }
+
+    function close() {
+      root.hidden = true;
+      document.body.style.overflow = '';
+      img.src = '';
+      lastFocused?.focus();
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const trigger = target.closest<HTMLElement>('[data-lightbox-item]');
+      if (trigger) {
+        event.preventDefault();
+        open(trigger);
+        return;
+      }
+      if (target.closest('[data-lightbox-close]')) close();
+      if (target.closest('[data-lightbox-prev]')) show(index - 1);
+      if (target.closest('[data-lightbox-next]')) show(index + 1);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (root.hidden) return;
+      if (event.key === 'Escape') close();
+      if (event.key === 'ArrowLeft') show(index - 1);
+      if (event.key === 'ArrowRight') show(index + 1);
+      if (event.key === 'Tab') {
+        // Retiene el foco dentro del visor mientras está abierto.
+        const focusables = dialog.querySelectorAll<HTMLElement>(
+          'button:not([hidden]), a[href]:not([hidden])',
+        );
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+  }
+
+  .lightbox[hidden] {
+    display: none;
+  }
+
+  .lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-black-warm) 94%, black);
+  }
+
+  .lightbox__dialog {
+    position: relative;
+    width: min(96vw, 76rem);
+    max-height: 94svh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-sm);
+  }
+
+  .lightbox__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-height: 0;
+  }
+
+  .lightbox__figure img {
+    max-width: 100%;
+    max-height: 76svh;
+    margin-inline: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+  }
+
+  .lightbox__caption {
+    text-align: center;
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+
+  .lightbox__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+  }
+
+  .lightbox__meta {
+    margin: var(--space-3xs) 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .lightbox__download {
+    display: inline-block;
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+  }
+
+  .lightbox__counter {
+    text-align: center;
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .lightbox__btn {
+    position: absolute;
+    background: color-mix(in srgb, var(--color-black-warm) 70%, transparent);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .lightbox__btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .lightbox__btn--prev {
+    left: var(--space-2xs);
+    top: 40%;
+  }
+
+  .lightbox__btn--next {
+    right: var(--space-2xs);
+    top: 40%;
+  }
+
+  .lightbox__btn--close {
+    right: var(--space-2xs);
+    top: var(--space-2xs);
+  }
+
+  @media (max-width: 40rem) {
+    .lightbox__btn--prev {
+      left: var(--space-2xs);
+      top: auto;
+      bottom: var(--space-2xs);
+    }
+    .lightbox__btn--next {
+      right: var(--space-2xs);
+      top: auto;
+      bottom: var(--space-2xs);
+    }
+  }
+</style>

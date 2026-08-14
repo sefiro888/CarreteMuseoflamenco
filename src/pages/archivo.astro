@@ -1,26 +1,21 @@
 ---
 import RoomLayout from '../layouts/RoomLayout.astro';
-import VerifyBadge from '../components/VerifyBadge.astro';
-import ProvisionalNote from '../components/ProvisionalNote.astro';
-import { getCollection, getEntry } from 'astro:content';
+import MediaGrid from '../components/MediaGrid.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { getCollection } from 'astro:content';
+import { getPublishedMedia, prepareMedia, byDate, TYPE_LABELS } from '../lib/media';
 
-const media = await getCollection('media');
-const withPlaces = await Promise.all(
-  media.map(async (item) => ({
-    item,
-    place: item.data.placeRef ? await getEntry(item.data.placeRef) : null,
-  })),
+const published = (await getPublishedMedia()).sort(byDate);
+const items = await prepareMedia(published);
+
+// Piezas todavía sin material: se siguen listando para que el archivo sea
+// honesto sobre lo que falta por incorporar.
+const pending = (await getCollection('media')).filter(
+  (item) => !item.data.image && item.data.status !== 'published',
 );
 
-const types = [...new Set(media.map((item) => item.data.type))];
-
-const typeLabels: Record<string, string> = {
-  photo: 'Fotografía',
-  video: 'Vídeo',
-  audio: 'Audio',
-  document: 'Documento',
-  object: 'Objeto de vitrina',
-};
+const types = [...new Set(published.map((i) => i.data.type))];
+const decades = [...new Set(items.map((i) => i.decade).filter(Boolean))].sort() as string[];
 ---
 
 <RoomLayout
@@ -29,95 +24,146 @@ const typeLabels: Record<string, string> = {
   title="Archivo fotográfico y audiovisual"
   summary="El material que documenta su vida."
 >
-  <ProvisionalNote>
-    El archivo real (fotografías, vídeos, documentos y objetos originales) todavía no
-    se ha incorporado. Estas fichas son marcadores de posición que muestran cómo
-    funcionará la búsqueda y los filtros una vez la familia aporte el material.
-  </ProvisionalNote>
-
-  <p class="prose section--tight" style="margin-top: 0;">
-    Este archivo incluye también las futuras <strong>vitrinas digitales</strong>: premios,
-    zapatos de baile, sombreros, bastones, carteles y programas de mano, catalogados
-    igual que cualquier otra pieza, con su procedencia y su estado de verificación.
-  </p>
+  <div class="prose">
+    <p>
+      Este archivo reúne <strong>{items.length} piezas</strong> cedidas por la familia Losada y
+      por Paco Roji: fotografías desde 1953, carteles, programas de mano, postales y recortes de
+      prensa. Puedes buscar por nombre, lugar o persona, y filtrar por década y tipo de material.
+      Pulsa cualquier pieza para verla ampliada.
+    </p>
+    <p>
+      Cada ficha conserva el crédito del fotógrafo cuando se conoce. Buena parte del material
+      antiguo no tiene autoría identificada: aparece acreditado al archivo familiar y queda
+      pendiente de atribuir.
+    </p>
+  </div>
 
   <div class="archive-controls section--tight" data-archive>
-    <label class="archive-search-label" for="archive-search">Buscar en el archivo</label>
-    <input
-      id="archive-search"
-      type="search"
-      placeholder="Buscar por título o lugar…"
-      class="archive-search"
-      data-archive-search
-    />
+    <div class="archive-search-row">
+      <label class="archive-search-label" for="archive-search">Buscar en el archivo</label>
+      <input
+        id="archive-search"
+        type="search"
+        placeholder="Un nombre, un tablao, un año…"
+        class="archive-search"
+        data-archive-search
+        autocomplete="off"
+      />
+    </div>
 
-    <div class="timeline__filters" role="group" aria-label="Filtrar por tipo de material">
-      <button class="timeline__filter is-active" data-type="all" type="button">Todo</button>
+    <div class="archive-filters" role="group" aria-label="Filtrar por tipo de material">
+      <span class="archive-filters__label">Tipo</span>
+      <button class="timeline__filter is-active" data-filter-type="all" type="button">Todo</button>
       {
         types.map((type) => (
-          <button class="timeline__filter" data-type={type} type="button">
-            {typeLabels[type] ?? type}
+          <button class="timeline__filter" data-filter-type={type} type="button">
+            {TYPE_LABELS[type] ?? type}
           </button>
         ))
       }
     </div>
 
-    <ul class="card-grid" data-archive-list style="list-style:none; padding:0;">
+    <div class="archive-filters" role="group" aria-label="Filtrar por década">
+      <span class="archive-filters__label">Década</span>
+      <button class="timeline__filter is-active" data-filter-decade="all" type="button">Todas</button>
       {
-        withPlaces.map(({ item, place }) => (
-          <li
-            class="archive-piece"
-            data-type={item.data.type}
-            data-search={`${item.data.title} ${place?.data.name ?? ''}`.toLowerCase()}
-          >
-            <div class="archive-piece__media">{typeLabels[item.data.type]} pendiente de incorporar</div>
-            <h3 class="archive-piece__title">{item.data.title}</h3>
-            {place && <p class="archive-piece__meta">📍 {place.data.name}</p>}
-            {item.data.dateApprox && <p class="archive-piece__meta">{item.data.dateApprox}</p>}
-            <VerifyBadge level={item.data.verification} />
-            {item.data.rightsNote && <p class="archive-piece__meta">{item.data.rightsNote}</p>}
-          </li>
+        decades.map((d) => (
+          <button class="timeline__filter" data-filter-decade={d} type="button">
+            {d}s
+          </button>
         ))
       }
-    </ul>
-    <p role="status" aria-live="polite" data-archive-empty hidden>
-      No se han encontrado piezas con ese criterio de búsqueda.
+    </div>
+
+    <p class="archive-count" role="status" aria-live="polite" data-archive-count></p>
+
+    <MediaGrid items={items} />
+
+    <p class="archive-empty" data-archive-empty hidden>
+      No hay piezas que coincidan con esa búsqueda. Prueba con otro nombre o quita los filtros.
     </p>
   </div>
+
+  {
+    pending.length > 0 && (
+      <div class="section--tight">
+        <h2>Pendiente de incorporar</h2>
+        <p class="prose">
+          Material que el archivo tiene identificado pero todavía no ha podido digitalizar o
+          publicar, por estar pendiente de permisos o de localizar el original.
+        </p>
+        <ul class="pending-list">
+          {pending.map((item) => (
+            <li>
+              <strong>{item.data.title}</strong>
+              {item.data.rightsNote && <span> — {item.data.rightsNote}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <Lightbox />
 </RoomLayout>
 
 <script>
-  const root = document.querySelector('[data-archive]');
-  const search = root?.querySelector<HTMLInputElement>('[data-archive-search]');
-  const buttons = root?.querySelectorAll<HTMLButtonElement>('.timeline__filter');
-  const items = root?.querySelectorAll<HTMLLIElement>('[data-archive-list] > li');
-  const emptyMessage = root?.querySelector<HTMLElement>('[data-archive-empty]');
+  const root = document.querySelector<HTMLElement>('[data-archive]');
+  if (root) {
+    const search = root.querySelector<HTMLInputElement>('[data-archive-search]');
+    const items = Array.from(root.querySelectorAll<HTMLLIElement>('[data-media-list] > li'));
+    const emptyMessage = root.querySelector<HTMLElement>('[data-archive-empty]');
+    const countLabel = root.querySelector<HTMLElement>('[data-archive-count]');
 
-  let activeType = 'all';
+    let activeType = 'all';
+    let activeDecade = 'all';
 
-  function applyFilters() {
-    const query = (search?.value ?? '').trim().toLowerCase();
-    let visibleCount = 0;
-    items?.forEach((item) => {
-      const matchesType = activeType === 'all' || item.dataset.type === activeType;
-      const matchesQuery = !query || item.dataset.search?.includes(query);
-      const show = matchesType && matchesQuery;
-      item.hidden = !show;
-      if (show) visibleCount += 1;
-    });
-    if (emptyMessage) emptyMessage.hidden = visibleCount !== 0;
+    function applyFilters() {
+      const query = (search?.value ?? '').trim().toLowerCase();
+      let visible = 0;
+      for (const item of items) {
+        const matchesType = activeType === 'all' || item.dataset.type === activeType;
+        const matchesDecade = activeDecade === 'all' || item.dataset.decade === activeDecade;
+        const matchesQuery = !query || (item.dataset.search ?? '').includes(query);
+        const show = matchesType && matchesDecade && matchesQuery;
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+      if (emptyMessage) emptyMessage.hidden = visible !== 0;
+      if (countLabel) {
+        countLabel.textContent =
+          visible === items.length
+            ? `${items.length} piezas en el archivo`
+            : `${visible} de ${items.length} piezas`;
+      }
+    }
+
+    /**
+     * Los botones de filtro llevan `data-filter-*` propio: las tarjetas del
+     * archivo también tienen `data-type` y `data-decade`, y un selector más
+     * amplio las convertiría a todas en botones de filtro.
+     */
+    function wireGroup(attr: 'type' | 'decade') {
+      const selector = attr === 'type' ? '[data-filter-type]' : '[data-filter-decade]';
+      const buttons = root!.querySelectorAll<HTMLButtonElement>(selector);
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-active'));
+          button.classList.add('is-active');
+          const value =
+            (attr === 'type' ? button.dataset.filterType : button.dataset.filterDecade) ?? 'all';
+          if (attr === 'type') activeType = value;
+          else activeDecade = value;
+          applyFilters();
+        });
+      });
+    }
+
+    wireGroup('type');
+    wireGroup('decade');
+    search?.addEventListener('input', applyFilters);
+    applyFilters();
   }
-
-  buttons?.forEach((button) => {
-    button.addEventListener('click', () => {
-      buttons.forEach((b) => b.classList.remove('is-active'));
-      button.classList.add('is-active');
-      activeType = button.dataset.type ?? 'all';
-      applyFilters();
-    });
-  });
-
-  search?.addEventListener('input', applyFilters);
 </script>
 
 <style>
@@ -127,14 +173,51 @@ const typeLabels: Record<string, string> = {
     color: var(--color-text-muted);
     margin-bottom: var(--space-2xs);
   }
+
   .archive-search {
     width: 100%;
-    max-width: 28rem;
-    padding: 0.6em 0.9em;
+    max-width: 30rem;
+    padding: 0.7em 1em;
     border-radius: var(--radius-sm);
     border: 1px solid var(--color-border-strong);
     background: var(--color-bg-raised);
     color: var(--color-text);
-    margin-bottom: var(--space-md);
+  }
+
+  .archive-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-top: var(--space-md);
+  }
+
+  .archive-filters__label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-right: var(--space-2xs);
+  }
+
+  .archive-count {
+    margin: var(--space-md) 0 var(--space-sm);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .archive-empty {
+    margin-top: var(--space-lg);
+    color: var(--color-text-soft);
+  }
+
+  .pending-list {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    max-width: var(--prose-max);
+  }
+
+  .pending-list li {
+    margin-bottom: var(--space-2xs);
   }
 </style>

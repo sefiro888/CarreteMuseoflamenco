@@ -1,0 +1,89 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** Anchuras candidatas para el srcset. */
+  widths?: number[];
+  sizes?: string;
+  /** Relación de aspecto fija; si se omite se respeta la de la imagen. */
+  ratio?: string;
+  focal?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  widths = [400, 800, 1200, 1600],
+  sizes = '(max-width: 60rem) 100vw, 50vw',
+  ratio,
+  focal = 'center',
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  class: className = '',
+} = Astro.props;
+
+// No pedir variantes mayores que el original: ampliar un escaneo antiguo solo
+// añade peso sin ganar detalle.
+const candidateWidths = widths.filter((w) => w <= src.width);
+if (candidateWidths.length === 0) candidateWidths.push(src.width);
+---
+
+<figure
+  class={`archive-image ${className}`}
+  style={ratio ? `--ratio:${ratio}; --focal:${focal};` : `--focal:${focal};`}
+  data-fixed-ratio={ratio ? 'true' : undefined}
+>
+  <Image
+    src={src}
+    alt={alt}
+    widths={candidateWidths}
+    sizes={sizes}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+  />
+  {
+    Astro.slots.has('default') && (
+      <figcaption>
+        <slot />
+      </figcaption>
+    )
+  }
+</figure>
+
+<style>
+  .archive-image {
+    margin: 0;
+    /* El archivo es en gran parte blanco y negro sobre fondo cálido: un tono
+       intermedio evita el destello blanco mientras carga la imagen. */
+    background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .archive-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .archive-image[data-fixed-ratio] img {
+    aspect-ratio: var(--ratio);
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focal);
+  }
+
+  .archive-image figcaption {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    line-height: var(--leading-snug);
+  }
+</style>

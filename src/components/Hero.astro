@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import { t, localizedPath, type Locale } from '../lib/i18n';
+import heroImage from '../assets/archivo/2022-05-21-aitor-lara.jpg';
 
 interface Props {
   locale?: Locale;
@@ -7,16 +9,25 @@ interface Props {
 
 const { locale = 'es' } = Astro.props;
 const dict = t(locale);
+
+const heroAlt =
+  locale === 'es'
+    ? 'Carrete de Málaga, de pie en el centro de una calle estrecha, con sombrero, chaqueta clara y bastón levantado. Fotografía en blanco y negro de Aitor Lara, 2022.'
+    : 'Carrete de Málaga standing in the middle of a narrow street, wearing a hat and light jacket and raising his cane. Black and white photograph by Aitor Lara, 2022.';
 ---
 
 <section class="hero" aria-label={locale === 'es' ? 'Apertura del museo' : 'Museum opening'}>
-  <div class="hero__reel" aria-hidden="true">
-    <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="300" cy="300" r="280" />
-      <circle cx="300" cy="300" r="220" />
-      <circle cx="300" cy="300" r="160" />
-      <circle cx="300" cy="300" r="60" />
-    </svg>
+  <div class="hero__media">
+    <Image
+      src={heroImage}
+      alt={heroAlt}
+      widths={[640, 1024, 1600, 2000]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="hero__scrim" aria-hidden="true"></div>
   </div>
 
   <div class="hero__content container">
@@ -53,11 +64,13 @@ const dict = t(locale);
     <p class="hero__note">
       {
         locale === 'es'
-          ? 'El sonido solo se activa si lo pides. Esta web respeta tu preferencia de sistema de reducir el movimiento.'
-          : 'Sound only plays if you ask for it. This site respects your system preference for reduced motion.'
+          ? 'Aquí no suena nada si no lo pides.'
+          : 'Nothing plays here unless you ask for it.'
       }
     </p>
   </div>
+
+  <p class="hero__credit">Fotografía: Aitor Lara, 2022</p>
 </section>
 
 <audio id="hero-audio" preload="none">
@@ -127,33 +140,55 @@ const dict = t(locale);
 </script>
 
 <style>
+  /* La fotografía de portada es apaisada y con la figura centrada: si el texto
+     se superpone, le tapa la cara. Se compone en dos bandas —imagen arriba,
+     palabra abajo— unidas por un degradado, para que la foto se lea entera. */
   .hero {
     position: relative;
-    min-height: 92vh;
-    display: flex;
-    align-items: center;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
     overflow: hidden;
-    background: radial-gradient(120% 120% at 50% 20%, var(--color-charcoal), var(--color-black-warm) 65%);
+    background: var(--color-black-warm);
+    padding-bottom: var(--space-lg);
   }
 
-  .hero__reel {
+  .hero__media {
+    position: relative;
+    /* Sin altura propia: la banda de imagen ocupa lo que sobra de la pantalla
+       una vez colocado el texto, y nunca lo desplaza fuera del primer golpe
+       de vista. */
+    min-height: 40svh;
+    overflow: hidden;
+  }
+
+  .hero__media :global(img) {
     position: absolute;
     inset: 0;
-    display: grid;
-    place-items: center;
-    opacity: 0.16;
-    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Sube el encuadre para que la figura quede por encima del bloque de
+       texto en vez de quedar tapada por él. */
+    object-position: center 30%;
+    /* La foto es de por sí en blanco y negro; el filtro solo la asienta
+       sobre el negro cálido del museo. */
+    filter: contrast(1.04) brightness(0.9);
   }
 
-  .hero__reel svg {
-    width: min(70vw, 46rem);
-    height: auto;
-  }
-
-  .hero__reel circle {
-    fill: none;
-    stroke: var(--color-gold-soft);
-    stroke-width: 0.75;
+  /* Funde el pie de la fotografía con el negro del museo, para que la banda
+     de texto no parezca una caja pegada debajo. */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      var(--color-black-warm) 0%,
+      color-mix(in srgb, var(--color-black-warm) 70%, transparent) 14%,
+      transparent 34%,
+      transparent 82%,
+      color-mix(in srgb, var(--color-black-warm) 60%, transparent) 100%
+    );
   }
 
   .hero__content {
@@ -162,7 +197,19 @@ const dict = t(locale);
     text-align: center;
     max-width: 46rem;
     margin-inline: auto;
+    padding-top: var(--space-sm);
     animation: hero-rise var(--duration-slow) var(--ease-standard) both;
+  }
+
+  .hero__credit {
+    grid-row: 3;
+    margin: var(--space-sm) 0 0;
+    padding-inline: var(--space-md);
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-paper) 50%, transparent);
   }
 
   @keyframes hero-rise {
@@ -181,12 +228,12 @@ const dict = t(locale);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-text-muted);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-2xs);
   }
 
   .hero__name {
     font-size: var(--step-5);
-    margin-bottom: var(--space-2xs);
+    margin-bottom: var(--space-3xs);
   }
 
   .hero__tagline {
@@ -194,14 +241,14 @@ const dict = t(locale);
     font-style: italic;
     font-size: var(--step-2);
     color: var(--color-accent);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
   }
 
   .hero__lines {
     font-size: var(--step-1);
     color: var(--color-paper);
-    margin-bottom: var(--space-lg);
-    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-sm);
+    line-height: var(--leading-snug);
   }
 
   .hero__lines p {
@@ -212,7 +259,7 @@ const dict = t(locale);
     display: flex;
     justify-content: center;
     gap: var(--space-xs);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
   }
 
   .hero__steps span {

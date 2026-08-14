@@ -1,0 +1,167 @@
+---
+import VerifyBadge from './VerifyBadge.astro';
+import { TYPE_LABELS, type PreparedMedia } from '../lib/media';
+
+interface Props {
+  items: PreparedMedia[];
+  /** Muestra la insignia de verificación bajo cada pieza. */
+  showVerification?: boolean;
+}
+
+const { items, showVerification = true } = Astro.props;
+---
+
+<ul class="media-grid" data-media-list>
+  {
+    items.map(({ entry, thumb, full, placeName, peopleNames, decade, dateText, haystack }) => {
+      const metaBits = [
+        TYPE_LABELS[entry.data.type] ?? entry.data.type,
+        dateText,
+        placeName,
+        peopleNames.length ? `Con ${peopleNames.join(', ')}` : null,
+        entry.data.credit,
+      ].filter(Boolean);
+
+      return (
+        <li
+          class="media-grid__item"
+          data-type={entry.data.type}
+          data-decade={decade ?? 'sin-fecha'}
+          data-search={haystack}
+        >
+          <button
+            class="media-grid__button"
+            type="button"
+            style={`--focal:${entry.data.focal};`}
+            data-lightbox-item
+            data-full={full.src}
+            data-alt={entry.data.alt ?? entry.data.title}
+            data-caption={entry.data.title}
+            data-meta={metaBits.join(' · ')}
+            data-download={entry.data.type === 'press' ? entry.data.filePath : undefined}
+          >
+            <img
+              src={thumb.src}
+              width={thumb.width}
+              height={thumb.height}
+              alt={entry.data.alt ?? entry.data.title}
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="media-grid__overlay" aria-hidden="true">Ampliar</span>
+          </button>
+
+          <div class="media-grid__body">
+            <h3 class="media-grid__title">{entry.data.title}</h3>
+            <p class="media-grid__date">{dateText}</p>
+            {placeName && <p class="media-grid__place">{placeName}</p>}
+            {entry.data.credit && <p class="media-grid__credit">{entry.data.credit}</p>}
+            {showVerification && <VerifyBadge level={entry.data.verification} />}
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .media-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  .media-grid__item {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .media-grid__item:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+
+  .media-grid__button {
+    position: relative;
+    display: block;
+    padding: 0;
+    border: none;
+    background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+    cursor: zoom-in;
+    line-height: 0;
+  }
+
+  .media-grid__button img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: var(--focal, center);
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+
+  .media-grid__button:hover img {
+    opacity: 0.72;
+  }
+
+  .media-grid__overlay {
+    position: absolute;
+    inset: auto var(--space-2xs) var(--space-2xs) auto;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4em 0.7em;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-black-warm) 78%, transparent);
+    color: var(--color-paper);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+
+  .media-grid__button:hover .media-grid__overlay,
+  .media-grid__button:focus-visible .media-grid__overlay {
+    opacity: 1;
+  }
+
+  .media-grid__body {
+    padding: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    flex: 1;
+  }
+
+  .media-grid__title {
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    line-height: var(--leading-snug);
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .media-grid__date {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-accent);
+  }
+
+  .media-grid__place,
+  .media-grid__credit {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .media-grid__body :global(.verify-badge) {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+</style>

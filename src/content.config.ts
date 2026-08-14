@@ -123,16 +123,35 @@ const testimonials = defineCollection({
 
 const media = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/media' }),
-  schema: provenance.extend({
-    title: z.string(),
-    /** "object" cubre piezas físicas de vitrina: premios, zapatos, sombreros, bastones, carteles, programas. */
-    type: z.enum(['photo', 'video', 'audio', 'document', 'object']),
-    dateApprox: z.string().optional(),
-    placeRef: reference('places').optional(),
-    peopleRefs: z.array(reference('people')).default([]),
-    rightsNote: z.string().optional(),
-    filePath: z.string().optional(),
-  }),
+  schema: ({ image }) =>
+    provenance.extend({
+      title: z.string(),
+      /**
+       * "object" cubre piezas físicas de vitrina: premios, zapatos, sombreros,
+       * bastones, carteles y programas. "press" son los recortes de hemeroteca,
+       * que además del escaneo conservan el PDF original descargable.
+       */
+      type: z.enum(['photo', 'video', 'audio', 'document', 'object', 'press']),
+      /** Imagen procesada en src/assets; Astro genera las variantes responsive. */
+      image: image().optional(),
+      /** Texto alternativo: describe la escena, nunca repite el título en seco. */
+      alt: z.string().optional(),
+      /** Recorte para tarjetas y cabeceras, en sintaxis de object-position. */
+      focal: z.string().default('center'),
+      /** Piezas destacadas: portada, cabeceras de sala y selección del archivo. */
+      featured: z.boolean().default(false),
+      dateExact: z.string().optional(),
+      dateApprox: z.string().optional(),
+      placeRef: reference('places').optional(),
+      peopleRefs: z.array(reference('people')).default([]),
+      rightsNote: z.string().optional(),
+      /** Ruta pública del original (PDF de hemeroteca, vídeo, audio). */
+      filePath: z.string().optional(),
+      /** Duración en segundos, para vídeo y audio. */
+      durationSeconds: z.number().optional(),
+      /** Número de páginas, para los recortes de prensa. */
+      pages: z.number().optional(),
+    }),
 });
 
 const places = defineCollection({
@@ -142,6 +161,12 @@ const places = defineCollection({
     kind: z.string(),
     lat: z.number().optional(),
     lng: z.number().optional(),
+    /**
+     * Municipio al que pertenece el local. Muchos tablaos de la Costa del Sol
+     * ya no existen y no se conoce su dirección exacta: se agrupan por
+     * municipio en vez de inventarles unas coordenadas.
+     */
+    municipality: z.string().optional(),
     dateRangeApprox: z.string().optional(),
     description: z.string(),
   }),

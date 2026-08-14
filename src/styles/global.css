@@ -47,6 +47,12 @@ svg {
   height: auto;
 }
 
+/* El atributo `hidden` debe ganar siempre: cualquier `display` declarado en un
+   componente lo anularía y dejaría visible algo que el código cree oculto. */
+[hidden] {
+  display: none !important;
+}
+
 input,
 button,
 textarea,
