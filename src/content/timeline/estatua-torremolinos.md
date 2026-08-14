@@ -9,6 +9,8 @@ summary: >
 verification: documented
 status: published
 placeRef: torremolinos
+mediaRefs:
+  - junto-a-su-estatua-en-torremolinos
 sourceRefs:
   - teatro-real
 ---

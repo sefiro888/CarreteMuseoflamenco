@@ -1,0 +1,192 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Side {
+  image: ImageMetadata;
+  alt: string;
+  label: string;
+  credit: string;
+  focal?: string;
+}
+
+interface Props {
+  before: Side;
+  after: Side;
+  /** Identificador único: permite más de un comparador por página. */
+  id?: string;
+}
+
+const { before, after, id = 'compare' } = Astro.props;
+
+const render = (side: Side) =>
+  getImage({ src: side.image, width: 1400, format: 'webp', quality: 80 });
+
+const beforeImg = await render(before);
+const afterImg = await render(after);
+---
+
+<figure class="compare" data-compare style={`--pos:50%;`}>
+  <div class="compare__stage">
+    <img
+      class="compare__img compare__img--after"
+      src={afterImg.src}
+      alt={after.alt}
+      style={`object-position:${after.focal ?? 'center'};`}
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="compare__clip">
+      <img
+        class="compare__img compare__img--before"
+        src={beforeImg.src}
+        alt={before.alt}
+        style={`object-position:${before.focal ?? 'center'};`}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <span class="compare__tag compare__tag--before" aria-hidden="true">{before.label}</span>
+    <span class="compare__tag compare__tag--after" aria-hidden="true">{after.label}</span>
+
+    <div class="compare__handle" aria-hidden="true">
+      <span class="compare__handle-grip">↔</span>
+    </div>
+  </div>
+
+  <label class="compare__control" for={`${id}-range`}>
+    <span class="visually-hidden">
+      Deslizar para comparar «{before.label}» con «{after.label}»
+    </span>
+    <input
+      id={`${id}-range`}
+      class="compare__range"
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      step="1"
+      data-compare-range
+    />
+  </label>
+
+  <figcaption class="compare__caption">
+    <span>{before.label} — {before.credit}</span>
+    <span>{after.label} — {after.credit}</span>
+  </figcaption>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-compare]').forEach((root) => {
+    const range = root.querySelector<HTMLInputElement>('[data-compare-range]');
+    if (!range) return;
+    const sync = () => root.style.setProperty('--pos', `${range.value}%`);
+    range.addEventListener('input', sync);
+    sync();
+  });
+</script>
+
+<style>
+  .compare {
+    margin: 0;
+  }
+
+  .compare__stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+    /* Permite que la imagen recortada conserve el ancho completo del
+       escenario y no se deforme al mover el control. */
+    container-type: inline-size;
+  }
+
+  .compare__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* La imagen "antes" se recorta hasta la posición del control. */
+  .compare__clip {
+    position: absolute;
+    inset: 0;
+    width: var(--pos);
+    overflow: hidden;
+  }
+
+  .compare__clip .compare__img {
+    width: 100cqw;
+  }
+
+  .compare__tag {
+    position: absolute;
+    top: var(--space-2xs);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35em 0.75em;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-black-warm) 78%, transparent);
+    color: var(--color-paper);
+  }
+
+  .compare__tag--before {
+    left: var(--space-2xs);
+  }
+
+  .compare__tag--after {
+    right: var(--space-2xs);
+  }
+
+  .compare__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 2px;
+    background: var(--color-accent);
+    transform: translateX(-1px);
+    pointer-events: none;
+  }
+
+  .compare__handle-grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--color-accent);
+    color: var(--color-black-warm);
+    font-size: 1rem;
+  }
+
+  .compare__control {
+    display: block;
+    margin-top: var(--space-xs);
+  }
+
+  .compare__range {
+    width: 100%;
+    accent-color: var(--color-accent);
+    cursor: ew-resize;
+  }
+
+  .compare__caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-md);
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+</style>

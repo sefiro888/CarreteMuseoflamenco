@@ -1,9 +1,10 @@
 ---
-import { getCollection, getEntries } from 'astro:content';
+import { getCollection, getEntries, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
 import ProvisionalNote from '../../components/ProvisionalNote.astro';
+import VideoPlayer from '../../components/VideoPlayer.astro';
 
 export async function getStaticPaths() {
   const monotonas = await getCollection('monotonas');
@@ -15,6 +16,7 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 const people = item.data.peopleRefs.length ? await getEntries(item.data.peopleRefs) : [];
+const { Content } = await render(item);
 ---
 
 <BaseLayout title={item.data.title} description={item.data.summary}>
@@ -24,11 +26,14 @@ const people = item.data.peopleRefs.length ? await getEntries(item.data.peopleRe
     <p><VerifyBadge level={item.data.verification} /></p>
 
     {
-      item.data.videoAvailable && item.data.videoUrl ? (
-        <video controls preload="none" style="width:100%; border-radius: var(--radius-md);">
-          <source src={item.data.videoUrl} />
-          {item.data.transcript && <track kind="captions" label="Español" default />}
-        </video>
+      item.data.videoAvailable && item.data.videoUrl && item.data.poster ? (
+        <VideoPlayer
+          src={item.data.videoUrl}
+          poster={item.data.poster}
+          description={item.data.summary}
+          credit={item.data.credit}
+          durationSeconds={item.data.durationSeconds}
+        />
       ) : (
         <ProvisionalNote>
           El vídeo de esta monótona todavía no se ha incorporado al archivo.
@@ -36,14 +41,23 @@ const people = item.data.peopleRefs.length ? await getEntries(item.data.peopleRe
       )
     }
 
-    <p>{item.data.summary}</p>
+    <div class="monotona__body">
+      <Content />
+    </div>
 
     {
-      item.data.transcript && (
-        <details>
+      item.data.transcript ? (
+        <details open>
           <summary>Transcripción</summary>
           <p>{item.data.transcript}</p>
         </details>
+      ) : (
+        item.data.videoAvailable && (
+          <p class="monotona__pending">
+            Esta monótona todavía no tiene transcripción ni subtítulos. Hasta que existan, el
+            museo no reproduce por escrito lo que Carrete dice en el vídeo.
+          </p>
+        )
       )
     }
 
@@ -75,3 +89,16 @@ const people = item.data.peopleRefs.length ? await getEntries(item.data.peopleRe
     <p><a href="/monotonas">← Volver a las monótonas</a></p>
   </section>
 </BaseLayout>
+
+<style>
+  .monotona__body {
+    margin-top: var(--space-lg);
+  }
+
+  .monotona__pending {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    border-left: 2px solid var(--color-border-strong);
+    padding-left: var(--space-sm);
+  }
+</style>

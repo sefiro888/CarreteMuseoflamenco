@@ -3,8 +3,22 @@ import RoomLayout from '../../layouts/RoomLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import ProvisionalNote from '../../components/ProvisionalNote.astro';
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 
-const monotonas = await getCollection('monotonas');
+const all = await getCollection('monotonas');
+// Las que ya tienen grabación van primero: son el contenido real de la sala.
+const monotonas = [...all].sort(
+  (a, b) => Number(b.data.videoAvailable) - Number(a.data.videoAvailable),
+);
+const withVideo = monotonas.filter((m) => m.data.videoAvailable);
+
+const posters = new Map<string, string>();
+for (const item of monotonas) {
+  if (item.data.poster) {
+    const img = await getImage({ src: item.data.poster, width: 640, format: 'webp', quality: 72 });
+    posters.set(item.id, img.src);
+  }
+}
 ---
 
 <RoomLayout
@@ -23,18 +37,31 @@ const monotonas = await getCollection('monotonas');
     </p>
   </div>
 
-  <ProvisionalNote>
-    Todavía no se ha incorporado ninguna grabación real. Las fichas siguientes son
-    marcadores de posición que preparan la estructura del archivo para cuando la
-    familia pueda registrar y ceder el material.
-  </ProvisionalNote>
+  {
+    withVideo.length === 0 ? (
+      <ProvisionalNote>
+        Todavía no se ha incorporado ninguna grabación real. Las fichas siguientes son
+        marcadores de posición que preparan la estructura del archivo.
+      </ProvisionalNote>
+    ) : (
+      <ProvisionalNote>
+        {withVideo.length === 1
+          ? 'De momento hay una monótona grabada. Le falta la transcripción, los subtítulos y la traducción: el museo todavía no reproduce por escrito lo que cuenta.'
+          : `De momento hay ${withVideo.length} monótonas grabadas, pendientes de transcripción y subtítulos.`}
+      </ProvisionalNote>
+    )
+  }
 
   <div class="card-grid section--tight">
     {
       monotonas.map((item) => (
         <a class="card archive-piece" href={`/monotonas/${item.id}`}>
           <div class="archive-piece__media">
-            {item.data.videoAvailable ? 'Vídeo disponible' : 'Vídeo pendiente de incorporar'}
+            {posters.has(item.id) ? (
+              <img src={posters.get(item.id)} alt="" loading="lazy" decoding="async" />
+            ) : (
+              <span>Vídeo pendiente de incorporar</span>
+            )}
           </div>
           <h3 class="archive-piece__title">{item.data.title}</h3>
           <p class="archive-piece__meta">{item.data.dateApprox}</p>
@@ -59,5 +86,16 @@ const monotonas = await getCollection('monotonas');
   .archive-piece {
     text-decoration: none;
     color: inherit;
+  }
+
+  .archive-piece__media {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .archive-piece__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 </style>

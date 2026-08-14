@@ -21,6 +21,7 @@
   >
     <figure class="lightbox__figure">
       <img data-lightbox-img alt="" />
+      <video data-lightbox-video controls preload="none" playsinline hidden></video>
       <figcaption class="lightbox__caption">
         <p class="lightbox__title" data-lightbox-caption></p>
         <p class="lightbox__meta" data-lightbox-meta></p>
@@ -48,6 +49,7 @@
     const root: HTMLElement = lightboxRoot;
     const dialog = root.querySelector<HTMLElement>('[data-lightbox-dialog]')!;
     const img = root.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const video = root.querySelector<HTMLVideoElement>('[data-lightbox-video]')!;
     const caption = root.querySelector<HTMLElement>('[data-lightbox-caption]')!;
     const meta = root.querySelector<HTMLElement>('[data-lightbox-meta]')!;
     const download = root.querySelector<HTMLAnchorElement>('[data-lightbox-download]')!;
@@ -70,7 +72,24 @@
       if (!items.length) return;
       index = (i + items.length) % items.length;
       const el = items[index];
-      img.src = el.dataset.full || '';
+
+      // Las piezas de vídeo se reproducen en el propio visor; el resto se
+      // muestran como imagen.
+      video.pause();
+      const videoSrc = el.dataset.video;
+      if (videoSrc) {
+        video.src = videoSrc;
+        video.poster = el.dataset.full || '';
+        video.hidden = false;
+        img.hidden = true;
+        img.src = '';
+      } else {
+        video.hidden = true;
+        video.removeAttribute('src');
+        img.hidden = false;
+        img.src = el.dataset.full || '';
+      }
+
       img.alt = el.dataset.alt || '';
       caption.textContent = el.dataset.caption || '';
       meta.textContent = el.dataset.meta || '';
@@ -101,6 +120,8 @@
       root.hidden = true;
       document.body.style.overflow = '';
       img.src = '';
+      video.pause();
+      video.removeAttribute('src');
       lastFocused?.focus();
     }
 
@@ -178,12 +199,17 @@
     min-height: 0;
   }
 
-  .lightbox__figure img {
+  .lightbox__figure img,
+  .lightbox__figure video {
     max-width: 100%;
     max-height: 76svh;
     margin-inline: auto;
     object-fit: contain;
     border-radius: var(--radius-sm);
+  }
+
+  .lightbox__figure video {
+    width: 100%;
   }
 
   .lightbox__caption {

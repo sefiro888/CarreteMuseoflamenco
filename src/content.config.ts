@@ -70,12 +70,16 @@ const stories = defineCollection({
 
 const monotonas = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/monotonas' }),
-  schema: provenance.extend({
+  schema: ({ image }) =>
+    provenance.extend({
     title: z.string(),
     summary: z.string(),
     durationMinutes: z.number().optional(),
     videoAvailable: z.boolean().default(false),
     videoUrl: z.string().optional(),
+    /** Fotograma de portada del vídeo, en src/assets/video. */
+    poster: image().optional(),
+    durationSeconds: z.number().optional(),
     audioOriginal: z.boolean().default(false),
     subtitlesAvailable: z.boolean().default(false),
     transcript: z.string().optional(),
@@ -84,7 +88,7 @@ const monotonas = defineCollection({
     placeRef: reference('places').optional(),
     peopleRefs: z.array(reference('people')).default([]),
     mediaRefs: z.array(reference('media')).default([]),
-  }),
+    }),
 });
 
 const performances = defineCollection({

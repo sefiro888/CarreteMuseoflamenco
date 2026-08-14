@@ -8,6 +8,8 @@ summary: >
   flamenco de la Costa del Sol y protagonista de este museo digital.
 verification: testimony
 status: published
+mediaRefs:
+  - img-0690bynr-fotografia-paco-lobato
 sourceRefs:
   - carrete-testimonio-oral
 ---

@@ -8,6 +8,8 @@ summary: >
   lugar entre las grandes figuras vivas de este arte.
 verification: documented
 status: published
+mediaRefs:
+  - 2023-10-leyenda-del-flamenco-venta-de-vargas
 sourceRefs:
   - canal-sur-premio-leyenda
 ---

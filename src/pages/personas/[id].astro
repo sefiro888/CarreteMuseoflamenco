@@ -3,6 +3,9 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { prepareMedia, byDate } from '../../lib/media';
 
 export async function getStaticPaths() {
   const people = await getCollection('people');
@@ -13,9 +16,21 @@ export async function getStaticPaths() {
 }
 
 const { person } = Astro.props;
+
 const testimonials = (await getCollection('testimonials')).filter(
   (item) => item.data.personRef?.id === person.id,
 );
+
+// Piezas del archivo en las que aparece esta persona.
+const related = (await getCollection('media'))
+  .filter(
+    (item) =>
+      item.data.status === 'published' &&
+      item.data.image &&
+      item.data.peopleRefs.some((ref) => ref.id === person.id),
+  )
+  .sort(byDate);
+const relatedItems = await prepareMedia(related);
 ---
 
 <BaseLayout title={person.data.name} description={person.data.summary}>
@@ -33,7 +48,9 @@ const testimonials = (await getCollection('testimonials')).filter(
           {testimonials.map((testimonial) => (
             <blockquote class="quote">
               <p>«{testimonial.data.quote}»</p>
-              {testimonial.data.context && <figcaption class="quote-cite">{testimonial.data.context}</figcaption>}
+              {testimonial.data.context && (
+                <figcaption class="quote-cite">{testimonial.data.context}</figcaption>
+              )}
               <VerifyBadge level={testimonial.data.verification} />
             </blockquote>
           ))}
@@ -42,6 +59,25 @@ const testimonials = (await getCollection('testimonials')).filter(
     }
 
     <SourceList sourceRefs={person.data.sourceRefs} />
-    <p><a href="/salas">← Volver al plano del museo</a></p>
   </section>
+
+  {
+    relatedItems.length > 0 && (
+      <section class="section--tight container">
+        <h2>En el archivo</h2>
+        <p class="prose">
+          {relatedItems.length === 1
+            ? 'Una pieza del archivo familiar documenta su relación con Carrete.'
+            : `${relatedItems.length} piezas del archivo familiar documentan su relación con Carrete.`}
+        </p>
+        <MediaGrid items={relatedItems} />
+      </section>
+    )
+  }
+
+  <section class="section--tight container">
+    <p><a href="/maestros">← Volver a Carrete y los maestros</a></p>
+  </section>
+
+  <Lightbox />
 </BaseLayout>

@@ -26,12 +26,20 @@ Abre `http://localhost:4321`.
 npm run build
 ```
 
-Esto ejecuta `astro check` (tipos) y después `astro build`. El resultado queda en `dist/`.
-Para previsualizar ese build tal y como se serviría en producción:
+Esto ejecuta `astro check` (tipos), después `astro build` y por último una poda de
+assets sin usar. El resultado queda en `dist/`. Para previsualizar ese build tal y
+como se serviría en producción:
 
 ```bash
 npm run preview
 ```
+
+> **Sobre la poda:** Astro copia a `dist/_astro/` el original de cada imagen
+> importada por las colecciones de contenido, aunque las páginas solo usen las
+> variantes optimizadas. Con más de doscientas fotografías eso son unos 60 MB que
+> ningún navegador llega a pedir. `scripts/prune-unused-assets.cjs` los elimina
+> comprobando antes que su nombre no aparezca en ningún HTML, CSS, JS, JSON ni XML
+> generado.
 
 ## Cómo desplegarla
 
@@ -42,6 +50,60 @@ ejecutar `npm run build`. Antes de desplegar a producción real:
 1. Actualiza `site` en [astro.config.mjs](astro.config.mjs) con el dominio definitivo
    (ahora mismo apunta a un dominio de ejemplo, `carretedemalaga.example`).
 2. Actualiza la URL del `Sitemap:` en [public/robots.txt](public/robots.txt) a juego.
+
+## El archivo real y cómo volver a ingerirlo
+
+En agosto de 2026 se incorporó el archivo cedido por Bernardo Losada y Paco Roji:
+**191 fotografías** desde 1953, **43 recortes de prensa** y **5 vídeos cortos**.
+Los scripts de `scripts/` dejan esa ingesta reproducible, por si en el futuro hay
+que rehacerla o ampliarla con material nuevo. Todos leen de una carpeta de origen
+y **nunca la modifican**.
+
+```bash
+# 1. Fotografías y PDFs de prensa
+node scripts/ingest-archive.cjs "<ruta de la carpeta con el material original>"
+
+# 2. Vistas previas de los recortes de prensa
+node scripts/render-press.cjs
+
+# 3. Vídeos cortos comprimidos y sus fotogramas de portada
+node scripts/ingest-video.cjs "<misma ruta>"
+
+# 4. Fichas de la colección media (no pisa las existentes; --force las regenera)
+node scripts/generate-media.cjs
+```
+
+Qué hace cada uno:
+
+- **`ingest-archive.cjs`** — normaliza las imágenes a 2000 px de lado máximo y las
+  deja en `src/assets/archivo/`; copia los PDFs a `public/hemeroteca/`. Descarta
+  duplicados exactos comparando el contenido, no el nombre.
+- **`render-press.cjs`** — extrae el mapa de bits que el escáner incrustó en cada
+  PDF, en vez de rasterizar la página. Los recortes son escaneos bilevel a mucha
+  resolución y rasterizarlos los degradaba.
+- **`ingest-video.cjs`** — comprime a H.264 con `faststart` y saca un fotograma de
+  portada del primer cuarto del clip, donde ya no hay fundidos ni encuadres sin
+  asentar.
+- **`generate-media.cjs`** — crea una ficha por pieza leyendo los metadatos que la
+  propia familia dejó en los nombres de archivo (fecha, lugar, personas, fotógrafo)
+  y mide la saturación real de cada imagen para no describir como «blanco y negro»
+  algo que está en color. Es idempotente: **no sobrescribe fichas ya existentes**,
+  así que las correcciones hechas a mano sobreviven.
+
+Los scripts requieren `sharp` (ya es dependencia), y además `pdfjs-dist` para la
+prensa y `ffmpeg-static` para el vídeo. Estos dos últimos solo hacen falta para la
+ingesta, así que se instalan sin guardarlos en el proyecto:
+
+```bash
+npm install --no-save pdfjs-dist@4 ffmpeg-static
+```
+
+### Material grande que no se sirve desde aquí
+
+El archivo original incluye un documental de 721 MB (Ana González, Eye Rise Films)
+y un programa de radio de 116 MB. No tiene sentido servirlos desde un sitio
+estático: quedan pendientes de subir a un servicio de vídeo o audio y de enlazarlos
+como cualquier otra ficha.
 
 ## Estructura del contenido
 
@@ -76,40 +138,74 @@ Colecciones existentes: `timeline`, `people`, `stories`, `monotonas`, `performan
 
 ## Cómo añadir contenido
 
-### Añadir una fotografía, vídeo, audio o documento
+### Añadir una fotografía
 
-1. Sube el archivo real a donde vayas a alojar medios (este repositorio no incluye
-   almacenamiento de archivos pesados; usa un CDN, un bucket, o `public/media/` para
-   pruebas locales).
-2. Crea un archivo en `src/content/media/tu-slug.md` con este frontmatter:
+1. Deja la imagen en `src/assets/archivo/`. No hace falta optimizarla a mano: Astro
+   genera las variantes responsive en WebP. Sí conviene que no pase de unos 2000 px
+   de lado, que es a lo que normaliza el script de ingesta.
+2. Crea `src/content/media/tu-slug.md`:
 
    ```md
    ---
    title: "Título descriptivo"
-   type: photo # photo | video | audio | document
-   dateApprox: "Años 60"
-   placeRef: torremolinos # id de un archivo en src/content/places, opcional
-   peopleRefs: [] # ids de src/content/people relacionadas, opcional
+   type: photo # photo | press | video | audio | document | object
+   image: "../../assets/archivo/tu-slug.jpg"
+   alt: "Qué se ve en la imagen, para quien no puede verla."
+   dateExact: "1967-05-12"   # o dateApprox: "Años sesenta"
+   placeRef: el-jaleo        # id de un archivo en src/content/places, opcional
+   peopleRefs:               # ids de src/content/people, opcional
+     - mariquilla
+   focal: "center 30%"       # recorte de la tarjeta, sintaxis de object-position
+   featured: false           # true para la selección destacada
    verification: documented
    status: published
-   owner: "Familia Losada" # quién es el titular del material
-   publishPermission: true # solo true si hay permiso explícito
-   credit: "Archivo familiar Losada"
-   filePath: "/media/nombre-del-archivo.jpg"
-   sourceRefs: []
+   owner: "Familia Losada"   # quién es el titular del material
+   publishPermission: true   # solo true si hay permiso explícito
+   credit: "Fotografía: …"   # el crédito exacto que debe verse
+   sourceRefs:
+     - archivo-familiar-losada
    ---
    ```
-3. Aparecerá automáticamente en `/archivo`, con buscador y filtros por tipo.
+3. Aparece automáticamente en `/archivo`, con buscador, filtros y visor ampliado.
+   Si lleva `peopleRefs`, aparece también en la ficha de cada una de esas personas.
+
+**`alt` importa.** Es lo que oye quien navega con lector de pantalla. Describe la
+escena, no repitas el título en seco.
+
+**`focal` es el recorte, no una edición.** La tarjeta muestra la foto en 4:3; el
+punto focal decide qué parte se ve. La imagen completa se conserva siempre y es la
+que aparece en el visor ampliado.
+
+### Añadir un recorte de prensa
+
+Igual que una fotografía, con `type: press`, la vista previa en
+`src/assets/hemeroteca/` y el PDF original en `public/hemeroteca/` referenciado
+desde `filePath`. Aparece en `/hemeroteca` y en `/archivo`, y el visor ofrece el
+enlace de descarga del PDF.
+
+### Añadir un vídeo o un audio
+
+Comprime el archivo (o pásalo por `scripts/ingest-video.cjs`), déjalo en
+`public/video/` y su fotograma de portada en `src/assets/video/`. Luego una ficha
+con `type: video`, `filePath` apuntando al MP4 e `image` al póster. En el archivo
+se reproduce dentro del propio visor.
 
 ### Añadir una «monótona» (anécdota de Carrete)
 
 1. Crea `src/content/monotonas/tu-slug.md`.
 2. Completa como mínimo `title`, `summary`, `verification` y `status`.
-3. Cuando exista grabación real: pon `videoAvailable: true`, añade `videoUrl`,
-   `transcript` (transcripción literal) y, si existe, `translationEn` (traducción al
-   inglés, sin sustituir la voz original — solo como apoyo de lectura).
-4. Mientras no haya grabación, deja `videoAvailable: false`: la ficha se mostrará
+3. Cuando exista grabación real: pon `videoAvailable: true` y añade `videoUrl`
+   (ruta en `public/video/`), `poster` (fotograma en `src/assets/video/`) y
+   `durationSeconds`.
+4. Añade `transcript` con la transcripción **literal** en cuanto la tengas, y
+   `translationEn` si hay traducción (como apoyo de lectura, nunca sustituyendo su
+   voz). Mientras no haya transcripción, la ficha lo dice abiertamente: el museo no
+   pone por escrito lo que Carrete cuenta hasta haberlo transcrito de verdad.
+5. Mientras no haya grabación, deja `videoAvailable: false`: la ficha se mostrará
    como «pendiente de incorporar», nunca como si el vídeo existiera.
+
+Ejemplo real ya publicado:
+[el-manco-junto-a-la-aduana.md](src/content/monotonas/el-manco-junto-a-la-aduana.md).
 
 ### Añadir una persona
 
@@ -176,49 +272,77 @@ Cuando haya traducciones reales y revisadas, crea las páginas en
 
 ## Contenido pendiente de aportar por Bernardo Losada y Paco Roji
 
-- Fotografías y vídeos reales (portada, estatua, tablaos, archivo familiar).
-- Grabación real de al menos una «monótona» con audio original.
-- Confirmación de fechas exactas de los tablaos de Torremolinos (El Remo, El Pimpi,
-  Gran Taberna Gitana, El Jaleo, Cuevas de la Alhambra, El Pez Espada, Los Tarantos,
-  Rincón Flamenco de Pepe Carrete).
-- Fuente publicada (o testimonio directo grabado) para las citas atribuidas a Rocío
-  Molina, Paco de Lucía, Camarón de la Isla y Enrique Morente.
-- Vínculo real y verificable de Carrete con el resto de maestros del flamenco
-  listados en `/maestros` (Carmen Amaya, Antonio Gades, Farruco, etc.), hoy marcados
-  como «por investigar».
-- Vínculo real y verificable con las personalidades internacionales listadas en
-  `/mundo`.
-- Traducciones al inglés revisadas por un hablante nativo (ver «Sobre el inglés»).
-- Autorización expresa de la familia y del ayuntamiento para usar cualquier
-  fotografía de la estatua de Torremolinos.
+Lo más urgente, por orden de impacto:
+
+1. **Transcribir el vídeo de Rocío Molina** que ya está en el archivo. Es el paso
+   que puede convertir en testimonio verificado la cita más repetida sobre Carrete
+   («Tú eres más contemporáneo que yo»), hoy todavía sin fuente.
+2. **Transcribir y subtitular «El manco junto a la aduana»**, la primera monótona
+   grabada que se ha publicado. Hasta que exista transcripción, el museo no
+   reproduce por escrito lo que cuenta.
+3. **Grabar más monótonas** con audio original, que es el corazón de la sala.
+4. **Precisar fechas y autorías**: 30 piezas del archivo no tienen fecha en el
+   nombre y buena parte del material antiguo carece de fotógrafo identificado.
+   Aparecen acreditadas al archivo familiar y marcadas como pendientes de atribuir.
+5. **Confirmar la cabecera y la fecha exacta** de los recortes de prensa que solo
+   traen día y mes.
+6. Fuente publicada para las citas atribuidas a **Paco de Lucía, Camarón de la Isla
+   y Enrique Morente** (la de Rocío Molina, ver punto 1).
+7. Vínculo real y verificable con los maestros que siguen marcados como «por
+   investigar» en `/maestros` y con las personalidades internacionales de `/mundo`.
+8. **Traducciones al inglés** revisadas por un hablante nativo (ver «Sobre el inglés»).
+9. Subir a un servicio de vídeo el **documental de Eye Rise Films** y el programa
+   de radio, demasiado pesados para un sitio estático.
 
 ## Datos pendientes de verificar (contradicciones y fechas abiertas)
 
 Documentados como `research-notes` y visibles en `/creditos`:
 
-- **Fecha de nacimiento** ([src/content/research-notes/fecha-nacimiento.md](src/content/research-notes/fecha-nacimiento.md)):
+- **Fecha de nacimiento** ([fecha-nacimiento.md](src/content/research-notes/fecha-nacimiento.md)):
   hacia 1940–1941, sin partida de nacimiento confirmada.
-- **Posible vínculo con Juan Domingo Perón** ([src/content/research-notes/version-peron.md](src/content/research-notes/version-peron.md)):
+- **Posible vínculo con Juan Domingo Perón** ([version-peron.md](src/content/research-notes/version-peron.md)):
   existen versiones contradictorias; el sitio no elige ninguna.
-- **Nota interna sobre una posible colaboración fotográfica futura**
-  ([src/content/research-notes/colaboracion-fotografica-futura.md](src/content/research-notes/colaboracion-fotografica-futura.md)):
-  ninguna persona en ese supuesto ha sido contactada; no debe aparecer en ningún
-  lugar público del sitio como colaborador.
+- **La frase de Rocío Molina** ([cita-rocio-molina.md](src/content/research-notes/cita-rocio-molina.md)):
+  sigue sin fuente publicada, pero ahora hay una vía concreta para resolverla.
+
+### Lo que el archivo sí ha permitido documentar
+
+La incorporación del material cerró varias incógnitas que antes estaban abiertas.
+Estas fichas pasaron de «pendiente de investigación» a «hecho documentado», siempre
+acotando qué prueba exactamente cada imagen:
+
+| Ficha | Qué lo documenta |
+| --- | --- |
+| Sean Connery | Fotografía de grupo en El Pimpi, hacia 1957 |
+| Anthony Quinn | Dos fotografías en La Bodega Andaluza, 1959 y 1960 |
+| Farruco | Fotografía en El Jaleo, segunda mitad de los sesenta |
+| Sabicas | Fotografía en El Jaleo, 1967 |
+| Paco de Lucía | Fotografía en Starlite Marbella, 2013 |
+| Chiquito de la Calzada | Programa compartido de 1953 |
+| Viaje a Noruega | Recorte «Embajada flamenca a Noruega», enero de 1969 |
+
+Importante: una fotografía prueba **un encuentro**, no una amistad ni una
+colaboración. Cada ficha lo dice con esas palabras y deja anotado lo que sigue sin
+saberse.
 
 ## Validaciones ejecutadas antes de esta entrega
 
 - `astro check` (tipos de TypeScript + content collections): 0 errores.
-- `astro build` (build de producción, 67 páginas estáticas): 0 errores.
+- `astro build` (build de producción, **74 páginas estáticas**): 0 errores.
 - Comprobación automática de enlaces internos rotos sobre `dist/`: 0 encontrados
   (aparte del audio de portada, que está pendiente de subir a propósito y se
   gestiona con un mensaje explícito, nunca en silencio).
-- Revisión manual en navegador: portada, mapa interactivo (con fallback en lista
-  sin JavaScript), archivo con filtros y buscador, línea temporal, ficha de persona,
-  monótona, y menú de navegación en móvil.
+- Poda de assets: 748 referencias a `/_astro/` comprobadas tras la limpieza, 0 rotas.
+- Revisión manual en navegador, en escritorio y en móvil: portada, archivo con
+  buscador y filtros por tipo y década, visor ampliado (ratón y teclado), línea
+  temporal con fotografías, hemeroteca, ficha de persona, monótona con vídeo,
+  comparador «antes y ahora» y mapa interactivo.
 - Contraste de color de toda la paleta calculado contra WCAG AA: todos los pares
   texto/fondo usados superan 4.5:1 (la mayoría por encima de 7:1).
 - `prefers-reduced-motion` respetado globalmente (variables de duración a 0 y
   desactivación de animaciones decorativas).
+- Vídeo sin reproducción automática y con `preload="none"`: no se descarga hasta
+  que alguien lo pide.
 
 ## Lo que todavía no se ha probado
 

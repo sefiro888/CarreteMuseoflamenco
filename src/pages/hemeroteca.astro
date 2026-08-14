@@ -1,0 +1,117 @@
+---
+import RoomLayout from '../layouts/RoomLayout.astro';
+import MediaGrid from '../components/MediaGrid.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { getCollection } from 'astro:content';
+import { prepareMedia, byDate, yearOf } from '../lib/media';
+
+const press = (await getCollection('media'))
+  .filter((item) => item.data.type === 'press' && item.data.status === 'published' && item.data.image)
+  .sort(byDate);
+
+const items = await prepareMedia(press);
+
+const years = items.map((i) => yearOf(i.entry)).filter((y): y is number => y !== null);
+const first = years.length ? Math.min(...years) : null;
+const last = years.length ? Math.max(...years) : null;
+
+const decades = [...new Set(items.map((i) => i.decade).filter(Boolean))].sort() as string[];
+---
+
+<RoomLayout
+  slug="/hemeroteca"
+  eyebrow="Hemeroteca"
+  title="Lo que decía la prensa"
+  summary="Carrete contado por los periódicos de su tiempo."
+>
+  <div class="prose">
+    <p>
+      {`${items.length} recortes de prensa conservados por la familia y por Paco Roji`}
+      {first && last ? `, entre ${first} y ${last}.` : '.'} Son la crónica en tiempo real de los
+      tablaos de la Costa del Sol: anuncios de espectáculos, columnas de sociedad, carteles
+      de fin de año y reseñas de las noches de Torremolinos.
+    </p>
+    <p>
+      Cada recorte puede verse ampliado o descargarse en su PDF original. En algunos casos la
+      cabecera del diario y la fecha exacta todavía están por confirmar: se indica en la propia
+      ficha cuando es así.
+    </p>
+  </div>
+
+  <div class="press-controls section--tight" data-press>
+    <div class="archive-filters" role="group" aria-label="Filtrar por década">
+      <span class="archive-filters__label">Década</span>
+      <button class="timeline__filter is-active" data-filter-decade="all" type="button">Todas</button>
+      {
+        decades.map((d) => (
+          <button class="timeline__filter" data-filter-decade={d} type="button">
+            {d}s
+          </button>
+        ))
+      }
+    </div>
+
+    <p class="press-count" role="status" aria-live="polite" data-press-count></p>
+
+    <MediaGrid items={items} showVerification={false} />
+  </div>
+
+  <Lightbox />
+</RoomLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-press]');
+  if (root) {
+    const items = Array.from(root.querySelectorAll<HTMLLIElement>('[data-media-list] > li'));
+    const countLabel = root.querySelector<HTMLElement>('[data-press-count]');
+    const buttons = root.querySelectorAll<HTMLButtonElement>('[data-filter-decade]');
+
+    function apply(decade: string) {
+      let visible = 0;
+      for (const item of items) {
+        const show = decade === 'all' || item.dataset.decade === decade;
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+      if (countLabel) {
+        countLabel.textContent =
+          visible === items.length
+            ? `${items.length} recortes`
+            : `${visible} de ${items.length} recortes`;
+      }
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        buttons.forEach((b) => b.classList.remove('is-active'));
+        button.classList.add('is-active');
+        apply(button.dataset.filterDecade ?? 'all');
+      });
+    });
+
+    apply('all');
+  }
+</script>
+
+<style>
+  .archive-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .archive-filters__label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-right: var(--space-2xs);
+  }
+
+  .press-count {
+    margin: var(--space-md) 0 var(--space-sm);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+</style>

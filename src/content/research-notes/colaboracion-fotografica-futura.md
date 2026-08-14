@@ -1,18 +1,24 @@
 ---
-title: "Nota interna: posible colaboración fotográfica futura"
-question: "¿Podría alguien del entorno fotográfico local aportar material de archivo en el futuro?"
+title: "Nota interna: permisos de fotógrafos"
+question: "¿Qué fotógrafos han cedido material y cuáles quedan por contactar?"
 status: open
 internal: true
 versions:
   - text: >
-      Se ha mencionado internamente la posibilidad de contactar en el futuro con
-      fotógrafos locales que pudieran conservar material de la época dorada de
-      Torremolinos. A día de hoy ninguna persona en ese supuesto ha sido contactada
-      ni conoce este proyecto, y por tanto no debe aparecer en ningún lugar público
-      del museo como colaborador confirmado.
+      Resuelto en agosto de 2026: Paco Lobato cedió sus fotografías y se publican
+      con crédito visible en cada pieza. Lo mismo ocurre con el material acreditado
+      a Aitor Lara, Vicente Pachón, Manu Rosaleny, Javier Fergó, S. Ruiz (cortesía
+      de Gerardo Mongelli) y Daphne Pelet.
+    likelihood: alta
+  - text: >
+      Sigue abierto: buena parte del material de los años cincuenta a setenta no
+      tiene fotógrafo identificado. Está acreditado al archivo familiar y marcado
+      como pendiente de atribuir en la propia ficha.
     likelihood: sin-evaluar
 conclusion: >
-  Esta nota es exclusivamente interna, para el equipo del proyecto (Bernardo Losada
-  y Paco Roji). No debe traducirse en ninguna mención pública de nombres concretos
-  hasta que exista contacto real, consentimiento y acuerdo de colaboración.
+  Esta nota es de uso interno del equipo (Bernardo Losada y Paco Roji) y no se
+  publica en la web. La regla de fondo no cambia: ningún nombre aparece como autor
+  o colaborador sin contacto real, consentimiento y acuerdo previos. Cuando se
+  identifique la autoría de alguna de las fotografías antiguas, hay que pedir
+  permiso antes de sustituir el crédito genérico por un nombre.
 ---

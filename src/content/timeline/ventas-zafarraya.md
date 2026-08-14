@@ -11,6 +11,8 @@ status: published
 placeRef: zafarraya
 peopleRefs:
   - carmen-la-carreta
+mediaRefs:
+  - la-carreta
 sourceRefs:
   - libro-carrete-al-compas
 ---

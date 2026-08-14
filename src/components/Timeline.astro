@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 import VerifyBadge from './VerifyBadge.astro';
 import type { Locale } from '../lib/i18n';
 
@@ -13,10 +14,41 @@ const entries = await getCollection('timeline');
 entries.sort((a, b) => a.data.order - b.data.order);
 
 const withPlaces = await Promise.all(
-  entries.map(async (entry) => ({
-    entry,
-    place: entry.data.placeRef ? await getEntry(entry.data.placeRef) : null,
-  })),
+  entries.map(async (entry) => {
+    const place = entry.data.placeRef ? await getEntry(entry.data.placeRef) : null;
+
+    // Fotografías del archivo que ilustran este hito.
+    const media = (
+      await Promise.all(entry.data.mediaRefs.map((ref) => getEntry(ref)))
+    ).filter((m): m is NonNullable<typeof m> => Boolean(m?.data.image));
+
+    const images = await Promise.all(
+      media.map(async (item) => {
+        const thumb = await getImage({
+          src: item.data.image!,
+          width: 560,
+          format: 'webp',
+          quality: 72,
+        });
+        const full = await getImage({
+          src: item.data.image!,
+          width: Math.min(item.data.image!.width, 1800),
+          format: 'webp',
+          quality: 82,
+        });
+        return {
+          thumb: thumb.src,
+          full: full.src,
+          alt: item.data.alt ?? item.data.title,
+          title: item.data.title,
+          credit: item.data.credit ?? '',
+          focal: item.data.focal,
+        };
+      }),
+    );
+
+    return { entry, place, images };
+  }),
 );
 
 const eras = [...new Set(entries.map((entry) => entry.data.era))];
@@ -38,17 +70,41 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
 
   <ol class="timeline__list">
     {
-      withPlaces.map(({ entry, place }) => (
+      withPlaces.map(({ entry, place, images }) => (
         <li class="timeline__item" data-era={entry.data.era}>
           <details>
             <summary>
               <span class="timeline__date">{entry.data.dateExact ?? entry.data.dateApprox ?? entry.data.era}</span>
               <span class="timeline__title">{entry.data.title}</span>
+              {images.length > 0 && (
+                <span class="timeline__has-photo" aria-label="Con fotografía del archivo">
+                  ◉
+                </span>
+              )}
             </summary>
             <div class="timeline__detail">
               <p>{entry.data.summary}</p>
               {place && <p class="timeline__place">📍 {place.data.name}</p>}
               <VerifyBadge level={entry.data.verification} locale={locale} />
+
+              {images.length > 0 && (
+                <div class="timeline__gallery">
+                  {images.map((img) => (
+                    <button
+                      class="timeline__photo"
+                      type="button"
+                      style={`--focal:${img.focal};`}
+                      data-lightbox-item
+                      data-full={img.full}
+                      data-alt={img.alt}
+                      data-caption={img.title}
+                      data-meta={img.credit}
+                    >
+                      <img src={img.thumb} alt={img.alt} loading="lazy" decoding="async" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </details>
         </li>
@@ -141,6 +197,42 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
   .timeline__place {
     color: var(--color-text-muted);
     font-size: var(--step--1);
+  }
+
+  .timeline__has-photo {
+    color: var(--color-accent);
+    font-size: 0.6em;
+    opacity: 0.8;
+  }
+
+  .timeline__gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-top: var(--space-xs);
+  }
+
+  .timeline__photo {
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+    overflow: hidden;
+    cursor: zoom-in;
+    line-height: 0;
+    width: 9rem;
+  }
+
+  .timeline__photo:hover {
+    border-color: var(--color-accent);
+  }
+
+  .timeline__photo img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: var(--focal, center);
   }
   @media (max-width: 40rem) {
     .timeline__detail {

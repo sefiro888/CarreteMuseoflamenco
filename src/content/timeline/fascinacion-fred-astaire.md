@@ -8,6 +8,8 @@ summary: >
   de entender el baile, que con los años le valdría el apodo de «el Fred Astaire gitano».
 verification: testimony
 status: published
+mediaRefs:
+  - 1959-carrete-posando-playa-de-torremolinos
 sourceRefs:
   - libro-carrete-al-compas
   - vanity-fair-entrevista

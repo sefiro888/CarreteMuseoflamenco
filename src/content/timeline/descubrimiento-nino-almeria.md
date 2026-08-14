@@ -10,6 +10,8 @@ verification: testimony
 status: published
 peopleRefs:
   - nino-de-almeria
+mediaRefs:
+  - 1953-04-13-velada-benefica
 sourceRefs:
   - libro-carrete-al-compas
 ---

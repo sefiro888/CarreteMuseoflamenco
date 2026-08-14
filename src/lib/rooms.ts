@@ -101,6 +101,14 @@ export const rooms: Room[] = [
     summary: { es: 'El material que documenta su vida.', en: 'The material documenting his life.' },
   },
   {
+    slug: '/hemeroteca',
+    title: { es: 'Lo que decía la prensa', en: 'What the press said' },
+    summary: {
+      es: 'Carrete contado por los periódicos de su tiempo.',
+      en: 'Carrete as told by the newspapers of his time.',
+    },
+  },
+  {
     slug: '/hoy',
     title: { es: 'Carrete hoy', en: 'Carrete today' },
     summary: { es: 'Su actividad artística en el presente.', en: 'His artistic activity in the present.' },

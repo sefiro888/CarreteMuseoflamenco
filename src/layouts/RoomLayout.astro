@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import { getRoomNeighbors } from '../lib/rooms';
+import { getRoomImage } from '../lib/room-images';
 import { t, localizedPath, type Locale } from '../lib/i18n';
 import { breadcrumbJsonLd } from '../lib/seo';
 
@@ -17,6 +19,7 @@ interface Props {
 const { slug, eyebrow, title, summary, description, locale = 'es', image } = Astro.props;
 const dict = t(locale);
 const { prev, next } = getRoomNeighbors(slug);
+const roomImage = getRoomImage(slug);
 
 const breadcrumb = breadcrumbJsonLd([
   { name: locale === 'es' ? 'Inicio' : 'Home', url: new URL(localizedPath('/', locale), Astro.site).toString() },
@@ -32,6 +35,28 @@ const breadcrumb = breadcrumbJsonLd([
       <h1>{title}</h1>
       {summary && <p class="room__summary">{summary}</p>}
     </header>
+
+    {
+      roomImage && (
+        <figure class="room__figure">
+          <div class="room__figure-frame" style={`--focal:${roomImage.focal ?? 'center'};`}>
+            <Image
+              src={roomImage.image}
+              alt={roomImage.alt}
+              widths={[640, 1024, 1600]}
+              sizes="(max-width: 74rem) 100vw, 74rem"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </div>
+          <figcaption class="container">
+            <span>{roomImage.caption}</span>
+            <span class="room__figure-credit">{roomImage.credit}</span>
+          </figcaption>
+        </figure>
+      )
+    }
 
     <div class="container room__body">
       <slot />
@@ -70,6 +95,51 @@ const breadcrumb = breadcrumbJsonLd([
     color: var(--color-paper);
     font-style: italic;
   }
+  .room__figure {
+    margin: 0 0 var(--space-xl);
+  }
+
+  .room__figure-frame {
+    width: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+  }
+
+  .room__figure-frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focal, center);
+  }
+
+  .room__figure figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-md);
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .room__figure-credit {
+    color: color-mix(in srgb, var(--color-paper) 45%, transparent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+  }
+
+  @media (max-width: 48rem) {
+    .room__figure-frame {
+      aspect-ratio: 4 / 3;
+      border-radius: 0;
+    }
+  }
+
   .room__body {
     padding-bottom: var(--space-2xl);
   }

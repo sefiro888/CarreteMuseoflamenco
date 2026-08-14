@@ -1,0 +1,42 @@
+[
+ {
+  "slug": "rocio-molina",
+  "source": "Vídeo Rocío Molina.mp4",
+  "video": "/video/rocio-molina.mp4",
+  "poster": "rocio-molina.jpg",
+  "durationSeconds": 40,
+  "bytes": 2924597
+ },
+ {
+  "slug": "2022-nueva-york",
+  "source": "2022.04.06 NY.mp4",
+  "video": "/video/2022-nueva-york.mp4",
+  "poster": "2022-nueva-york.jpg",
+  "durationSeconds": 31,
+  "bytes": 8467661
+ },
+ {
+  "slug": "2022-aceitera",
+  "source": "2022.02.27_Aceitera.mp4",
+  "video": "/video/2022-aceitera.mp4",
+  "poster": "2022-aceitera.jpg",
+  "durationSeconds": 13,
+  "bytes": 1806263
+ },
+ {
+  "slug": "el-manco-junto-a-la-aduana",
+  "source": "El manco junto a la aduana.mp4",
+  "video": "/video/el-manco-junto-a-la-aduana.mp4",
+  "poster": "el-manco-junto-a-la-aduana.jpg",
+  "durationSeconds": 27,
+  "bytes": 6482634
+ },
+ {
+  "slug": "postal",
+  "source": "Postal.MP4",
+  "video": "/video/postal.mp4",
+  "poster": "postal.jpg",
+  "durationSeconds": 6,
+  "bytes": 270248
+ }
+]

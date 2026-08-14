@@ -13,6 +13,9 @@ status: published
 placeRef: torremolinos
 peopleRefs:
   - mariquilla
+mediaRefs:
+  - 1959-bodega-carrete-bailando-foto-s-ruiz-cortesia-gerardo-mongelli
+  - 1967-con-el-gran-guitarrista-sabicas-tablao-el-jaleo
 sourceRefs:
   - libro-carrete-al-compas
   - teatro-real

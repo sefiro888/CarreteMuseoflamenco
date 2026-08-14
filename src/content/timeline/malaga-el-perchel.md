@@ -13,6 +13,9 @@ peopleRefs:
   - pepito-vargas
   - la-repompa
   - la-caneta
+mediaRefs:
+  - 1954-carrete-con-los-vargas-en-el-refugio-archivo-paco-roji
+  - 1954-tablao-el-refugio
 sourceRefs:
   - libro-carrete-al-compas
   - instituto-andaluz-flamenco

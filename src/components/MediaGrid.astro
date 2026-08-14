@@ -39,6 +39,7 @@ const { items, showVerification = true } = Astro.props;
             data-caption={entry.data.title}
             data-meta={metaBits.join(' · ')}
             data-download={entry.data.type === 'press' ? entry.data.filePath : undefined}
+            data-video={entry.data.type === 'video' ? entry.data.filePath : undefined}
           >
             <img
               src={thumb.src}
@@ -48,7 +49,16 @@ const { items, showVerification = true } = Astro.props;
               loading="lazy"
               decoding="async"
             />
-            <span class="media-grid__overlay" aria-hidden="true">Ampliar</span>
+            <span class="media-grid__overlay" aria-hidden="true">
+              {entry.data.type === 'video' ? 'Reproducir' : 'Ampliar'}
+            </span>
+            {
+              entry.data.type === 'video' && (
+                <span class="media-grid__play" aria-hidden="true">
+                  ▶
+                </span>
+              )
+            }
           </button>
 
           <div class="media-grid__body">
@@ -129,6 +139,24 @@ const { items, showVerification = true } = Astro.props;
   .media-grid__button:hover .media-grid__overlay,
   .media-grid__button:focus-visible .media-grid__overlay {
     opacity: 1;
+  }
+
+  .media-grid__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--color-black-warm) 65%, transparent);
+    border: 1px solid var(--color-paper);
+    color: var(--color-paper);
+    font-size: 0.9rem;
+    padding-left: 0.15em;
+    line-height: 1;
   }
 
   .media-grid__body {

@@ -2,6 +2,7 @@
 import RoomLayout from '../../layouts/RoomLayout.astro';
 import SourceList from '../../components/SourceList.astro';
 import Timeline from '../../components/Timeline.astro';
+import Lightbox from '../../components/Lightbox.astro';
 import { getEntry, render } from 'astro:content';
 
 const entry = await getEntry('stories', 'yo-no-se-la-eda-que-tengo');
@@ -29,4 +30,6 @@ const { Content } = await render(entry);
     </p>
     <Timeline locale="es" />
   </div>
+
+  <Lightbox />
 </RoomLayout>

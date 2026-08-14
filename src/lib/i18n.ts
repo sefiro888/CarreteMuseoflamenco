@@ -23,6 +23,7 @@ export const navItems: NavItem[] = [
   { href: '/mapa', label: { es: 'Mapa', en: 'Map' } },
   { href: '/espectaculos', label: { es: 'Obra', en: 'Works' } },
   { href: '/archivo', label: { es: 'Archivo', en: 'Archive' } },
+  { href: '/hemeroteca', label: { es: 'Hemeroteca', en: 'Press' } },
   { href: '/hoy', label: { es: 'Carrete hoy', en: 'Carrete today' } },
   { href: '/salas', label: { es: 'Todas las salas', en: 'All rooms' } },
 ];

@@ -1,12 +1,75 @@
 ---
 import RoomLayout from '../layouts/RoomLayout.astro';
 import StoryContent from '../components/StoryContent.astro';
-import { getEntry } from 'astro:content';
+import PhotoCompare from '../components/PhotoCompare.astro';
+import MediaGrid from '../components/MediaGrid.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { getEntry, getCollection } from 'astro:content';
+import { prepareMedia, byDate } from '../lib/media';
+
+import bailando1959 from '../assets/archivo/1959-bodega-carrete-bailando-foto-s-ruiz-cortesia-gerardo-mongelli.jpg';
+import bailandoHoy from '../assets/archivo/img-0690bynr-fotografia-paco-lobato.jpg';
 
 const entry = await getEntry('stories', 'hoy');
 if (!entry) throw new Error('Falta el contenido de hoy');
+
+// Últimas piezas del archivo: qué ha hecho en los años más recientes.
+const recent = (await getCollection('media'))
+  .filter((item) => {
+    if (item.data.status !== 'published' || !item.data.image) return false;
+    const raw = item.data.dateExact ?? item.data.dateApprox ?? '';
+    const year = Number(String(raw).match(/(19|20)\d{2}/)?.[0] ?? 0);
+    return year >= 2023;
+  })
+  .sort(byDate)
+  .reverse()
+  .slice(0, 12);
+const recentItems = await prepareMedia(recent);
 ---
 
 <RoomLayout slug="/hoy" eyebrow="Carrete hoy" title={entry.data.title} summary={entry.data.summary}>
   <StoryContent entry={entry} />
+
+  <div class="section--tight">
+    <h2>El mismo baile, sesenta años después</h2>
+    <p class="prose">
+      A la izquierda, bailando en La Bodega Andaluza de Torremolinos en 1959. A la derecha, sobre
+      un escenario en la actualidad. Arrastra el control para pasar de una a otra.
+    </p>
+
+    <PhotoCompare
+      id="carrete-1959-hoy"
+      before={{
+        image: bailando1959,
+        alt: 'Carrete joven baila con los brazos en alto en una taberna flamenca de techos con vigas de madera.',
+        label: '1959',
+        credit: 'S. Ruiz, cortesía de Gerardo Mongelli',
+        focal: 'center 30%',
+      }}
+      after={{
+        image: bailandoHoy,
+        alt: 'Carrete, ya mayor, baila de perfil sobre fondo negro con los brazos extendidos y las manos abiertas.',
+        label: 'Hoy',
+        credit: 'Paco Lobato',
+        focal: '32% center',
+      }}
+    />
+  </div>
+
+  {
+    recentItems.length > 0 && (
+      <div class="section--tight">
+        <h2>Lo más reciente del archivo</h2>
+        <p class="prose">
+          Actuaciones, homenajes y encuentros documentados desde 2023.
+        </p>
+        <MediaGrid items={recentItems} showVerification={false} />
+        <p style="margin-top: var(--space-md);">
+          <a class="btn" href="/archivo">Ver el archivo completo</a>
+        </p>
+      </div>
+    )
+  }
+
+  <Lightbox />
 </RoomLayout>

@@ -9,6 +9,8 @@ summary: >
 verification: documented
 status: published
 placeRef: nueva-york
+mediaRefs:
+  - cartel-de-quijote-en-nueva-york
 sourceRefs:
   - el-pais-nueva-york
   - diario-de-jerez-quijote-ny

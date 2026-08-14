@@ -1,17 +1,19 @@
 ---
 name: "Paco de Lucía"
 role: "Guitarrista flamenco"
-relationToCarrete: "Vínculo personal recordado por Carrete; se le atribuye una petición afectuosa"
+relationToCarrete: "Trato personal documentado; se le atribuye además una petición afectuosa"
 confirmedCollaborator: false
 summary: >
-  Uno de los guitarristas flamencos más influyentes del siglo XX. La memoria familiar
-  recoge que le pedía a Carrete «léeme la Biblia», una expresión de confianza y cariño
-  cuyo contexto exacto está aún por documentar.
-verification: pending-research
-status: review
+  Uno de los guitarristas flamencos más influyentes del siglo XX. El archivo
+  conserva una fotografía de agosto de 2013 en la que aparecen los dos
+  conversando y sonriendo en el festival Starlite de Marbella.
+verification: documented
+status: published
 sourceRefs:
-  - carrete-testimonio-oral
+  - archivo-familiar-losada
 ---
 
-Pista pendiente de investigación: fecha, lugar y circunstancia de esta anécdota, y
-si existe alguna fuente publicada que la mencione.
+La fotografía documenta el trato entre ambos. Cuestión distinta es la frase
+que la memoria familiar le atribuye —«Carrete, léeme la Biblia»—: sigue sin
+una fuente publicada que la respalde y se mantiene marcada como pista
+pendiente de investigación.
