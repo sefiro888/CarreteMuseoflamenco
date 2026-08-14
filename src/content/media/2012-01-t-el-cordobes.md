@@ -4,6 +4,7 @@ type: photo
 image: "../../assets/archivo/2012-01-t-el-cordobes.jpg"
 alt: "T. El Cordobés. Fotografía del archivo familiar, enero de 2012."
 dateApprox: "enero de 2012"
+placeRef: barcelona
 focal: "center"
 verification: documented
 status: published

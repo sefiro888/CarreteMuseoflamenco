@@ -4,11 +4,13 @@ import StoryContent from '../components/StoryContent.astro';
 import PhotoCompare from '../components/PhotoCompare.astro';
 import MediaGrid from '../components/MediaGrid.astro';
 import Lightbox from '../components/Lightbox.astro';
+import VideoPlayer from '../components/VideoPlayer.astro';
 import { getEntry, getCollection } from 'astro:content';
 import { prepareMedia, byDate } from '../lib/media';
 
 import bailando1959 from '../assets/archivo/1959-bodega-carrete-bailando-foto-s-ruiz-cortesia-gerardo-mongelli.jpg';
 import bailandoHoy from '../assets/archivo/img-0690bynr-fotografia-paco-lobato.jpg';
+import posterDocumental from '../assets/video/documental-2024-eye-rise-films.jpg';
 
 const entry = await getEntry('stories', 'hoy');
 if (!entry) throw new Error('Falta el contenido de hoy');
@@ -29,6 +31,24 @@ const recentItems = await prepareMedia(recent);
 
 <RoomLayout slug="/hoy" eyebrow="Carrete hoy" title={entry.data.title} summary={entry.data.summary}>
   <StoryContent entry={entry} />
+
+  <div class="section--tight">
+    <h2>El documental</h2>
+    <p class="prose">
+      Ana González lo filmó en 2024 para Eye Rise Films. Cinco minutos que arrancan con
+      una frase escueta: «José Losada Santiago, conocido como Carrete, es un bailaor
+      andaluz de 82 años. De niño aprendió a bailar en campos de trigo, con las espinas
+      clavándose en los talones. No ha parado desde entonces».
+    </p>
+
+    <VideoPlayer
+      src="/video/documental-2024-eye-rise-films.mp4"
+      poster={posterDocumental}
+      description="Retrato documental de Carrete rodado en 2024: le sigue por Torremolinos, por la playa y por escenarios vacíos."
+      credit="Ana González — Eye Rise Films"
+      durationSeconds={314}
+    />
+  </div>
 
   <div class="section--tight">
     <h2>El mismo baile, sesenta años después</h2>

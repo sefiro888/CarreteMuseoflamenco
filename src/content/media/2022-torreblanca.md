@@ -4,6 +4,7 @@ type: photo
 image: "../../assets/archivo/2022-torreblanca.jpg"
 alt: "Torreblanca. Fotografía del archivo familiar, 2022."
 dateApprox: "2022"
+placeRef: torremolinos
 focal: "center"
 verification: documented
 status: published

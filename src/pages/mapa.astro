@@ -1,52 +1,89 @@
 ---
 import RoomLayout from '../layouts/RoomLayout.astro';
 import MapExplorer from '../components/MapExplorer.tsx';
-import VerifyBadge from '../components/VerifyBadge.astro';
-import { getCollection } from 'astro:content';
+import { getMapPlaces } from '../lib/places';
+import '../styles/map.css';
 
-const places = await getCollection('places');
-const withCoords = places.filter((p) => p.data.lat !== undefined && p.data.lng !== undefined);
-
-const mapPlaces = withCoords.map((p) => ({
-  id: p.id,
-  name: p.data.name,
-  kind: p.data.kind,
-  lat: p.data.lat as number,
-  lng: p.data.lng as number,
-  description: p.data.description,
-  verification: p.data.verification,
-}));
+const places = await getMapPlaces();
+const torremolinos = places.filter((p) => p.scope === 'torremolinos');
+const mundo = places.filter((p) => p.scope === 'mundo');
 ---
 
 <RoomLayout
   slug="/mapa"
   eyebrow="Mapa interactivo"
-  title="Mapa interactivo"
-  summary="Los lugares de una vida bailada."
+  title="Los lugares de una vida bailada"
+  summary="Doce tablaos en un pueblo, y desde ahí el mundo."
 >
   <div class="prose">
     <p>
-      Este mapa reúne los lugares documentados o citados en la vida de Carrete. Usa
-      mapas de OpenStreetMap y requiere conexión a internet para cargar el mosaico
-      visual; la lista de lugares, debajo, funciona siempre, con o sin JavaScript.
+      Casi todas las salas donde Carrete se hizo bailaor han desaparecido. Están aquí de
+      todos modos, en el sitio donde estuvieron, con los años en que abrieron y lo que se
+      sabe de cada una. El único que sigue abierto es El Jaleo, que hoy se llama Taberna
+      Flamenca Pepe López y sigue en la misma plaza desde 1965.
+    </p>
+    <p>
+      Pulsa cualquier punto para ver su historia y las fotografías que se conservan de allí.
+      El punto con el borde punteado indica que la ubicación es aproximada: se sabe el
+      pueblo y la zona, no el portal exacto.
     </p>
   </div>
 
-  <MapExplorer client:visible places={mapPlaces} />
+  <div class="section--tight">
+    <MapExplorer client:visible places={places} />
+  </div>
 
-  <h2 class="section--tight">Lista de lugares</h2>
-  <ul class="place-list">
-    {
-      places.map((place) => (
-        <li class="place-list__item">
-          <h3>{place.data.name}</h3>
-          <p class="eyebrow">{place.data.kind}</p>
-          <p>{place.data.description}</p>
-          <VerifyBadge level={place.data.verification} />
-        </li>
-      ))
-    }
-  </ul>
+  <div class="section--tight">
+    <h2>La milla del tablao</h2>
+    <p class="prose">
+      {torremolinos.length} salas en Torremolinos, casi todas a menos de diez minutos
+      andando unas de otras. Esa concentración es la que convirtió el pueblo en la capital
+      del flamenco de la Costa del Sol.
+    </p>
+    <ul class="place-list">
+      {
+        torremolinos
+          .sort((a, b) => (a.journeyOrder ?? 99) - (b.journeyOrder ?? 99))
+          .map((place) => (
+            <li class="place-list__item">
+              <a href={`/lugares/${place.id}`}>
+                <h3>{place.name}</h3>
+                <p class="place-list__kind">{place.kind}</p>
+                {place.yearOpened && <p class="place-list__years">Desde {place.yearOpened}</p>}
+                <p class="place-list__desc">{place.description}</p>
+                {place.photoCount > 0 && (
+                  <p class="place-list__count">
+                    {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'} en el archivo
+                  </p>
+                )}
+              </a>
+            </li>
+          ))
+      }
+    </ul>
+  </div>
+
+  <div class="section--tight">
+    <h2>Fuera de Torremolinos</h2>
+    <ul class="place-list">
+      {
+        mundo.map((place) => (
+          <li class="place-list__item">
+            <a href={`/lugares/${place.id}`}>
+              <h3>{place.name}</h3>
+              <p class="place-list__kind">{place.kind}</p>
+              <p class="place-list__desc">{place.description}</p>
+              {place.photoCount > 0 && (
+                <p class="place-list__count">
+                  {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'} en el archivo
+                </p>
+              )}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </RoomLayout>
 
 <style>
@@ -55,12 +92,59 @@ const mapPlaces = withCoords.map((p) => ({
     padding: 0;
     display: grid;
     gap: var(--space-md);
-    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   }
+
   .place-list__item {
     background: var(--color-bg-raised);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
+  }
+
+  .place-list__item:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+
+  .place-list__item a {
+    display: block;
     padding: var(--space-sm);
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .place-list__item h3 {
+    font-size: var(--step-1);
+    margin: 0 0 var(--space-3xs);
+    color: var(--color-text);
+  }
+
+  .place-list__kind {
+    margin: 0;
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+  }
+
+  .place-list__years {
+    margin: var(--space-3xs) 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .place-list__desc {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-soft);
+    line-height: var(--leading-snug);
+  }
+
+  .place-list__count {
+    margin: var(--space-2xs) 0 0;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
   }
 </style>

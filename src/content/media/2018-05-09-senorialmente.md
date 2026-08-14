@@ -4,6 +4,7 @@ type: photo
 image: "../../assets/archivo/2018-05-09-senorialmente.jpg"
 alt: "Señorialmente. Fotografía del archivo familiar, 9 de mayo de 2018."
 dateExact: "2018-05-09"
+featured: true
 focal: "center"
 verification: documented
 status: published

@@ -5,6 +5,7 @@ image: "../../assets/archivo/2026-05-mau-rosaleny02.jpg"
 alt: "Mau Rosaleny02. Fotografía del archivo familiar, mayo de 2026."
 dateApprox: "mayo de 2026"
 placeRef: nueva-york
+featured: true
 focal: "center 30%"
 verification: documented
 status: published

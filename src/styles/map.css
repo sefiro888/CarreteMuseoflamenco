@@ -1,0 +1,459 @@
+/**
+ * Mapa de lugares.
+ *
+ * Estos estilos son globales a propósito: Leaflet inserta los marcadores en
+ * su propio contenedor, fuera del alcance del CSS con ámbito de componente.
+ */
+
+.mapx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ---- Controles ---- */
+.mapx__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
+}
+
+.mapx__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.mapx__label {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+.mapx__chip {
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  padding: 0.45em 1em;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.mapx__chip--sm {
+  padding: 0.3em 0.8em;
+}
+
+.mapx__chip:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.mapx__chip.is-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-black-warm);
+  font-weight: 600;
+}
+
+.mapx__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.mapx__toggle input {
+  accent-color: var(--color-accent);
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ---- Escenario ---- */
+.mapx__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--space-sm);
+  min-height: 34rem;
+}
+
+.mapx__canvas {
+  min-height: 34rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-black-warm);
+  overflow: hidden;
+}
+
+/* Leaflet pinta su propio fondo blanco mientras cargan los mosaicos. */
+.mapx__canvas .leaflet-container {
+  background: #0f0c0a;
+  font-family: var(--font-body);
+}
+
+.mapx__canvas .leaflet-control-attribution {
+  background: color-mix(in srgb, var(--color-black-warm) 82%, transparent);
+  color: var(--color-text-muted);
+  font-size: 0.66rem;
+}
+
+.mapx__canvas .leaflet-control-attribution a {
+  color: var(--color-accent);
+}
+
+.mapx__canvas .leaflet-bar a {
+  background: var(--color-charcoal);
+  color: var(--color-paper);
+  border-color: var(--color-border);
+}
+
+.mapx__canvas .leaflet-bar a:hover {
+  background: var(--color-black-warm);
+  color: var(--color-accent);
+}
+
+/* ---- Marcadores propios ---- */
+.map-pin-wrap {
+  background: none;
+  border: none;
+}
+
+.map-pin {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.map-pin__dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-gold-soft);
+  border: 2px solid color-mix(in srgb, var(--color-black-warm) 70%, transparent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-gold-soft) 55%, transparent);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard);
+}
+
+.map-pin--tablao .map-pin__dot {
+  background: var(--color-gold-soft);
+}
+
+.map-pin--teatro .map-pin__dot {
+  background: var(--color-bronze);
+  border-radius: var(--radius-sm);
+}
+
+.map-pin--ciudad .map-pin__dot {
+  background: var(--color-paper);
+  width: 10px;
+  height: 10px;
+  inset: 3px;
+}
+
+.map-pin--origen .map-pin__dot {
+  background: var(--color-wine);
+  border-color: var(--color-gold-soft);
+}
+
+/* Los sitios cuya ubicación no es segura se dibujan con el borde punteado,
+   para que el mapa nunca aparente más precisión de la que tiene. */
+.map-pin--tablao.is-approx .map-pin__dot,
+.map-pin--teatro.is-approx .map-pin__dot {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+}
+
+.map-pin:hover .map-pin__dot,
+.map-pin.is-selected .map-pin__dot {
+  transform: scale(1.45);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-gold-soft) 18%, transparent);
+}
+
+.map-pin__label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--color-paper);
+  text-shadow:
+    0 1px 3px #000,
+    0 0 8px #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.map-pin:hover .map-pin__label,
+.map-pin.is-selected .map-pin__label {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pin__dot {
+    transition: none;
+  }
+}
+
+/* ---- Panel lateral ---- */
+.mapx__panel {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow-y: auto;
+  max-height: 34rem;
+}
+
+.mapx__empty-title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--color-text);
+  margin: 0 0 var(--space-2xs);
+}
+
+.mapx__empty p {
+  color: var(--color-text-muted);
+  font-size: var(--step--1);
+}
+
+.mapx__list {
+  list-style: none;
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mapx__list button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  width: 100%;
+  padding: 0.5em 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-soft);
+  font-size: var(--step--1);
+  text-align: left;
+  cursor: pointer;
+}
+
+.mapx__list button:hover {
+  color: var(--color-accent);
+}
+
+.mapx__swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mapx__swatch--tablao {
+  background: var(--color-gold-soft);
+}
+.mapx__swatch--teatro {
+  background: var(--color-bronze);
+  border-radius: 2px;
+}
+.mapx__swatch--ciudad {
+  background: var(--color-paper);
+}
+.mapx__swatch--origen {
+  background: var(--color-wine);
+}
+
+.mapx__list-name {
+  flex: 1;
+}
+
+.mapx__count {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Detalle ---- */
+.mapx__back {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--step--1);
+  padding: 0 0 var(--space-xs);
+  cursor: pointer;
+}
+
+.mapx__back:hover {
+  color: var(--color-accent);
+}
+
+.mapx__kind {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-accent);
+  margin: 0 0 var(--space-3xs);
+}
+
+.mapx__name {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-2xs);
+  color: var(--color-text);
+}
+
+.mapx__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-sm);
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+}
+
+.mapx__meta span:not(:last-child)::after {
+  content: ' ·';
+}
+
+.mapx__figure {
+  margin: 0 0 var(--space-sm);
+}
+
+.mapx__figure img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+}
+
+.mapx__figure figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+  margin-top: var(--space-2xs);
+}
+
+.mapx__figure-title {
+  font-size: var(--step--1);
+  color: var(--color-text-soft);
+  line-height: var(--leading-snug);
+}
+
+.mapx__figure-meta {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.mapx__figure-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2xs);
+  margin-top: var(--space-2xs);
+}
+
+.mapx__figure-nav span {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.mapx__figure-nav button {
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  border-radius: 999px;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}
+
+.mapx__figure-nav button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.mapx__desc {
+  font-size: var(--step--1);
+  color: var(--color-text-soft);
+  line-height: var(--leading-normal);
+  margin: 0 0 var(--space-2xs);
+}
+
+.mapx__today {
+  font-size: var(--step--1);
+  color: var(--color-text-soft);
+  border-left: 2px solid var(--color-accent-strong);
+  padding-left: var(--space-xs);
+  margin: var(--space-sm) 0;
+}
+
+.mapx__also {
+  margin: var(--space-sm) 0;
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+}
+
+.mapx__also-title {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  color: var(--color-accent);
+  margin: 0 0 var(--space-3xs);
+}
+
+.mapx__also p {
+  margin: 0;
+}
+
+.mapx__precision {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--color-paper) 45%, transparent);
+  margin: var(--space-sm) 0 var(--space-xs);
+}
+
+.mapx__link {
+  display: inline-block;
+  font-size: var(--step--1);
+}
+
+.mapx__error {
+  color: var(--color-verify-contradictory);
+  font-size: var(--step--1);
+}
+
+@media (max-width: 62rem) {
+  .mapx__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .mapx__canvas {
+    min-height: 24rem;
+  }
+
+  .mapx__panel {
+    max-height: none;
+  }
+}

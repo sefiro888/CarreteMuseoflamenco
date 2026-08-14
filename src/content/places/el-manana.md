@@ -1,14 +1,22 @@
 ---
 name: "El Mañana"
 kind: "Sala de fiestas"
+lat: 36.6243
+lng: -4.499
+locationPrecision: approximate
 municipality: "Torremolinos"
-dateRangeApprox: "Finales de los años cincuenta"
+yearOpened: 1958
+todayNote: "Ya no existe."
+journeyOrder: 2
+dateRangeApprox: "Desde 1958"
 description: >
-  Sala de fiestas y restaurante de Torremolinos con espectáculo flamenco, documentada en publicidad de la época conservada en el archivo.
+  Sala de fiestas y restaurante con espectáculo flamenco, que su propia publicidad
+  anunciaba como «el lugar más céntrico y selecto de Torremolinos».
 verification: documented
 status: published
 sourceRefs:
   - archivo-familiar-losada
 ---
 
-Su publicidad se anunciaba como «el lugar más céntrico y selecto de Torremolinos», con cocina internacional y flamenco show.
+El archivo conserva su publicidad —cocina internacional y flamenco show— y una
+fotografía de Carrete en el local junto a Lee, el dueño.

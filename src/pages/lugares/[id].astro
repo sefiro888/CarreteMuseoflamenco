@@ -1,0 +1,135 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VerifyBadge from '../../components/VerifyBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+import MediaGrid from '../../components/MediaGrid.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { prepareMedia, byDate } from '../../lib/media';
+
+export async function getStaticPaths() {
+  const places = await getCollection('places');
+  return places.map((place) => ({
+    params: { id: place.id },
+    props: { place },
+  }));
+}
+
+const { place } = Astro.props;
+const { Content } = await render(place);
+
+const related = (await getCollection('media'))
+  .filter(
+    (item) =>
+      item.data.status === 'published' && item.data.image && item.data.placeRef?.id === place.id,
+  )
+  .sort(byDate);
+const items = await prepareMedia(related);
+
+const years =
+  place.data.yearOpened && place.data.yearClosed
+    ? `${place.data.yearOpened}–${place.data.yearClosed}`
+    : place.data.yearOpened
+      ? `Desde ${place.data.yearOpened}`
+      : place.data.dateRangeApprox;
+
+const precisionLabel = {
+  exact: 'Ubicación exacta',
+  street: 'Ubicación conocida por calle o plaza',
+  approximate: 'Ubicación aproximada: se conoce la zona, no el portal',
+}[place.data.locationPrecision];
+---
+
+<BaseLayout title={place.data.name} description={place.data.description}>
+  <section class="section container prose">
+    <p class="eyebrow">{place.data.kind}</p>
+    <h1>{place.data.name}</h1>
+
+    <p class="place-meta">
+      {years && <span>{years}</span>}
+      {place.data.municipality && <span>{place.data.municipality}</span>}
+      <span><VerifyBadge level={place.data.verification} /></span>
+    </p>
+
+    <p class="place-lede">{place.data.description}</p>
+
+    <Content />
+
+    {
+      place.data.todayNote && (
+        <p class="place-today">
+          <strong>Qué hay hoy:</strong> {place.data.todayNote}
+        </p>
+      )
+    }
+
+    {
+      place.data.alsoPlayed.length > 0 && (
+        <>
+          <h2>Por aquí pasaron también</h2>
+          <p>{place.data.alsoPlayed.join(' · ')}</p>
+        </>
+      )
+    }
+
+    {
+      place.data.lat !== undefined && (
+        <p class="place-precision">
+          {precisionLabel}. Coordenadas usadas en el mapa: {place.data.lat.toFixed(4)},{' '}
+          {place.data.lng?.toFixed(4)}.
+        </p>
+      )
+    }
+
+    <SourceList sourceRefs={place.data.sourceRefs} />
+  </section>
+
+  {
+    items.length > 0 && (
+      <section class="section--tight container">
+        <h2>El archivo de este lugar</h2>
+        <p class="prose">
+          {items.length === 1
+            ? 'Una pieza del archivo se tomó aquí.'
+            : `${items.length} piezas del archivo se tomaron aquí o lo documentan.`}
+        </p>
+        <MediaGrid items={items} />
+      </section>
+    )
+  }
+
+  <section class="section--tight container">
+    <p><a href="/mapa">← Volver al mapa</a></p>
+  </section>
+
+  <Lightbox />
+</BaseLayout>
+
+<style>
+  .place-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .place-lede {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+    color: var(--color-paper);
+  }
+
+  .place-today {
+    border-left: 2px solid var(--color-accent-strong);
+    padding-left: var(--space-sm);
+    color: var(--color-text-soft);
+  }
+
+  .place-precision {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+</style>

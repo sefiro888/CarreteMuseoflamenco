@@ -166,11 +166,22 @@ const places = defineCollection({
     lat: z.number().optional(),
     lng: z.number().optional(),
     /**
-     * Municipio al que pertenece el local. Muchos tablaos de la Costa del Sol
-     * ya no existen y no se conoce su dirección exacta: se agrupan por
-     * municipio en vez de inventarles unas coordenadas.
+     * Hasta dónde llega la certeza de la ubicación. Muchos tablaos de la edad
+     * de oro cerraron hace décadas: se sitúan igualmente, pero el mapa dice
+     * siempre con qué precisión.
      */
+    locationPrecision: z.enum(['exact', 'street', 'approximate']).default('approximate'),
+    /** Municipio al que pertenece el local. */
     municipality: z.string().optional(),
+    /** Año de apertura y de cierre, cuando constan. */
+    yearOpened: z.number().optional(),
+    yearClosed: z.number().optional(),
+    /** Qué hay hoy en ese sitio, si el local ya no existe con ese nombre. */
+    todayNote: z.string().optional(),
+    /** Otros artistas documentados en esa sala, además de Carrete. */
+    alsoPlayed: z.array(z.string()).default([]),
+    /** Orden de aparición en la vida de Carrete, para trazar el recorrido. */
+    journeyOrder: z.number().optional(),
     dateRangeApprox: z.string().optional(),
     description: z.string(),
   }),

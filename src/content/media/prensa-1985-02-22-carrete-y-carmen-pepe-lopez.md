@@ -6,6 +6,7 @@ alt: "Carrete y carmen pepe lopez. Recorte de prensa del archivo familiar, 22 de
 filePath: "/hemeroteca/1985-02-22-carrete-y-carmen-pepe-lopez.pdf"
 pages: 1
 dateExact: "1985-02-22"
+placeRef: el-jaleo
 focal: "center top"
 verification: documented
 status: published
