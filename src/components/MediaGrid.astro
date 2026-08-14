@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import VerifyBadge from './VerifyBadge.astro';
 import { TYPE_LABELS, type PreparedMedia } from '../lib/media';
 
@@ -38,8 +39,8 @@ const { items, showVerification = true } = Astro.props;
             data-alt={entry.data.alt ?? entry.data.title}
             data-caption={entry.data.title}
             data-meta={metaBits.join(' · ')}
-            data-download={entry.data.type === 'press' ? entry.data.filePath : undefined}
-            data-video={entry.data.type === 'video' ? entry.data.filePath : undefined}
+            data-download={entry.data.type === 'press' ? url(entry.data.filePath ?? '') : undefined}
+            data-video={entry.data.type === 'video' ? url(entry.data.filePath ?? '') : undefined}
           >
             <img
               src={thumb.src}

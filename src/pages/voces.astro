@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import RoomLayout from '../layouts/RoomLayout.astro';
 import VerifyBadge from '../components/VerifyBadge.astro';
 import { getCollection, getEntry } from 'astro:content';
@@ -35,7 +36,7 @@ const withPeople = await Promise.all(
             <p>«{item.data.quote}»</p>
           </blockquote>
           <figcaption class="quote-cite">
-            {person ? <a href={`/personas/${person.id}`}>{person.data.name}</a> : item.data.personNameFallback}
+            {person ? <a href={url(`/personas/${person.id}`)}>{person.data.name}</a> : item.data.personNameFallback}
             {item.data.context && <span> — {item.data.context}</span>}
           </figcaption>
           <VerifyBadge level={item.data.verification} />

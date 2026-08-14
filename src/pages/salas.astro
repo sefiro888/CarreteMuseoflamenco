@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { rooms } from '../lib/rooms';
 ---
@@ -17,7 +18,7 @@ import { rooms } from '../lib/rooms';
       {
         rooms.map((room, index) => (
           <li>
-            <a class="room-index__link" href={room.slug}>
+            <a class="room-index__link" href={url(room.slug)}>
               <span class="room-index__number">{String(index + 1).padStart(2, '0')}</span>
               <span>
                 <span class="room-index__title">{room.title.es}</span>

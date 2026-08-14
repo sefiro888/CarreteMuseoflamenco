@@ -1,3 +1,4 @@
+import { url } from './url';
 export const locales = ['es', 'en'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'es';
@@ -97,6 +98,7 @@ export function t(locale: Locale) {
 
 export function localizedPath(path: string, locale: Locale) {
   const clean = path.startsWith('/') ? path : `/${path}`;
-  if (locale === defaultLocale) return clean;
-  return `/en${clean === '/' ? '' : clean}`;
+  const localized = locale === defaultLocale ? clean : `/en${clean === '/' ? '' : clean}`;
+  // Prefijo de despliegue: en GitHub Pages el museo cuelga de un subdirectorio.
+  return url(localized);
 }

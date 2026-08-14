@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import { Image } from 'astro:assets';
 import { t, localizedPath, type Locale } from '../lib/i18n';
 import heroImage from '../assets/archivo/2022-05-21-aitor-lara.jpg';
@@ -74,7 +75,7 @@ const heroAlt =
 </section>
 
 <audio id="hero-audio" preload="none">
-  <source src="/audio/carrete-intro.mp3" type="audio/mpeg" />
+  <source src={url("/audio/carrete-intro.mp3")} type="audio/mpeg" />
 </audio>
 
 <script define:vars={{ es: locale === 'es' }}>

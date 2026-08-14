@@ -1,4 +1,5 @@
 ---
+import { url } from '../../lib/url';
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
@@ -79,7 +80,7 @@ const relatedItems = await prepareMedia(related);
   }
 
   <section class="section--tight container">
-    <p><a href="/maestros">← Volver a Carrete y los maestros</a></p>
+    <p><a href={url("/maestros")}>← Volver a Carrete y los maestros</a></p>
   </section>
 
   <Lightbox />

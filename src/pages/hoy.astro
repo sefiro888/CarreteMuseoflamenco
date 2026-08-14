@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import RoomLayout from '../layouts/RoomLayout.astro';
 import StoryContent from '../components/StoryContent.astro';
 import PhotoCompare from '../components/PhotoCompare.astro';
@@ -42,7 +43,7 @@ const recentItems = await prepareMedia(recent);
     </p>
 
     <VideoPlayer
-      src="/video/documental-2024-eye-rise-films.mp4"
+      src={url("/video/documental-2024-eye-rise-films.mp4")}
       poster={posterDocumental}
       description="Retrato documental de Carrete rodado en 2024: le sigue por Torremolinos, por la playa y por escenarios vacíos."
       credit="Ana González — Eye Rise Films"
@@ -85,7 +86,7 @@ const recentItems = await prepareMedia(recent);
         </p>
         <MediaGrid items={recentItems} showVerification={false} />
         <p style="margin-top: var(--space-md);">
-          <a class="btn" href="/archivo">Ver el archivo completo</a>
+          <a class="btn" href={url("/archivo")}>Ver el archivo completo</a>
         </p>
       </div>
     )

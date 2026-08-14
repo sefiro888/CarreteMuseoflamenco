@@ -1,4 +1,5 @@
 ---
+import { url } from '../../lib/url';
 import { getCollection, getEntries, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
@@ -55,7 +56,7 @@ const dateLabel = show.data.dateExact
     }
 
     <SourceList sourceRefs={show.data.sourceRefs} />
-    <p><a href="/espectaculos">← Volver a espectáculos y obras</a></p>
+    <p><a href={url("/espectaculos")}>← Volver a espectáculos y obras</a></p>
   </section>
 </BaseLayout>
 

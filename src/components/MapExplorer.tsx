@@ -3,6 +3,9 @@ import type { Map as LeafletMap, Marker, Polyline } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { kindGroup, type MapPlace } from '../lib/map-types';
 
+/** Prefijo de despliegue (subdirectorio en GitHub Pages). */
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 interface Props {
   places: MapPlace[];
 }
@@ -339,7 +342,7 @@ export default function MapExplorer({ places }: Props) {
 
               <p className="mapx__precision">{PRECISION_LABEL[selected.precision]}</p>
 
-              <a className="mapx__link" href={`/lugares/${selected.id}`}>
+              <a className="mapx__link" href={`${BASE}/lugares/${selected.id}`}>
                 Ver la ficha completa
                 {selected.photoCount > 0 &&
                   ` y las ${selected.photoCount} piezas del archivo`}

@@ -1,3 +1,4 @@
+import { url } from './url';
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import { getImage } from 'astro:assets';
 import { byDate, dateLabel, yearOf } from './media';
@@ -46,7 +47,7 @@ export async function getMapPlaces(): Promise<MapPlace[]> {
           credit: item.data.credit ?? '',
           focal: item.data.focal,
           isPress: item.data.type === 'press',
-          pdf: item.data.type === 'press' ? item.data.filePath : undefined,
+          pdf: item.data.type === 'press' ? url(item.data.filePath ?? '') : undefined,
         };
       }),
     );

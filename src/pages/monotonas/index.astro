@@ -1,4 +1,5 @@
 ---
+import { url } from '../../lib/url';
 import RoomLayout from '../../layouts/RoomLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import ProvisionalNote from '../../components/ProvisionalNote.astro';
@@ -55,7 +56,7 @@ for (const item of monotonas) {
   <div class="card-grid section--tight">
     {
       monotonas.map((item) => (
-        <a class="card archive-piece" href={`/monotonas/${item.id}`}>
+        <a class="card archive-piece" href={url(`/monotonas/${item.id}`)}>
           <div class="archive-piece__media">
             {posters.has(item.id) ? (
               <img src={posters.get(item.id)} alt="" loading="lazy" decoding="async" />
