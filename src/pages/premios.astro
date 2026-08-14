@@ -1,9 +1,20 @@
 ---
 import RoomLayout from '../layouts/RoomLayout.astro';
 import VerifyBadge from '../components/VerifyBadge.astro';
-import { getCollection } from 'astro:content';
+import SourceList from '../components/SourceList.astro';
+import { getCollection, render } from 'astro:content';
 
 const awards = await getCollection('awards');
+
+/**
+ * Los premios se ordenan del más reciente al más antiguo; los que todavía no
+ * tienen año fijado quedan al final, en vez de colarse arriba por azar.
+ */
+const entries = await Promise.all(
+  awards
+    .sort((a, b) => (b.data.year ?? '').localeCompare(a.data.year ?? ''))
+    .map(async (award) => ({ award, Content: (await render(award)).Content })),
+);
 ---
 
 <RoomLayout
@@ -12,15 +23,23 @@ const awards = await getCollection('awards');
   title="Premios y homenajes"
   summary="El reconocimiento a una trayectoria."
 >
-  <div class="card-grid">
+  <div class="award-list">
     {
-      awards.map((award) => (
-        <div class="card">
-          <h3>{award.data.title}</h3>
-          {award.data.grantor && <p class="eyebrow">{award.data.grantor}</p>}
-          <p>{award.data.description}</p>
-          <VerifyBadge level={award.data.verification} />
-        </div>
+      entries.map(({ award, Content }) => (
+        <article class="award">
+          <header class="award__head">
+            <h2>{award.data.title}</h2>
+            <p class="eyebrow">
+              {[award.data.grantor, award.data.year].filter(Boolean).join(' · ')}
+            </p>
+            <VerifyBadge level={award.data.verification} />
+          </header>
+          <p class="award__lede">{award.data.description}</p>
+          <div class="prose">
+            <Content />
+          </div>
+          <SourceList sourceRefs={award.data.sourceRefs} />
+        </article>
       ))
     }
   </div>
@@ -29,3 +48,32 @@ const awards = await getCollection('awards');
     <a href="/estatua">Ver también: la estatua de Torremolinos →</a>
   </p>
 </RoomLayout>
+
+<style>
+  .award-list {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .award {
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .award:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .award__head h2 {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .award__lede {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+    color: var(--color-paper);
+    max-width: 60ch;
+  }
+</style>

@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
@@ -16,6 +16,7 @@ export async function getStaticPaths() {
 }
 
 const { person } = Astro.props;
+const { Content } = await render(person);
 
 const testimonials = (await getCollection('testimonials')).filter(
   (item) => item.data.personRef?.id === person.id,
@@ -40,6 +41,8 @@ const relatedItems = await prepareMedia(related);
     <p><VerifyBadge level={person.data.verification} /></p>
     <p>{person.data.summary}</p>
     <p><strong>Relación con Carrete:</strong> {person.data.relationToCarrete}</p>
+
+    <Content />
 
     {
       testimonials.length > 0 && (

@@ -1,8 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntries, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
+import PersonCard from '../../components/PersonCard.astro';
 
 export async function getStaticPaths() {
   const performances = await getCollection('performances');
@@ -13,6 +14,18 @@ export async function getStaticPaths() {
 }
 
 const { show } = Astro.props;
+const { Content } = await render(show);
+const people = show.data.peopleRefs.length ? await getEntries(show.data.peopleRefs) : [];
+
+/** Las fechas exactas se guardan en ISO, pero se leen mucho mejor escritas en largo. */
+const dateFormatter = new Intl.DateTimeFormat('es-ES', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const dateLabel = show.data.dateExact
+  ? dateFormatter.format(new Date(`${show.data.dateExact}T00:00:00`))
+  : show.data.dateApprox;
 ---
 
 <BaseLayout title={show.data.title} description={show.data.description}>
@@ -20,13 +33,37 @@ const { show } = Astro.props;
     <p class="eyebrow">Espectáculo</p>
     <h1>{show.data.title}</h1>
     {show.data.venue && <p><strong>Lugar:</strong> {show.data.venue}</p>}
-    {(show.data.dateExact || show.data.dateApprox) && (
-      <p><strong>Fecha:</strong> {show.data.dateExact ?? show.data.dateApprox}</p>
+    {dateLabel && (
+      <p><strong>Fecha:</strong> {dateLabel}</p>
     )}
     <p><VerifyBadge level={show.data.verification} /></p>
-    <p>{show.data.description}</p>
+    <p class="show-lede">{show.data.description}</p>
+
+    <Content />
+
+    {
+      people.length > 0 && (
+        <div class="section--tight">
+          <h2>Quién estuvo</h2>
+          <div class="card-grid">
+            {people.map((person) => (
+              <PersonCard person={person} />
+            ))}
+          </div>
+        </div>
+      )
+    }
 
     <SourceList sourceRefs={show.data.sourceRefs} />
     <p><a href="/espectaculos">← Volver a espectáculos y obras</a></p>
   </section>
 </BaseLayout>
+
+<style>
+  .show-lede {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+    color: var(--color-paper);
+  }
+</style>

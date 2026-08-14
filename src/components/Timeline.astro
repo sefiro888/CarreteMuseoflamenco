@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import { getImage } from 'astro:assets';
 import VerifyBadge from './VerifyBadge.astro';
 import type { Locale } from '../lib/i18n';
@@ -12,6 +12,16 @@ const { locale = 'es' } = Astro.props;
 
 const entries = await getCollection('timeline');
 entries.sort((a, b) => a.data.order - b.data.order);
+
+/**
+ * Las fechas exactas se guardan en ISO para poder ordenarlas, pero en la
+ * cronología se leen escritas en largo.
+ */
+const dateFormatter = new Intl.DateTimeFormat(locale === 'es' ? 'es-ES' : 'en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
 
 const withPlaces = await Promise.all(
   entries.map(async (entry) => {
@@ -47,7 +57,13 @@ const withPlaces = await Promise.all(
       }),
     );
 
-    return { entry, place, images };
+    // El cuerpo de la ficha amplía el resumen; no todos los hitos lo tienen.
+    const { Content } = await render(entry);
+    const dateLabel = entry.data.dateExact
+      ? dateFormatter.format(new Date(`${entry.data.dateExact}T00:00:00`))
+      : (entry.data.dateApprox ?? entry.data.era);
+
+    return { entry, place, images, Content, dateLabel };
   }),
 );
 
@@ -70,11 +86,11 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
 
   <ol class="timeline__list">
     {
-      withPlaces.map(({ entry, place, images }) => (
+      withPlaces.map(({ entry, place, images, Content, dateLabel }) => (
         <li class="timeline__item" data-era={entry.data.era}>
           <details>
             <summary>
-              <span class="timeline__date">{entry.data.dateExact ?? entry.data.dateApprox ?? entry.data.era}</span>
+              <span class="timeline__date">{dateLabel}</span>
               <span class="timeline__title">{entry.data.title}</span>
               {images.length > 0 && (
                 <span class="timeline__has-photo" aria-label="Con fotografía del archivo">
@@ -84,6 +100,9 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
             </summary>
             <div class="timeline__detail">
               <p>{entry.data.summary}</p>
+              <div class="timeline__body">
+                <Content />
+              </div>
               {place && <p class="timeline__place">📍 {place.data.name}</p>}
               <VerifyBadge level={entry.data.verification} locale={locale} />
 
@@ -197,6 +216,19 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
   .timeline__place {
     color: var(--color-text-muted);
     font-size: var(--step--1);
+  }
+
+  .timeline__body {
+    max-width: 62ch;
+  }
+
+  .timeline__body :global(p),
+  .timeline__body :global(li) {
+    font-size: var(--step--1);
+  }
+
+  .timeline__body :global(ul) {
+    padding-left: 1.1em;
   }
 
   .timeline__has-photo {
