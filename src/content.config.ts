@@ -46,14 +46,19 @@ const timeline = defineCollection({
 
 const people = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/people' }),
-  schema: provenance.extend({
-    name: z.string(),
-    role: z.string(),
-    relationToCarrete: z.string(),
-    confirmedCollaborator: z.boolean().default(false),
-    summary: z.string(),
-    photoCredit: z.string().optional(),
-  }),
+  schema: ({ image }) =>
+    provenance.extend({
+      name: z.string(),
+      role: z.string(),
+      relationToCarrete: z.string(),
+      confirmedCollaborator: z.boolean().default(false),
+      summary: z.string(),
+      /** Retrato, normalmente recortado de una foto del archivo donde sale con Carrete. */
+      portrait: image().optional(),
+      /** Recorte del retrato, en sintaxis de object-position. */
+      focal: z.string().default('center'),
+      photoCredit: z.string().optional(),
+    }),
 });
 
 const stories = defineCollection({
@@ -112,6 +117,8 @@ const awards = defineCollection({
     year: z.string().optional(),
     grantor: z.string().optional(),
     description: z.string(),
+    /** Piezas del archivo que documentan el premio: la estatua, la entrega, el diploma. */
+    mediaRefs: z.array(reference('media')).default([]),
   }),
 });
 

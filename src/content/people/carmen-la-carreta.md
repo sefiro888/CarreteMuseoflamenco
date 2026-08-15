@@ -7,6 +7,8 @@ summary: >
   Madre de Carrete. Vendía biznagas por las calles de Antequera y bailaba. De su
   apodo, «La Carreta», viene el nombre con el que se conoce a su hijo en medio
   mundo.
+portrait: "../../assets/archivo/la-carreta.jpg"
+focal: "center 20%"
 verification: documented
 status: published
 sourceRefs:

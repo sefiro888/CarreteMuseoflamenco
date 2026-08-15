@@ -7,6 +7,8 @@ description: >
   noviembre de 2023 en la Venta de Vargas de San Fernando (Cádiz), dentro de los
   actos del Día Internacional del Flamenco. El premio, creado en 2009, reconoce a
   quienes han dejado una huella indeleble en la historia de este arte.
+mediaRefs:
+  - 2023-10-leyenda-del-flamenco-venta-de-vargas
 verification: documented
 status: published
 sourceRefs:

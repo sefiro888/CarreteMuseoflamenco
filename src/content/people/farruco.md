@@ -8,6 +8,8 @@ summary: >
   del archivo, fechada en la segunda mitad de los años sesenta, los sitúa juntos
   en el tablao El Jaleo de Torremolinos, junto a El Gringo, El Chaqueta, Adela y
   Juan el Africano.
+portrait: "../../assets/archivo/1968-carrete-farruco-el-gringo-chaqueta-adela-y-juan-el-africao-el-jaleo.jpg"
+focal: "center 30%"
 verification: documented
 status: published
 sourceRefs:

@@ -1,6 +1,7 @@
 ---
 import { url } from '../../lib/url';
 import { getCollection, render } from 'astro:content';
+import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
@@ -18,6 +19,10 @@ export async function getStaticPaths() {
 
 const { person } = Astro.props;
 const { Content } = await render(person);
+
+const portrait = person.data.portrait
+  ? await getImage({ src: person.data.portrait, width: 900, format: 'webp', quality: 78 })
+  : null;
 
 const testimonials = (await getCollection('testimonials')).filter(
   (item) => item.data.personRef?.id === person.id,
@@ -39,6 +44,23 @@ const relatedItems = await prepareMedia(related);
   <section class="section container prose">
     <p class="eyebrow">{person.data.role}</p>
     <h1>{person.data.name}</h1>
+
+    {
+      portrait && (
+        <figure class="person-hero">
+          <img
+            src={portrait.src}
+            alt={`Detalle de una fotografía del archivo en la que aparece ${person.data.name}.`}
+            width="900"
+            height="600"
+            style={`object-position:${person.data.focal};`}
+          />
+          {person.data.photoCredit && (
+            <figcaption>{person.data.photoCredit}</figcaption>
+          )}
+        </figure>
+      )
+    }
     <p><VerifyBadge level={person.data.verification} /></p>
     <p>{person.data.summary}</p>
     <p><strong>Relación con Carrete:</strong> {person.data.relationToCarrete}</p>
@@ -85,3 +107,26 @@ const relatedItems = await prepareMedia(related);
 
   <Lightbox />
 </BaseLayout>
+
+<style>
+  .person-hero {
+    margin: 0 0 var(--space-md);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .person-hero img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    display: block;
+  }
+
+  .person-hero figcaption {
+    padding: var(--space-2xs) var(--space-sm);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    background: var(--color-bg-raised);
+  }
+</style>

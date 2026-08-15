@@ -7,6 +7,8 @@ summary: >
   Uno de los grandes guitarristas de la historia del flamenco. El archivo
   familiar conserva una fotografía de 1967 en la que aparece junto a Carrete
   en el tablao El Jaleo de Torremolinos.
+portrait: "../../assets/archivo/1967-con-el-gran-guitarrista-sabicas-tablao-el-jaleo.jpg"
+focal: "center 30%"
 verification: documented
 status: published
 sourceRefs:

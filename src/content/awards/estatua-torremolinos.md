@@ -6,6 +6,8 @@ description: >
   Escultura en bronce fundido inaugurada el 24 de marzo de 2023 en la Plaza Costa
   del Sol de Torremolinos, obra del escultor madrileño Francisco Javier Galán
   Domingo. Mide alrededor de 1,70 metros sobre una base de un metro.
+mediaRefs:
+  - junto-a-su-estatua-en-torremolinos
 verification: documented
 status: published
 sourceRefs:

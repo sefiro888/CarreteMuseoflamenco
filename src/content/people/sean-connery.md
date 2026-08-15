@@ -9,6 +9,8 @@ summary: >
   «Con los Hermanos Rojo, Sean Connery y Los Vargas». Documenta un encuentro
   en el ambiente de la Costa del Sol de aquellos años, años antes de que el
   actor se hiciera mundialmente conocido.
+portrait: "../../assets/archivo/1957-con-los-hnos-rojo-sean-connery-y-los-vargas-sala-de-fiesta-el-pimpi.jpg"
+focal: "center 25%"
 verification: documented
 status: published
 sourceRefs:

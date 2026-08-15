@@ -2,27 +2,63 @@
 import { url } from '../lib/url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { rooms } from '../lib/rooms';
+import { getRoomImage } from '../lib/room-images';
+import { getImage } from 'astro:assets';
+
+/**
+ * El plano del museo. Cada sala entra con su fotografía de cabecera cuando la
+ * tiene; las que todavía no la tienen se quedan como ficha de texto, y se nota.
+ */
+const entries = await Promise.all(
+  rooms.map(async (room, index) => {
+    const art = getRoomImage(room.slug);
+    const thumb = art
+      ? await getImage({ src: art.image, width: 640, format: 'webp', quality: 72 })
+      : null;
+    return { room, art, thumb, number: String(index + 1).padStart(2, '0') };
+  }),
+);
+
+const conImagen = entries.filter((e) => e.thumb).length;
 ---
 
-<BaseLayout title="Todas las salas" description="El plano completo del museo digital de Carrete de Málaga.">
+<BaseLayout
+  title="Todas las salas"
+  description="El plano completo del museo digital de Carrete de Málaga."
+>
   <section class="section container">
     <p class="eyebrow">Plano del museo</p>
     <h1>Todas las salas</h1>
     <p class="prose">
-      Diecinueve salas componen, de momento, este museo digital. Puedes recorrerlas
-      en orden, como si caminaras por un museo real, o ir directamente a la que te
-      interese.
+      {rooms.length} salas componen, de momento, este museo digital. Puedes recorrerlas
+      en orden, como si caminaras por un museo real, o entrar directamente en la que te
+      interese. {conImagen} tienen ya su fotografía de cabecera.
     </p>
 
-    <ol class="room-index">
+    <ol class="rooms">
       {
-        rooms.map((room, index) => (
-          <li>
-            <a class="room-index__link" href={url(room.slug)}>
-              <span class="room-index__number">{String(index + 1).padStart(2, '0')}</span>
-              <span>
-                <span class="room-index__title">{room.title.es}</span>
-                <span class="room-index__summary">{room.summary.es}</span>
+        entries.map(({ room, art, thumb, number }) => (
+          <li class="rooms__item">
+            <a class="rooms__link" href={url(room.slug)}>
+              <span class="rooms__media">
+                {thumb ? (
+                  <img
+                    src={thumb.src}
+                    alt=""
+                    width="640"
+                    height="427"
+                    loading="lazy"
+                    decoding="async"
+                    style={`object-position:${art?.focal ?? 'center'};`}
+                  />
+                ) : (
+                  <span class="rooms__placeholder" aria-hidden="true" />
+                )}
+                <span class="rooms__number">{number}</span>
+              </span>
+              <span class="rooms__body">
+                <span class="rooms__title">{room.title.es}</span>
+                <span class="rooms__summary">{room.summary.es}</span>
               </span>
             </a>
           </li>
@@ -33,40 +69,114 @@ import { rooms } from '../lib/rooms';
 </BaseLayout>
 
 <style>
-  .room-index {
+  .rooms {
     list-style: none;
+    margin: var(--space-lg) 0 0;
     padding: 0;
-    margin-top: var(--space-lg);
     display: grid;
-    gap: var(--space-sm);
-  }
-  .room-index__link {
-    display: flex;
     gap: var(--space-md);
-    align-items: baseline;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    counter-reset: none;
+  }
+
+  .rooms__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     text-decoration: none;
-    padding: var(--space-sm);
+    color: inherit;
+    background: var(--color-bg-raised);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
   }
-  .room-index__link:hover {
+
+  .rooms__link:hover,
+  .rooms__link:focus-visible {
     border-color: var(--color-accent);
+    transform: translateY(-2px);
   }
-  .room-index__number {
+
+  .rooms__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--color-charcoal);
+  }
+
+  .rooms__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.55) contrast(1.05);
+    transition: transform var(--duration-slow) var(--ease-standard),
+      filter var(--duration-base) var(--ease-standard);
+  }
+
+  .rooms__link:hover .rooms__media img,
+  .rooms__link:focus-visible .rooms__media img {
+    transform: scale(1.05);
+    filter: saturate(1) contrast(1);
+  }
+
+  /* Sala sin fotografía todavía: se ve el hueco, no se disimula. */
+  .rooms__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 10px,
+      color-mix(in srgb, var(--color-paper) 6%, transparent) 10px,
+      color-mix(in srgb, var(--color-paper) 6%, transparent) 20px
+    );
+  }
+
+  .rooms__number {
+    position: absolute;
+    left: var(--space-2xs);
+    top: var(--space-2xs);
     font-family: var(--font-display);
-    font-size: var(--step-2);
+    font-size: var(--step-1);
+    line-height: 1;
     color: var(--color-accent);
-    min-width: 2.5ch;
+    background: rgba(23, 19, 16, 0.78);
+    padding: 0.2em 0.45em;
+    border-radius: var(--radius-sm);
+    font-variant-numeric: tabular-nums;
   }
-  .room-index__title {
+
+  .rooms__body {
+    display: block;
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+  }
+
+  .rooms__title {
     display: block;
     font-family: var(--font-display);
     font-size: var(--step-1);
     color: var(--color-text);
+    margin-bottom: var(--space-3xs);
   }
-  .room-index__summary {
+
+  .rooms__summary {
     display: block;
     color: var(--color-text-muted);
     font-size: var(--step--1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rooms__link:hover,
+    .rooms__link:focus-visible {
+      transform: none;
+    }
+    .rooms__link:hover .rooms__media img {
+      transform: none;
+    }
   }
 </style>

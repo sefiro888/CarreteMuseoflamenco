@@ -3,7 +3,10 @@ import { url } from '../lib/url';
 import RoomLayout from '../layouts/RoomLayout.astro';
 import VerifyBadge from '../components/VerifyBadge.astro';
 import SourceList from '../components/SourceList.astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection, getEntries, render } from 'astro:content';
+import MediaGrid from '../components/MediaGrid.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { prepareMedia } from '../lib/media';
 
 const awards = await getCollection('awards');
 
@@ -14,7 +17,11 @@ const awards = await getCollection('awards');
 const entries = await Promise.all(
   awards
     .sort((a, b) => (b.data.year ?? '').localeCompare(a.data.year ?? ''))
-    .map(async (award) => ({ award, Content: (await render(award)).Content })),
+    .map(async (award) => {
+      const refs = award.data.mediaRefs.length ? await getEntries(award.data.mediaRefs) : [];
+      const piezas = await prepareMedia(refs.filter((m) => m?.data.image));
+      return { award, Content: (await render(award)).Content, piezas };
+    }),
 );
 ---
 
@@ -26,7 +33,7 @@ const entries = await Promise.all(
 >
   <div class="award-list">
     {
-      entries.map(({ award, Content }) => (
+      entries.map(({ award, Content, piezas }) => (
         <article class="award">
           <header class="award__head">
             <h2>{award.data.title}</h2>
@@ -39,6 +46,11 @@ const entries = await Promise.all(
           <div class="prose">
             <Content />
           </div>
+          {piezas.length > 0 && (
+            <div class="award__media">
+              <MediaGrid items={piezas} />
+            </div>
+          )}
           <SourceList sourceRefs={award.data.sourceRefs} />
         </article>
       ))
@@ -48,6 +60,7 @@ const entries = await Promise.all(
   <p class="section--tight">
     <a href={url("/estatua")}>Ver también: la estatua de Torremolinos →</a>
   </p>
+  <Lightbox />
 </RoomLayout>
 
 <style>
@@ -68,6 +81,11 @@ const entries = await Promise.all(
 
   .award__head h2 {
     margin-bottom: var(--space-3xs);
+  }
+
+  .award__media {
+    margin: var(--space-md) 0;
+    max-width: 34rem;
   }
 
   .award__lede {

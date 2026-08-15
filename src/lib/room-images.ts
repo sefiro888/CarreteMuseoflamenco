@@ -131,6 +131,34 @@ const SPECS: Record<string, RoomImageSpec> = {
     credit: 'Archivo familiar Losada',
     focal: 'center 30%',
   },
+  '/videos': {
+    file: '2023-ff-londres',
+    alt: 'Carrete en el escenario del festival flamenco de Londres, con los brazos en alto.',
+    caption: `Festival Flamenco de Londres, en el Sadler's Wells, 2023.`,
+    credit: 'Archivo familiar Losada',
+    focal: 'center 30%',
+  },
+  '/mapa': {
+    file: '1966-el-jaleo',
+    alt: 'Interior del tablao El Jaleo de Torremolinos en 1966, con el cuadro flamenco sobre el escenario.',
+    caption: 'El Jaleo, Torremolinos, 1966. El único tablao de aquella edad de oro que sigue abierto.',
+    credit: 'Archivo familiar Losada',
+    focal: 'center 40%',
+  },
+  '/espectaculos': {
+    file: '2015-carrete-60-anos',
+    alt: 'Carrete sobre el escenario durante el espectáculo de sus sesenta años bailando.',
+    caption: '«60 años bailando», el espectáculo que resume su vida en siete palos.',
+    credit: 'Archivo familiar Losada',
+    focal: 'center 30%',
+  },
+  '/archivo': {
+    file: '1957-pimpi-carrete',
+    alt: 'Carrete adolescente, de perfil, en la sala de fiestas El Pimpi.',
+    caption: 'El Pimpi, 1957. Los dueños ingleses le dejaban dormir allí para que no durmiera en la calle.',
+    credit: 'Archivo familiar Losada',
+    focal: 'center 30%',
+  },
 };
 
 export function getRoomImage(slug: string): RoomImage | null {
