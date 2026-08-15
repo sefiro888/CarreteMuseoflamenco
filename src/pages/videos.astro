@@ -1,0 +1,162 @@
+---
+import { url } from '../lib/url';
+import RoomLayout from '../layouts/RoomLayout.astro';
+import EmbedVideo from '../components/EmbedVideo.astro';
+import { getCollection } from 'astro:content';
+
+const all = (await getCollection('videos'))
+  .filter((v) => v.data.status === 'published')
+  .sort((a, b) => a.data.order - b.data.order);
+
+const destacado = all.find((v) => v.data.featured) ?? all[0];
+const resto = all.filter((v) => v.id !== destacado?.id);
+
+/** Los vídeos se agrupan por lo que son, no por fecha. */
+const GRUPOS = [
+  { kind: 'homenaje', titulo: 'Homenajes', pie: 'Las noches en que el flamenco se lo devolvió.' },
+  { kind: 'actuacion', titulo: 'Bailando', pie: 'Su arte, tal y como se ve desde una butaca.' },
+  { kind: 'documental', titulo: 'En el cine', pie: 'Su vida contada en pantalla.' },
+  { kind: 'reportaje', titulo: 'Reportajes', pie: 'Lo que contaron de él.' },
+] as const;
+
+const grupos = GRUPOS.map((g) => ({
+  ...g,
+  items: resto.filter((v) => v.data.kind === g.kind),
+})).filter((g) => g.items.length > 0);
+
+const dateFormatter = new Intl.DateTimeFormat('es-ES', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const fecha = (v: (typeof all)[number]) =>
+  v.data.dateExact
+    ? dateFormatter.format(new Date(`${v.data.dateExact}T00:00:00`))
+    : v.data.dateApprox;
+---
+
+<RoomLayout
+  slug="/videos"
+  eyebrow="Verlo bailar"
+  title="Verlo bailar"
+  summary="Porque esto no se cuenta: se mira."
+>
+  <div class="prose">
+    <p>
+      Todo lo demás en este museo son palabras y fotografías fijas. Aquí está lo único
+      que se mueve. {all.length} piezas: el tráiler de la película sobre su vida, la mañana
+      en que se descubrió su estatua y varias actuaciones suyas sobre un escenario.
+    </p>
+    <p class="videos__nota">
+      Ninguno se carga hasta que lo pides. Al pulsar, el vídeo se pide a YouTube o a
+      Vimeo; hasta entonces lo que ves es una imagen guardada en este archivo.
+    </p>
+  </div>
+
+  {
+    destacado && (
+      <section class="videos__destacado">
+        <p class="eyebrow">La película de su vida</p>
+        <h2>{destacado.data.title}</h2>
+        <EmbedVideo
+          platform={destacado.data.platform}
+          videoId={destacado.data.videoId}
+          title={destacado.data.title}
+          poster={destacado.data.poster}
+          description={destacado.data.summary}
+          credit={destacado.data.credit ?? destacado.data.channel}
+          durationSeconds={destacado.data.durationSeconds}
+          eager
+        />
+      </section>
+    )
+  }
+
+  {
+    grupos.map((g) => (
+      <section class="videos__grupo">
+        <h2>{g.titulo}</h2>
+        <p class="videos__pie">{g.pie}</p>
+        <div class="videos__grid">
+          {g.items.map((v) => (
+            <article class="videos__item">
+              <EmbedVideo
+                platform={v.data.platform}
+                videoId={v.data.videoId}
+                title={v.data.title}
+                poster={v.data.poster}
+                credit={v.data.credit ?? v.data.channel}
+                durationSeconds={v.data.durationSeconds}
+              />
+              <h3>{v.data.title}</h3>
+              <p class="videos__meta">
+                {fecha(v) && <span>{fecha(v)}</span>}
+                {v.data.venue && <span>{v.data.venue}</span>}
+              </p>
+              <p class="videos__summary">{v.data.summary}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  <p class="section--tight">
+    <a href={url('/monotonas')}>Ver también: las monótonas, con su propia voz →</a>
+  </p>
+</RoomLayout>
+
+<style>
+  .videos__nota {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .videos__destacado {
+    margin: var(--space-lg) 0 var(--space-xl);
+  }
+
+  .videos__destacado h2 {
+    margin-bottom: var(--space-sm);
+  }
+
+  .videos__grupo {
+    margin-bottom: var(--space-xl);
+  }
+
+  .videos__grupo h2 {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .videos__pie {
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-bottom: var(--space-md);
+  }
+
+  .videos__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+    gap: var(--space-lg);
+  }
+
+  .videos__item h3 {
+    font-size: var(--step-1);
+    margin: var(--space-2xs) 0 var(--space-3xs);
+  }
+
+  .videos__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    font-size: var(--step--1);
+    color: var(--color-accent);
+    margin: 0 0 var(--space-3xs);
+  }
+
+  .videos__summary {
+    color: var(--color-text-soft);
+    font-size: var(--step--1);
+    margin: 0;
+  }
+</style>

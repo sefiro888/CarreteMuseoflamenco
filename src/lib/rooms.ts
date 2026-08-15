@@ -61,6 +61,11 @@ export const rooms: Room[] = [
     summary: { es: 'Sus anécdotas, contadas por él mismo.', en: 'His anecdotes, told in his own words.' },
   },
   {
+    slug: '/videos',
+    title: { es: 'Verlo bailar', en: 'Watch him dance' },
+    summary: { es: 'Porque esto no se cuenta: se mira.', en: 'This is not told: it is watched.' },
+  },
+  {
     slug: '/maestros',
     title: { es: 'Carrete y los maestros', en: 'Carrete and the masters' },
     summary: { es: 'Los artistas que marcaron su camino.', en: 'The artists who shaped his path.' },

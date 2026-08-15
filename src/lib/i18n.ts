@@ -20,6 +20,7 @@ export const navItems: NavItem[] = [
   { href: '/vida/yo-no-se-la-eda-que-tengo', label: { es: 'La vida', en: 'The life' } },
   { href: '/gracia', label: { es: 'La gracia', en: 'The gracia' } },
   { href: '/monotonas', label: { es: 'Monótonas', en: 'Monótonas' } },
+  { href: '/videos', label: { es: 'Verlo bailar', en: 'Watch him dance' } },
   { href: '/maestros', label: { es: 'Maestros', en: 'Masters' } },
   { href: '/mapa', label: { es: 'Mapa', en: 'Map' } },
   { href: '/espectaculos', label: { es: 'Obra', en: 'Works' } },

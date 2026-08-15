@@ -2,7 +2,7 @@
 title: "El redescubrimiento: Ortiz Nuevo y la Bienal de Málaga"
 era: "Reconocimiento"
 dateApprox: "2005–2007"
-order: 14
+order: 15
 summary: >
   Una noche, bailando en Los Tarantos de Playamar, van a buscarlo para sustituir a
   Matilde Coral en la primera Bienal de Málaga. Allí conoce a José Luis Ortiz Nuevo,

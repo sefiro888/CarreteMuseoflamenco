@@ -8,6 +8,15 @@ import '../styles/map.css';
 const places = await getMapPlaces();
 const torremolinos = places.filter((p) => p.scope === 'torremolinos');
 const mundo = places.filter((p) => p.scope === 'mundo');
+
+/** Fuera de Torremolinos hay dos historias distintas: la de España y la de sus giras. */
+const EXTRANJERO = new Set([
+  'oslo', 'londres', 'liverpool', 'berlin', 'copenhague',
+  'santa-monica', 'nueva-york', 'marruecos', 'finlandia',
+  'nimes', 'mont-de-marsan',
+]);
+const espana = mundo.filter((p) => !EXTRANJERO.has(p.id));
+const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
 ---
 
 <RoomLayout
@@ -65,10 +74,14 @@ const mundo = places.filter((p) => p.scope === 'mundo');
   </div>
 
   <div class="section--tight">
-    <h2>Fuera de Torremolinos</h2>
+    <h2>El resto de España</h2>
+    <p class="prose">
+      Madrid, Sevilla, Barcelona, Córdoba, Jerez. Y Ceuta, donde hizo la mili y se
+      llevó a sus hijos al cuartel porque no tenía dónde dejarlos.
+    </p>
     <ul class="place-list">
       {
-        mundo.map((place) => (
+        espana.map((place) => (
           <li class="place-list__item">
             <a href={url(`/lugares/${place.id}`)}>
               <h3>{place.name}</h3>
@@ -85,6 +98,44 @@ const mundo = places.filter((p) => p.scope === 'mundo');
       }
     </ul>
   </div>
+
+  <div class="section--tight">
+    <h2>Y desde ahí, el mundo</h2>
+    <p class="prose">
+      {fuera.length} destinos fuera de España, repartidos en seis décadas. Empiezan en
+      enero de 1969, con dieciocho días en un hotel de Oslo y una invitación a Palacio,
+      y llegan hasta el Skirball Center de Nueva York en 2022 y el Sadler's Wells de
+      Londres en 2023, cuando ya tenía ochenta y tres años.
+    </p>
+    <ul class="place-list place-list--mundo">
+      {
+        fuera
+          .sort((a, b) => (a.journeyOrder ?? 99) - (b.journeyOrder ?? 99))
+          .map((place) => (
+            <li class="place-list__item">
+              <a href={url(`/lugares/${place.id}`)}>
+                <h3>{place.name}</h3>
+                <p class="place-list__kind">{place.kind}</p>
+                {place.dateRange && (
+                  <p class="place-list__years">{place.dateRange}</p>
+                )}
+                <p class="place-list__desc">{place.description}</p>
+                {place.photoCount > 0 && (
+                  <p class="place-list__count">
+                    {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'} en el archivo
+                  </p>
+                )}
+              </a>
+            </li>
+          ))
+      }
+    </ul>
+    <p class="prose mapa__nota">
+      Falta Japón. La familia recuerda un viaje con Chiquito de la Calzada, pero
+      ninguna fuente lo confirma todavía, así que no se sitúa en el mapa:
+      <a href={url('/creditos')}>queda anotado como pregunta abierta</a>.
+    </p>
+  </div>
 </RoomLayout>
 
 <style>
@@ -100,6 +151,16 @@ const mundo = places.filter((p) => p.scope === 'mundo');
     background: var(--color-bg-raised);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
+  }
+
+  .place-list--mundo .place-list__item {
+    border-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  }
+
+  .mapa__nota {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    margin-top: var(--space-md);
   }
 
   .place-list__item:hover {

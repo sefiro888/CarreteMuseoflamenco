@@ -223,6 +223,43 @@ const researchNotes = defineCollection({
   }),
 });
 
+/**
+ * Vídeos alojados fuera del museo (YouTube, Vimeo).
+ *
+ * A diferencia de las monótonas —que son grabaciones del archivo familiar y se
+ * sirven desde aquí—, estos son documentos públicos: actuaciones, homenajes y
+ * reportajes que grabó otra gente. Se incrustan bajo demanda, nunca al cargar
+ * la página, y siempre se acredita a quien los publicó.
+ */
+const videos = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/videos' }),
+  schema: ({ image }) =>
+    provenance.extend({
+      title: z.string(),
+      platform: z.enum(['youtube', 'vimeo']),
+      /** Identificador del vídeo en la plataforma, no la URL completa. */
+      videoId: z.string(),
+      url: z.string().url(),
+      /** Miniatura descargada y servida desde el museo, para no llamar a la plataforma al cargar. */
+      poster: image(),
+      summary: z.string(),
+      /** Qué clase de documento es, para agruparlos. */
+      kind: z.enum(['actuacion', 'homenaje', 'documental', 'reportaje']),
+      durationSeconds: z.number().optional(),
+      dateExact: z.string().optional(),
+      dateApprox: z.string().optional(),
+      venue: z.string().optional(),
+      placeRef: reference('places').optional(),
+      peopleRefs: z.array(reference('people')).default([]),
+      /** Quien subió el vídeo: se acredita siempre. */
+      channel: z.string().optional(),
+      /** Piezas de portada y de cabecera de sala. */
+      featured: z.boolean().default(false),
+      /** Orden de aparición: cuanto menor, antes. */
+      order: z.number().default(50),
+    }),
+});
+
 export const collections = {
   timeline,
   people,
@@ -235,4 +272,5 @@ export const collections = {
   places,
   sources,
   'research-notes': researchNotes,
+  videos,
 };

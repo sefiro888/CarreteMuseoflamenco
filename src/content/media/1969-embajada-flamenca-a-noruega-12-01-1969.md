@@ -4,7 +4,7 @@ type: photo
 image: "../../assets/archivo/1969-embajada-flamenca-a-noruega-12-01-1969.jpg"
 alt: "Embajada flamenca a Noruega 12 01 1969. Fotografía en blanco y negro del archivo familiar, 1969."
 dateApprox: "1969"
-placeRef: noruega
+placeRef: oslo
 focal: "center 30%"
 verification: documented
 status: published

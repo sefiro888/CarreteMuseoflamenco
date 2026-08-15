@@ -3,7 +3,7 @@ title: "La estatua de Torremolinos"
 era: "Homenaje"
 dateExact: "2023-03-24"
 dateApprox: "Marzo de 2023"
-order: 17
+order: 18
 summary: >
   El 24 de marzo de 2023 Torremolinos inaugura en la Plaza Costa del Sol una estatua
   de Carrete en bronce, obra de Francisco Javier Galán Domingo, con una placa que lo
