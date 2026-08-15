@@ -8,10 +8,11 @@ pages: 2
 focal: "center top"
 verification: documented
 status: published
-owner: "Archivo familiar Losada / Paco Roji"
+owner: "Paco Roji"
 publishPermission: true
-credit: "Recorte conservado en el archivo familiar"
+credit: "Archivo Paco Roji"
 sourceRefs:
+  - archivo-paco-roji
   - tony-bryant-el-fenomeno
   - archivo-familiar-losada
 ---

@@ -8,10 +8,11 @@ pages: 1
 focal: "center top"
 verification: documented
 status: published
-owner: "Archivo familiar Losada / Paco Roji"
+owner: "Paco Roji"
 publishPermission: true
-credit: "Recorte conservado en el archivo familiar"
+credit: "Archivo Paco Roji"
 sourceRefs:
+  - archivo-paco-roji
   - find-carrete-intimo-2009
   - archivo-familiar-losada
 ---

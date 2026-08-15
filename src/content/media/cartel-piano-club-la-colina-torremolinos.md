@@ -8,9 +8,9 @@ pages: 1
 focal: "center top"
 verification: documented
 status: published
-owner: "Archivo familiar Losada / Paco Roji"
+owner: "Paco Roji"
 publishPermission: true
-credit: "Recorte conservado en el archivo familiar"
+credit: "Archivo Paco Roji"
 sourceRefs:
-  - archivo-familiar-losada
+  - archivo-paco-roji
 ---

@@ -9,10 +9,10 @@ dateExact: "1968-03-06"
 focal: "center top"
 verification: documented
 status: published
-owner: "Archivo familiar Losada / Paco Roji"
+owner: "Paco Roji"
 publishPermission: true
-credit: "Recorte conservado en el archivo familiar"
+credit: "Archivo Paco Roji"
 rightsNote: "Cabecera y fecha exactas del diario pendientes de confirmar en algunos recortes."
 sourceRefs:
-  - archivo-familiar-losada
+  - archivo-paco-roji
 ---
