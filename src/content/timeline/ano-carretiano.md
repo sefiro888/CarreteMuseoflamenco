@@ -2,7 +2,8 @@
 title: "El Año Carretiano"
 era: "Homenaje"
 dateApprox: "2023"
-order: 20
+year: 2023
+order: 21
 summary: >
   En 2023 se cumplen setenta años del comienzo de su carrera profesional, y Málaga
   —que celebraba a la vez el Año Picassiano— llega a hablar de un «Año Carretiano».

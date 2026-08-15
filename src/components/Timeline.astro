@@ -87,8 +87,8 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
   <ol class="timeline__list">
     {
       withPlaces.map(({ entry, place, images, Content, dateLabel }) => (
-        <li class="timeline__item" data-era={entry.data.era}>
-          <details>
+        <li class="timeline__item" id={`hito-${entry.id}`} data-era={entry.data.era}>
+          <details open={false}>
             <summary>
               <span class="timeline__date">{dateLabel}</span>
               <span class="timeline__title">{entry.data.title}</span>
@@ -136,6 +136,19 @@ const eras = [...new Set(entries.map((entry) => entry.data.era))];
   const root = document.querySelector('[data-timeline]');
   const buttons = root?.querySelectorAll<HTMLButtonElement>('.timeline__filter');
   const items = root?.querySelectorAll<HTMLLIElement>('.timeline__item');
+
+  // Si se llega desde el eje visual (#hito-xxx), ese hito se abre solo.
+  function abrirDesdeHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id.startsWith('hito-')) return;
+    const item = document.getElementById(id);
+    const det = item?.querySelector('details');
+    if (!det) return;
+    det.open = true;
+    item?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+  window.addEventListener('hashchange', abrirDesdeHash);
+  abrirDesdeHash();
 
   buttons?.forEach((button) => {
     button.addEventListener('click', () => {

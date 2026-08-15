@@ -1,0 +1,150 @@
+---
+import { url } from '../lib/url';
+import { getCollection } from 'astro:content';
+
+/**
+ * «Aparece también en…».
+ *
+ * Un lugar o una persona no viven en una sola sala: El Jaleo está en el mapa,
+ * en la cronología, en las fichas de Farruco y de Sabicas y en media hemeroteca.
+ * Este bloque recorre las colecciones que apuntan a esta entidad y ofrece los
+ * caminos para seguir tirando del hilo, en lugar de dejar la ficha cerrada.
+ */
+interface Props {
+  tipo: 'place' | 'person';
+  id: string;
+}
+
+const { tipo, id } = Astro.props;
+const salidas: { titulo: string; donde: string; href: string }[] = [];
+
+const apunta = (refs: { id: string }[] | undefined) => (refs ?? []).some((r) => r.id === id);
+
+for (const h of await getCollection('timeline')) {
+  const hit = tipo === 'place' ? h.data.placeRef?.id === id : apunta(h.data.peopleRefs);
+  if (hit) {
+    salidas.push({
+      titulo: h.data.title,
+      donde: 'Cronología',
+      href: `/vida/yo-no-se-la-eda-que-tengo#hito-${h.id}`,
+    });
+  }
+}
+
+for (const s of (await getCollection('performances')).filter((x) => x.data.status === 'published')) {
+  if (tipo === 'person' && apunta(s.data.peopleRefs)) {
+    salidas.push({ titulo: s.data.title, donde: 'Espectáculo', href: `/espectaculos/${s.id}` });
+  }
+}
+
+for (const v of (await getCollection('videos')).filter((x) => x.data.status === 'published')) {
+  const hit = tipo === 'place' ? v.data.placeRef?.id === id : apunta(v.data.peopleRefs);
+  if (hit) salidas.push({ titulo: v.data.title, donde: 'Vídeo', href: '/videos' });
+}
+
+for (const s of (await getCollection('stories')).filter((x) => x.data.status === 'published')) {
+  const hit = tipo === 'place' ? s.data.placeRef?.id === id : apunta(s.data.peopleRefs);
+  if (hit) {
+    salidas.push({
+      titulo: s.data.title,
+      donde: 'Sala',
+      href: `/${s.data.room === 'vida' ? 'vida/' + s.id : s.id}`,
+    });
+  }
+}
+
+if (tipo === 'person') {
+  for (const t of (await getCollection('testimonials')).filter((x) => x.data.status === 'published')) {
+    if (t.data.personRef?.id === id) {
+      salidas.push({ titulo: 'Su testimonio sobre Carrete', donde: 'Voces', href: '/voces' });
+      break;
+    }
+  }
+}
+
+// Cuántas piezas del archivo lo documentan, para poder decirlo con un número.
+const piezas = (await getCollection('media')).filter(
+  (m) =>
+    m.data.status === 'published' &&
+    (tipo === 'place' ? m.data.placeRef?.id === id : apunta(m.data.peopleRefs)),
+).length;
+---
+
+{
+  salidas.length > 0 && (
+    <aside class="aparece">
+      <h2 class="aparece__titulo">Aparece también en</h2>
+      <ul>
+        {salidas.map((s) => (
+          <li>
+            <a href={url(s.href)}>
+              <span class="aparece__donde">{s.donde}</span>
+              <span>{s.titulo}</span>
+            </a>
+          </li>
+        ))}
+        {piezas > 0 && (
+          <li>
+            <a href={url('/archivo')}>
+              <span class="aparece__donde">Archivo</span>
+              <span>{piezas} {piezas === 1 ? 'pieza' : 'piezas'}</span>
+            </a>
+          </li>
+        )}
+      </ul>
+    </aside>
+  )
+}
+
+<style>
+  .aparece {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .aparece__titulo {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .aparece ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .aparece a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--color-text-soft);
+    background: var(--color-bg-raised);
+    font-size: var(--step--1);
+    max-width: 22rem;
+  }
+
+  .aparece a:hover,
+  .aparece a:focus-visible {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  .aparece__donde {
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+</style>

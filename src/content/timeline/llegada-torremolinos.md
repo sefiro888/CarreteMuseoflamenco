@@ -2,6 +2,7 @@
 title: "Torremolinos lo acoge"
 era: "Consagración"
 dateApprox: "1956"
+year: 1956
 order: 10
 summary: >
   Carrete llega a Torremolinos en 1956, todavía adolescente. Es el pueblo que lo

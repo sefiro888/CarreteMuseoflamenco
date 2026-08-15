@@ -13,11 +13,51 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container">
     <p>{dict.footerRights}</p>
-    <p>
+    <p class="site-footer__links">
       <a href={localizedPath('/creditos', locale)}>
         {locale === 'es' ? 'Colaboradores, créditos y fuentes' : 'Collaborators, credits and sources'}
+      </a>
+      <a
+        class="site-footer__ig"
+        href="https://www.instagram.com/carrete_de_malaga/"
+        target="_blank"
+        rel="me noopener noreferrer"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            d="M7 2.8h10A4.2 4.2 0 0 1 21.2 7v10a4.2 4.2 0 0 1-4.2 4.2H7A4.2 4.2 0 0 1 2.8 17V7A4.2 4.2 0 0 1 7 2.8Z"
+          ></path>
+          <circle fill="none" stroke="currentColor" stroke-width="1.7" cx="12" cy="12" r="3.8"></circle>
+          <circle fill="currentColor" cx="17.2" cy="6.8" r="1.1"></circle>
+        </svg>
+        {locale === 'es' ? 'Carrete en Instagram' : 'Carrete on Instagram'}
       </a>
     </p>
     <p>© {year} Archivo familiar Losada · José Losada Santiago, «Carrete de Málaga»</p>
   </div>
 </footer>
+
+<style>
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm) var(--space-lg);
+  }
+
+  /* La cuenta la lleva la familia y se actualiza sola: es el único sitio del
+     museo donde hay algo más nuevo que lo publicado aquí. */
+  .site-footer__ig {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .site-footer__ig svg {
+    flex: 0 0 auto;
+  }
+</style>

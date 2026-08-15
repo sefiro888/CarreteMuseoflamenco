@@ -2,6 +2,7 @@
 title: "El cine y la fascinación por Fred Astaire"
 era: "Juventud"
 dateApprox: "Hacia 1948, con ocho años"
+year: 1948
 order: 5
 summary: >
   El descubrimiento del cine y de Fred Astaire despierta en Carrete una forma distinta

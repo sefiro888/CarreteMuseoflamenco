@@ -2,6 +2,7 @@
 title: "Los reformatorios y la fuga por el agua"
 era: "Infancia"
 dateApprox: "Hacia 1952, con doce años"
+year: 1952
 order: 6
 summary: >
   Tras quedar solo en Málaga, Carrete pasa por varios reformatorios de los que se

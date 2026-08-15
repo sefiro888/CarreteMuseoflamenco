@@ -4,6 +4,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
+import AparaceEn from '../../components/AparaceEn.astro';
 import MediaGrid from '../../components/MediaGrid.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { prepareMedia, byDate } from '../../lib/media';
@@ -83,6 +84,8 @@ const precisionLabel = {
     }
 
     <SourceList sourceRefs={place.data.sourceRefs} />
+
+    <AparaceEn tipo="place" id={place.id} />
   </section>
 
   {

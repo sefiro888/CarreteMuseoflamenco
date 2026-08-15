@@ -5,6 +5,7 @@ import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VerifyBadge from '../../components/VerifyBadge.astro';
 import SourceList from '../../components/SourceList.astro';
+import AparaceEn from '../../components/AparaceEn.astro';
 import MediaGrid from '../../components/MediaGrid.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { prepareMedia, byDate } from '../../lib/media';
@@ -85,6 +86,8 @@ const relatedItems = await prepareMedia(related);
     }
 
     <SourceList sourceRefs={person.data.sourceRefs} />
+
+    <AparaceEn tipo="person" id={person.id} />
   </section>
 
   {

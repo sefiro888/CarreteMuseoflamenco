@@ -3,7 +3,8 @@ title: "Premio Leyenda del Flamenco"
 era: "Homenaje"
 dateExact: "2023-11-17"
 dateApprox: "Noviembre de 2023"
-order: 19
+year: 2023
+order: 20
 summary: >
   El 17 de noviembre de 2023 la Venta de Vargas de San Fernando y la productora
   Flamenco de la Isla le entregan el XI galardón Leyenda del Flamenco, en la ciudad

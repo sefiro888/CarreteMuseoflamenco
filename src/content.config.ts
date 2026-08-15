@@ -36,6 +36,12 @@ const timeline = defineCollection({
     era: z.string(),
     dateExact: z.string().optional(),
     dateApprox: z.string().optional(),
+    /**
+     * Año en que situar el hito en el eje visual. Muchas fechas son
+     * aproximadas —«años de posguerra», «primeros años sesenta»—, así que este
+     * campo dice dónde cae en la línea sin fingir una precisión que no existe.
+     */
+    year: z.number().optional(),
     order: z.number(),
     placeRef: reference('places').optional(),
     peopleRefs: z.array(reference('people')).default([]),

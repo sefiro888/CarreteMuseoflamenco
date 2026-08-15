@@ -2,6 +2,7 @@
 title: "La mili en Ceuta"
 era: "Consagración"
 dateApprox: "Principios de los años sesenta"
+year: 1962
 order: 11
 summary: >
   Con veintidós años y tres hijos se marcha al ejército. Le toca Ceuta, de

@@ -2,6 +2,7 @@
 title: "El mundo: Oslo, Liverpool, Berlín, Copenhague"
 era: "Consagración"
 dateApprox: "Desde enero de 1969"
+year: 1969
 order: 14
 summary: >
   En 1969 sale de España por primera vez y ya no para: Oslo en enero, Liverpool y

@@ -2,7 +2,8 @@
 title: "Bienales, festivales y el Teatro Real"
 era: "Reconocimiento"
 dateApprox: "Décadas recientes"
-order: 16
+year: 2008
+order: 17
 summary: >
   Su trayectoria le lleva a bienales y festivales flamencos, y a llevar el espectáculo
   «De El Perchel al Teatro Real» a uno de los principales teatros de España.

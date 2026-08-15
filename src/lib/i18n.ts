@@ -27,6 +27,7 @@ export const navItems: NavItem[] = [
   { href: '/archivo', label: { es: 'Archivo', en: 'Archive' } },
   { href: '/hemeroteca', label: { es: 'Hemeroteca', en: 'Press' } },
   { href: '/hoy', label: { es: 'Carrete hoy', en: 'Carrete today' } },
+  { href: '/buscar', label: { es: 'Buscar', en: 'Search' } },
   { href: '/salas', label: { es: 'Todas las salas', en: 'All rooms' } },
 ];
 

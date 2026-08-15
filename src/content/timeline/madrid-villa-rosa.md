@@ -2,6 +2,7 @@
 title: "Madrid: Villa Rosa y los grandes tablaos"
 era: "Consagración"
 dateApprox: "Primeros años sesenta"
+year: 1963
 order: 12
 summary: >
   Se va a Madrid con sus tres hijos y entra en Villa Rosa, en la Plaza de Santa Ana.

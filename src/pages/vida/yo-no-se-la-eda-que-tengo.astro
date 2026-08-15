@@ -2,6 +2,7 @@
 import RoomLayout from '../../layouts/RoomLayout.astro';
 import SourceList from '../../components/SourceList.astro';
 import Timeline from '../../components/Timeline.astro';
+import TimelineAxis from '../../components/TimelineAxis.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { getEntry, render } from 'astro:content';
 
@@ -28,7 +29,9 @@ const { Content } = await render(entry);
       Explora los hitos conocidos de su vida, filtrados por etapa. Cada fecha indica su
       grado de certeza: exacta, aproximada, documentada o pendiente de confirmar.
     </p>
-    <Timeline locale="es" />
+    <TimelineAxis />
+
+  <Timeline locale="es" />
   </div>
 
   <Lightbox />

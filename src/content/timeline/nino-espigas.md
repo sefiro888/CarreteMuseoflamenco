@@ -2,6 +2,7 @@
 title: "El niño que bailaba sobre las espigas"
 era: "Infancia"
 dateApprox: "Infancia, años de posguerra"
+year: 1945
 order: 3
 summary: >
   De niño baila sobre las espigas de trigo para separar el grano, en la carretera de

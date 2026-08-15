@@ -2,6 +2,7 @@
 title: "Málaga, El Perchel y los primeros tablaos"
 era: "Formación"
 dateApprox: "Juventud"
+year: 1954
 order: 9
 summary: >
   Carrete se instala en Málaga, en el entorno de El Perchel y de Los Vargas, donde

@@ -6,7 +6,7 @@ summary: >
   internacional, y a Carrete en una de sus grandes atracciones flamencas.
 verification: testimony
 status: published
-placeRef: torremolinos
+placeRef: el-jaleo
 peopleRefs:
   - mariquilla
 sourceRefs:

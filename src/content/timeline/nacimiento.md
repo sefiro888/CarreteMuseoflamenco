@@ -3,6 +3,7 @@ title: "Nacimiento en una era, junto a la Venta de Zafarraya"
 era: "Infancia"
 dateExact: "1940-03-28"
 dateApprox: "28 de marzo de 1940"
+year: 1940
 order: 1
 summary: >
   José Losada Santiago nace el 28 de marzo de 1940 en pleno campo, en una era junto

@@ -2,6 +2,7 @@
 title: "El Refugio: el primer tablao"
 era: "Formación"
 dateApprox: "Hacia 1951–1952"
+year: 1953
 order: 8
 summary: >
   El Niño de Almería lo recoge en la Casa de las Monjas de calle La Puente y lo mete

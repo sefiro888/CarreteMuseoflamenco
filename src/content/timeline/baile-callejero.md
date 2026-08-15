@@ -2,6 +2,7 @@
 title: "Baile en la calle a cambio de comida o monedas"
 era: "Infancia"
 dateApprox: "Años de posguerra"
+year: 1947
 order: 4
 summary: >
   En los años más duros de la posguerra, Carrete baila en la calle a cambio de comida

@@ -1,0 +1,223 @@
+---
+import { url } from '../lib/url';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+/**
+ * Buscador de todo el museo.
+ *
+ * El índice se construye al compilar y viaja en la propia página como JSON: son
+ * unos cientos de fichas, así que no compensa montar un servicio de búsqueda.
+ * Todo ocurre en el navegador y funciona sin conexión una vez cargada.
+ */
+type Fila = { t: string; d: string; u: string; k: string; y?: string; b?: string };
+
+/**
+ * El cuerpo de la ficha también se indexa: buscar «Sinatra» tiene que encontrar
+ * la noche del Pez Espada aunque su nombre no esté en ningún título. Se recorta
+ * para que el índice no se dispare.
+ */
+const cuerpo = (e: { body?: string }) =>
+  (e.body ?? '').replace(/[#*_>`\[\]()-]/g, ' ').replace(/\s+/g, ' ').slice(0, 700);
+
+const filas: Fila[] = [];
+const publicado = (e: { data: { status?: string } }) => e.data.status === 'published';
+
+for (const e of (await getCollection('timeline'))) {
+  filas.push({ t: e.data.title, d: e.data.summary, u: `/vida/yo-no-se-la-eda-que-tengo#hito-${e.id}`, k: 'Cronología', y: String(e.data.year ?? ''), b: cuerpo(e) });
+}
+for (const e of (await getCollection('places')).filter(publicado)) {
+  filas.push({ t: e.data.name, d: e.data.description, u: `/lugares/${e.id}`, k: e.data.kind, b: cuerpo(e) });
+}
+for (const e of await getCollection('people')) {
+  filas.push({ t: e.data.name, d: `${e.data.role}. ${e.data.relationToCarrete}`, u: `/personas/${e.id}`, k: 'Persona', b: cuerpo(e) });
+}
+for (const e of (await getCollection('performances')).filter(publicado)) {
+  filas.push({ t: e.data.title, d: e.data.description, u: `/espectaculos/${e.id}`, k: 'Espectáculo', y: e.data.dateExact?.slice(0, 4), b: cuerpo(e) });
+}
+for (const e of (await getCollection('videos')).filter(publicado)) {
+  filas.push({ t: e.data.title, d: e.data.summary, u: '/videos', k: 'Vídeo', y: e.data.dateExact?.slice(0, 4), b: cuerpo(e) });
+}
+for (const e of (await getCollection('media')).filter(publicado)) {
+  const donde = e.data.type === 'press' ? '/hemeroteca' : '/archivo';
+  filas.push({ t: e.data.title, d: e.data.alt ?? '', u: donde, k: e.data.type === 'press' ? 'Prensa' : 'Archivo', y: (e.data.dateExact ?? e.data.dateApprox ?? '').slice(0, 4) });
+}
+for (const e of (await getCollection('testimonials')).filter(publicado)) {
+  filas.push({ t: `«${e.data.quote}»`, d: e.data.context ?? '', u: '/voces', k: 'Testimonio' });
+}
+for (const e of (await getCollection('awards')).filter(publicado)) {
+  filas.push({ t: e.data.title, d: e.data.description, u: '/premios', k: 'Premio', y: e.data.year, b: cuerpo(e) });
+}
+for (const e of (await getCollection('stories')).filter(publicado)) {
+  filas.push({ t: e.data.title, d: e.data.summary, u: `/${e.data.room === 'vida' ? 'vida/' + e.id : e.id}`, k: 'Sala', b: cuerpo(e) });
+}
+
+const indice = filas.map((f) => ({ ...f, u: url(f.u) }));
+---
+
+<BaseLayout title="Buscar en el museo" description="Busca en todo el archivo de Carrete de Málaga.">
+  <section class="section container">
+    <p class="eyebrow">Buscar</p>
+    <h1>Buscar en el museo</h1>
+    <p class="prose">
+      {indice.length} fichas: hitos, lugares, personas, espectáculos, vídeos, fotografías,
+      recortes de prensa y testimonios. Prueba con «Sinatra», «Oslo», «Camarón» o «1969».
+    </p>
+
+    <form class="buscar" role="search" onsubmit="return false">
+      <label class="buscar__label" for="q">Qué buscas</label>
+      <input
+        class="buscar__input"
+        id="q"
+        type="search"
+        placeholder="Escribe un nombre, un lugar o un año…"
+        autocomplete="off"
+        autofocus
+      />
+    </form>
+
+    <p class="buscar__estado" id="estado" role="status" aria-live="polite"></p>
+    <ol class="buscar__resultados" id="resultados"></ol>
+  </section>
+
+  <script is:inline set:html={`window.__INDICE__ = ${JSON.stringify(indice)};`} />
+
+  <script>
+    const indice = (window as any).__INDICE__ as {
+      t: string; d: string; u: string; k: string; y?: string; b?: string;
+    }[];
+
+    const input = document.getElementById('q') as HTMLInputElement;
+    const lista = document.getElementById('resultados')!;
+    const estado = document.getElementById('estado')!;
+
+    /** Sin tildes y en minúsculas: buscar "camaron" tiene que encontrar "Camarón". */
+    const norm = (s: string) =>
+      s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+    const preparado = indice.map((f) => ({ f, blob: norm(`${f.t} ${f.d} ${f.k} ${f.y ?? ''} ${f.b ?? ''}`) }));
+
+    function buscar(q: string) {
+      const term = norm(q.trim());
+      lista.replaceChildren();
+      if (term.length < 2) {
+        estado.textContent = '';
+        return;
+      }
+      const palabras = term.split(/\s+/);
+      const hits = preparado
+        .filter(({ blob }) => palabras.every((p) => blob.includes(p)))
+        // Lo que coincide en el título va primero.
+        .sort((a, b) => Number(norm(b.f.t).includes(palabras[0])) - Number(norm(a.f.t).includes(palabras[0])))
+        .slice(0, 60);
+
+      estado.textContent = hits.length
+        ? `${hits.length} resultado${hits.length === 1 ? '' : 's'}`
+        : 'Nada por aquí. Prueba con otra palabra.';
+
+      for (const { f } of hits) {
+        const li = document.createElement('li');
+        li.className = 'buscar__item';
+        const a = document.createElement('a');
+        a.href = f.u;
+        a.innerHTML =
+          `<span class="buscar__kind">${f.k}${f.y ? ' · ' + f.y : ''}</span>` +
+          `<span class="buscar__titulo"></span>` +
+          `<span class="buscar__desc"></span>`;
+        a.querySelector('.buscar__titulo')!.textContent = f.t;
+        a.querySelector('.buscar__desc')!.textContent = (f.d || '').slice(0, 160);
+        li.appendChild(a);
+        lista.appendChild(li);
+      }
+    }
+
+    input.addEventListener('input', () => buscar(input.value));
+
+    // Permite llegar con la búsqueda hecha: /buscar?q=oslo
+    const inicial = new URLSearchParams(location.search).get('q');
+    if (inicial) {
+      input.value = inicial;
+      buscar(inicial);
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .buscar {
+    margin: var(--space-lg) 0 var(--space-sm);
+    max-width: 34rem;
+  }
+
+  .buscar__label {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3xs);
+  }
+
+  .buscar__input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+    padding: var(--space-2xs) var(--space-sm);
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+  }
+
+  .buscar__input:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .buscar__estado {
+    font-size: var(--step--1);
+    color: var(--color-accent);
+    min-height: 1.4em;
+  }
+
+  .buscar__resultados {
+    list-style: none;
+    margin: var(--space-sm) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .buscar__item a {
+    display: block;
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-raised);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .buscar__item a:hover,
+  .buscar__item a:focus-visible {
+    border-color: var(--color-accent);
+  }
+
+  .buscar__kind {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .buscar__titulo {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+  }
+
+  .buscar__desc {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+</style>
