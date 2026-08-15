@@ -211,3 +211,13 @@ hr {
     transition: none;
   }
 }
+
+/* Área táctil de los enlaces de acción sueltos. En un párrafo, un enlace de
+   texto no necesita 44 px de alto; pero estos van solos en su línea y son la
+   forma de seguir navegando, así que se les da holgura para el dedo. */
+.strip__foot a,
+.embed__meta a,
+.section--tight > p > a {
+  display: inline-block;
+  padding-block: var(--space-2xs);
+}

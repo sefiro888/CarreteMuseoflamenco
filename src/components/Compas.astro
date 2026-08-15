@@ -1,0 +1,52 @@
+---
+/**
+ * El compás flamenco, dibujado.
+ *
+ * La soleá, la bulería y la alegría se cuentan en doce tiempos, y no todos
+ * pesan igual: el acento cae en el 3, el 6, el 8, el 10 y el 12. Ese patrón es
+ * lo que un bailaor marca con los pies y lo que hace que el flamenco suene a
+ * flamenco. Aquí sirve de separador entre secciones: doce marcas, cinco altas.
+ *
+ * Es decorativo, así que se oculta a los lectores de pantalla; el dato va en el
+ * `title` para quien pase el ratón.
+ */
+interface Props {
+  /** Los tiempos acentuados se pueden desactivar para un separador más neutro. */
+  acentos?: boolean;
+}
+const { acentos = true } = Astro.props;
+const ACENTUADOS = new Set([3, 6, 8, 10, 12]);
+const tiempos = Array.from({ length: 12 }, (_, i) => i + 1);
+---
+
+<div class="compas" aria-hidden="true" title="El compás de doce tiempos de la soleá y la bulería: el acento cae en el 3, el 6, el 8, el 10 y el 12.">
+  {
+    tiempos.map((n) => (
+      <span class={`compas__t${acentos && ACENTUADOS.has(n) ? ' compas__t--fuerte' : ''}`} />
+    ))
+  }
+</div>
+
+<style>
+  .compas {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.55rem;
+    height: 1.25rem;
+    margin-block: var(--space-xl);
+  }
+
+  .compas__t {
+    width: 1px;
+    height: 0.4rem;
+    background: color-mix(in srgb, var(--color-paper) 26%, transparent);
+  }
+
+  /* Los cinco tiempos que se acentúan: más altos y en el dorado de la casa. */
+  .compas__t--fuerte {
+    height: 1.1rem;
+    width: 2px;
+    background: color-mix(in srgb, var(--color-accent) 72%, transparent);
+  }
+</style>

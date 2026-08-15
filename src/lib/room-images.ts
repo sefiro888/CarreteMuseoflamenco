@@ -139,11 +139,11 @@ const SPECS: Record<string, RoomImageSpec> = {
     focal: 'center 40%',
   },
   '/mapa': {
-    file: '1968-carrete-farruco-el-gringo-chaqueta-adela-y-juan-el-africao-el-jaleo',
-    alt: 'Carrete con Farruco, El Gringo, El Chaqueta, Adela y Juan el Africano en el tablao El Jaleo de Torremolinos, en los años sesenta.',
-    caption: 'El Jaleo, Torremolinos, finales de los sesenta. Con Farruco, El Gringo, El Chaqueta, Adela y Juan el Africano.',
+    file: '2022-04-rumbo-a-nueva-york',
+    alt: 'Carrete, con sombrero y abrigo largo, posa con su equipo bajo los carteles de puertas de embarque de un aeropuerto, camino de Nueva York.',
+    caption: 'Puertas de embarque, abril de 2022. Camino de Nueva York a los ochenta y dos años.',
     credit: 'Archivo familiar Losada',
-    focal: 'center 35%',
+    focal: 'center 45%',
   },
   '/espectaculos': {
     file: '2015-carrete-60-anos',

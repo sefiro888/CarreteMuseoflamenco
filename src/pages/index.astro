@@ -7,6 +7,7 @@ import { getRoomImage } from '../lib/room-images';
 import { getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import EmbedVideo from '../components/EmbedVideo.astro';
+import Compas from '../components/Compas.astro';
 
 /**
  * Las cifras del archivo se cuentan, no se escriben a mano: si mañana entran
@@ -130,6 +131,8 @@ const teaser = await Promise.all(
     }
   </section>
 
+  <Compas />
+
   <!-- Su voz, a todo lo ancho y sobre una fotografía suya bailando. -->
   <section class="quote-hero">
     {
@@ -193,6 +196,8 @@ const teaser = await Promise.all(
       </section>
     )
   }
+
+  <Compas />
 
   <section class="section section--tight container">
     <p class="eyebrow">Empieza a recorrer el museo</p>
