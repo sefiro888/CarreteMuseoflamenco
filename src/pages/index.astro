@@ -22,6 +22,42 @@ const cifras = [
 
 const trailer = (await getCollection('videos')).find((v) => v.data.featured && v.data.kind === 'documental');
 
+/**
+ * Tira de fotografías del archivo. No es decoración: es la prueba de que detrás
+ * hay doscientas piezas más. Se eligen a mano para que cuenten seis décadas.
+ */
+const MOSAICO = [
+  '1954-carrete-con-los-vargas-en-el-refugio-archivo-paco-roji',
+  '1959-carrete-posando-playa-de-torremolinos',
+  '1960-con-anthony-quinn-y-el-cantaor-agustin-flores-taberna-la-bodega-and',
+  '1967-con-el-gran-guitarrista-sabicas-tablao-el-jaleo',
+  '1968-carrete-farruco-el-gringo-chaqueta-adela-y-juan-el-africao-el-jaleo',
+  '2013-08-con-paco-de-lucia-starlite-marbella',
+  'img-0690bynr-fotografia-paco-lobato',
+  'junto-a-su-estatua-en-torremolinos',
+];
+const porId = new Map(media.map((m) => [m.id, m]));
+const tira = await Promise.all(
+  MOSAICO.map(async (id) => {
+    const pieza = porId.get(id);
+    if (!pieza?.data.image) return null;
+    const img = await getImage({ src: pieza.data.image, width: 520, format: 'webp', quality: 72 });
+    return { img, alt: pieza.data.alt ?? pieza.data.title, focal: pieza.data.focal, title: pieza.data.title };
+  }),
+).then((l) => l.filter((x): x is NonNullable<typeof x> => x !== null));
+
+/** Fotografía de fondo para la cita: él bailando, oscurecida por CSS. */
+const fondo = porId.get('1959-bodega-carrete-bailando-foto-s-ruiz-cortesia-gerardo-mongelli');
+const citaFondo = fondo?.data.image
+  ? await getImage({ src: fondo.data.image, width: 1600, format: 'webp', quality: 68 })
+  : null;
+
+/** Retrato grande para acompañar la presentación del museo. */
+const presentacion = porId.get('carrete-vicente-pachon') ?? porId.get('img-0690bynr-fotografia-paco-lobato');
+const presentacionImg = presentacion?.data.image
+  ? await getImage({ src: presentacion.data.image, width: 900, format: 'webp', quality: 78 })
+  : null;
+
 const teaser = await Promise.all(
   rooms.slice(1, 5).map(async (room) => {
     const art = getRoomImage(room.slug);
@@ -35,7 +71,32 @@ const teaser = await Promise.all(
 <BaseLayout title="Carrete de Málaga · Al compás de una vida">
   <Hero locale="es" />
 
-  <section class="section container">
+  <!-- Seis décadas en una tira. Se desplaza sola y con el dedo. -->
+  <section class="strip" aria-label="Fotografías del archivo">
+    <ul class="strip__track">
+      {
+        tira.map((f) => (
+          <li class="strip__item">
+            <img
+              src={f.img.src}
+              alt={f.alt}
+              width="520"
+              height="347"
+              loading="lazy"
+              decoding="async"
+              style={`object-position:${f.focal};`}
+            />
+          </li>
+        ))
+      }
+    </ul>
+    <p class="strip__foot">
+      <a href={url('/archivo')}>Ver las {cifras[0].n} fotografías del archivo →</a>
+    </p>
+  </section>
+
+  <section class="section container intro">
+    <div class="intro__text">
     <p class="eyebrow">El museo</p>
     <h2>Un archivo vivo, no una biografía cerrada</h2>
     <div class="prose">
@@ -52,10 +113,38 @@ const teaser = await Promise.all(
         archivo familiar real: fotografías, vídeos, documentos y testimonios.
       </p>
     </div>
+    </div>
+    {
+      presentacionImg && (
+        <figure class="intro__figure">
+          <img
+            src={presentacionImg.src}
+            alt="Carrete sobre el escenario, con sombrero y bastón."
+            width="900"
+            height="1200"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      )
+    }
   </section>
 
-  <!-- Su voz, en grande y sin adornos. La frase con la que cierra el libro. -->
+  <!-- Su voz, a todo lo ancho y sobre una fotografía suya bailando. -->
   <section class="quote-hero">
+    {
+      citaFondo && (
+        <img
+          class="quote-hero__bg"
+          src={citaFondo.src}
+          alt=""
+          width="1600"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+      )
+    }
     <div class="container">
       <blockquote>
         <p>Seguiré bailando hasta que se termine el carrete y no haya más hilo.</p>
@@ -185,28 +274,125 @@ const teaser = await Promise.all(
     max-width: 40ch;
   }
 
-  /* La cita rompe el ritmo de la página: fondo distinto, tipografía de display
-     y mucho aire. Es lo único que se lee a este tamaño en toda la portada. */
-  .quote-hero {
-    background: var(--color-charcoal);
-    border-block: 1px solid var(--color-border);
-    padding-block: var(--space-2xl);
-    margin-block: var(--space-xl);
+  /* Tira de fotografías del archivo: se desplaza sola con el dedo o la rueda,
+     y en pantallas anchas cabe casi entera. Es lo primero que se ve tras el
+     hero, para que quede claro de qué va esto. */
+  .strip {
+    margin-block: var(--space-lg) var(--space-xl);
   }
 
+  .strip__track {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--space-md);
+    display: flex;
+    gap: var(--space-2xs);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .strip__item {
+    flex: 0 0 clamp(11rem, 22vw, 17rem);
+    scroll-snap-align: center;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-charcoal);
+  }
+
+  .strip__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.5) contrast(1.06);
+    transition: transform var(--duration-slow) var(--ease-standard),
+      filter var(--duration-base) var(--ease-standard);
+  }
+
+  .strip__item:hover img {
+    transform: scale(1.06);
+    filter: saturate(1) contrast(1);
+  }
+
+  .strip__foot {
+    margin: var(--space-sm) 0 0;
+    padding-inline: var(--space-md);
+    font-size: var(--step--1);
+    text-align: center;
+  }
+
+  /* Presentación del museo: texto e imagen, para que no quede media pantalla
+     vacía a la derecha. */
+  .intro {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: center;
+  }
+
+  @media (min-width: 54rem) {
+    .intro {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  .intro__figure {
+    margin: 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    max-height: 32rem;
+  }
+
+  .intro__figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* La cita, a todo lo ancho y sobre una fotografía suya bailando. */
+  .quote-hero {
+    position: relative;
+    isolation: isolate;
+    padding-block: var(--space-2xl);
+    margin-block: var(--space-xl);
+    border-block: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .quote-hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    z-index: -1;
+    filter: grayscale(1) brightness(0.34) contrast(1.1);
+  }
+
+  /* El ancho se mide en rem, no en ch: `ch` se calcula con la tipografía del
+     contenedor —Source Sans a 17 px— y no con la de la cita, que va en
+     Cormorant al triple de cuerpo. Medirlo en ch la dejaba en tres palabras
+     por línea. */
   .quote-hero blockquote {
     margin: 0;
-    max-width: 34ch;
+    max-width: 46rem;
   }
 
   .quote-hero p {
     font-family: var(--font-display);
-    font-size: var(--step-4);
+    /* Un punto por debajo del titular: a pantalla estrecha, step-4 obligaba a
+       partir la frase en diez líneas. */
+    font-size: var(--step-3);
     font-style: italic;
     line-height: var(--leading-snug);
-    color: var(--color-paper);
+    color: var(--color-ivory);
     margin: 0 0 var(--space-md);
     text-wrap: balance;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
   }
 
   .quote-hero p::before {

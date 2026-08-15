@@ -7,6 +7,8 @@ summary: >
   El archivo conserva un recorte de prensa titulado «Embajada flamenca a
   Noruega», fechado el 12 de enero de 1969, con la fotografía del grupo de
   artistas que hizo el viaje.
+portrait: "../../assets/archivo/1969-embajada-flamenca-a-noruega-12-01-1969.jpg"
+focal: "center 30%"
 verification: documented
 status: published
 sourceRefs:

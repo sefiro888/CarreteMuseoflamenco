@@ -7,6 +7,8 @@ summary: >
   Impulsor de este museo digital como regalo personal y homenaje en vida a su padre.
   Aporta la visión emocional del proyecto, el archivo familiar y las entrevistas, y
   participa en el desarrollo de la propia web.
+portrait: "../../assets/archivo/2007-yo-no-se-la-eda-que-tengo-carrete-y-familia.jpg"
+focal: "center 30%"
 verification: documented
 status: published
 author: "Equipo del proyecto"

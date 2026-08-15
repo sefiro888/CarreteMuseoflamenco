@@ -97,25 +97,46 @@ const portrait = person.data.portrait
     color: color-mix(in srgb, var(--color-accent) 55%, transparent);
   }
 
+  /* min-width:0 permite que el hijo de un flex se encoja; sin él, la insignia
+     de verificación empujaba el contenido fuera de la tarjeta. */
   .person-card__body {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3xs);
     min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  /* La insignia es lo que desbordaba: se deja envolver y no forzar el ancho. */
+  .person-card__body :global(.verify-badge) {
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .person-card h3,
+  .person-card__role,
+  .person-card__relation {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .person-card h3 {
     font-size: var(--step-1);
-    margin: 0 0 var(--space-3xs);
+    margin: 0;
+    line-height: var(--leading-snug);
   }
 
   .person-card__role {
     color: var(--color-accent);
     font-size: var(--step--1);
-    margin: 0 0 var(--space-3xs);
+    margin: 0;
   }
 
   .person-card__relation {
     color: var(--color-text-muted);
     font-size: var(--step--1);
-    margin: 0 0 var(--space-2xs);
+    margin: 0 0 var(--space-3xs);
   }
 </style>

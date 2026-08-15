@@ -6,6 +6,8 @@ confirmedCollaborator: false
 summary: >
   Vinculado al entorno de Los Vargas, uno de los primeros círculos artísticos donde
   Carrete se formó tras su llegada a Málaga.
+portrait: "../../assets/archivo/1957-pepito-caneta-hija-duena-y-la-quica-el-pimpi.jpg"
+focal: "center 30%"
 verification: testimony
 status: review
 sourceRefs:
