@@ -2,7 +2,7 @@
 title: "Torremolinos y la edad de oro de la Costa del Sol"
 era: "Consagración"
 dateApprox: "Décadas de 1960 y 1970"
-year: 1966
+year: 1965
 order: 13
 summary: >
   Torremolinos vive su edad de oro turística y Carrete se convierte en una de sus

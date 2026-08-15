@@ -31,6 +31,7 @@ verification: documented
 status: published
 sourceRefs:
   - archivo-familiar-losada
+  - diario-sur-dia-flamenco-torremolinos
 ---
 
 Por El Jaleo pasó lo mejor del flamenco de aquellos años. Los carteles conservados
