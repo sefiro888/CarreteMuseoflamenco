@@ -138,13 +138,6 @@ const SPECS: Record<string, RoomImageSpec> = {
     credit: 'Fotografía: Paco Lobato',
     focal: 'center 40%',
   },
-  '/mapa': {
-    file: '2022-04-rumbo-a-nueva-york',
-    alt: 'Carrete, con sombrero y abrigo largo, posa con su equipo bajo los carteles de puertas de embarque de un aeropuerto, camino de Nueva York.',
-    caption: 'Puertas de embarque, abril de 2022. Camino de Nueva York a los ochenta y dos años.',
-    credit: 'Archivo familiar Losada',
-    focal: 'center 45%',
-  },
   '/espectaculos': {
     file: '2015-carrete-60-anos',
     alt: 'Carrete sobre el escenario durante el espectáculo de sus sesenta años bailando.',

@@ -2,6 +2,7 @@
 import { url } from '../lib/url';
 import RoomLayout from '../layouts/RoomLayout.astro';
 import MapExplorer from '../components/MapExplorer.tsx';
+import MapaMundi from '../components/MapaMundi.astro';
 import { getMapPlaces } from '../lib/places';
 import '../styles/map.css';
 
@@ -37,6 +38,10 @@ const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
       El punto con el borde punteado indica que la ubicación es aproximada: se sabe el
       pueblo y la zona, no el portal exacto.
     </p>
+  </div>
+
+  <div class="section--tight">
+    <MapaMundi />
   </div>
 
   <div class="section--tight">
