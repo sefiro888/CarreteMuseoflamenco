@@ -5,6 +5,22 @@ import Hero from '../components/Hero.astro';
 import { rooms } from '../lib/rooms';
 import { getRoomImage } from '../lib/room-images';
 import { getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import EmbedVideo from '../components/EmbedVideo.astro';
+
+/**
+ * Las cifras del archivo se cuentan, no se escriben a mano: si mañana entran
+ * treinta fotos más, la portada lo dice sola.
+ */
+const media = (await getCollection('media')).filter((m) => m.data.status === 'published');
+const cifras = [
+  { n: media.filter((m) => m.data.type === 'photo' && m.data.image).length, label: 'fotografías del archivo' },
+  { n: media.filter((m) => m.data.type === 'press').length, label: 'recortes de prensa' },
+  { n: (await getCollection('places')).length, label: 'lugares en el mapa' },
+  { n: (await getCollection('timeline')).length, label: 'hitos de su vida' },
+];
+
+const trailer = (await getCollection('videos')).find((v) => v.data.featured && v.data.kind === 'documental');
 
 const teaser = await Promise.all(
   rooms.slice(1, 5).map(async (room) => {
@@ -51,6 +67,44 @@ const teaser = await Promise.all(
     </div>
   </section>
 
+  <section class="section container">
+    <ul class="figures">
+      {
+        cifras.map((c) => (
+          <li class="figures__item">
+            <span class="figures__n">{c.n}</span>
+            <span class="figures__label">{c.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  {
+    trailer && (
+      <section class="section container film">
+        <div class="film__text">
+          <p class="eyebrow">La película de su vida</p>
+          <h2>{trailer.data.title}</h2>
+          <p>{trailer.data.summary}</p>
+          <p>
+            <a class="btn" href={url('/videos')}>Ver todos los vídeos →</a>
+          </p>
+        </div>
+        <div class="film__player">
+          <EmbedVideo
+            platform={trailer.data.platform}
+            videoId={trailer.data.videoId}
+            title={trailer.data.title}
+            poster={trailer.data.poster}
+            credit={trailer.data.credit}
+            durationSeconds={trailer.data.durationSeconds}
+          />
+        </div>
+      </section>
+    )
+  }
+
   <section class="section section--tight container">
     <p class="eyebrow">Empieza a recorrer el museo</p>
     <div class="card-grid">
@@ -85,6 +139,52 @@ const teaser = await Promise.all(
 </BaseLayout>
 
 <style>
+  /* Las cifras del archivo, en display grande: dicen de un vistazo que aquí
+     hay mucho detrás, sin tener que leerlo. */
+  .figures {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    text-align: center;
+  }
+
+  .figures__n {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--color-accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .figures__label {
+    display: block;
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    text-wrap: balance;
+  }
+
+  .film {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: center;
+  }
+
+  @media (min-width: 52rem) {
+    .film {
+      grid-template-columns: 1fr 1.15fr;
+    }
+  }
+
+  .film__text p {
+    color: var(--color-text-soft);
+    max-width: 40ch;
+  }
+
   /* La cita rompe el ritmo de la página: fondo distinto, tipografía de display
      y mucho aire. Es lo único que se lee a este tamaño en toda la portada. */
   .quote-hero {

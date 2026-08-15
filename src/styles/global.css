@@ -186,3 +186,28 @@ hr {
   border-top: 1px solid var(--color-border);
   margin-block: var(--space-lg);
 }
+
+/* Aparición suave al entrar en pantalla.
+   La clase la pone el script solo si el visitante no ha pedido menos
+   movimiento, así que sin JS —o con reduced-motion— nada de esto se aplica y
+   el contenido se ve desde el principio. */
+.will-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    transform var(--duration-slow) var(--ease-standard);
+}
+
+.will-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .will-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

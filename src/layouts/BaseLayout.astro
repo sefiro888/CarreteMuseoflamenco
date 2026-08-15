@@ -73,5 +73,43 @@ const enUrl = new URL(localizedPath(canonicalPath.replace(/^\/en/, '') || '/', '
       <slot />
     </main>
     <Footer locale={locale} />
+
+    <script>
+      // Aparición al entrar en pantalla. Se hace desde JS —la hoja de estilos no
+      // esconde nada por su cuenta— y con dos salvaguardas: si el visitante ha
+      // pedido menos movimiento no se activa, y si algo falla se destapa todo.
+      (() => {
+        const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (quieto || !('IntersectionObserver' in window)) return;
+
+        const dianas = Array.from(
+          document.querySelectorAll('main .section, main .section--tight, main figure, main .card'),
+        );
+        if (dianas.length === 0) return;
+
+        const destapar = () => dianas.forEach((d) => d.classList.add('is-in'));
+
+        try {
+          const observador = new IntersectionObserver(
+            (entradas) => {
+              for (const e of entradas) {
+                if (!e.isIntersecting) continue;
+                e.target.classList.add('is-in');
+                observador.unobserve(e.target);
+              }
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+          );
+          dianas.forEach((d) => {
+            d.classList.add('will-reveal');
+            observador.observe(d);
+          });
+          // Red de seguridad: pase lo que pase, a los tres segundos nada sigue oculto.
+          window.setTimeout(destapar, 3000);
+        } catch {
+          destapar();
+        }
+      })();
+    </script>
   </body>
 </html>
