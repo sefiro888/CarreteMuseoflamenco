@@ -2,9 +2,13 @@
 personRef: camaron-de-la-isla
 quote: "Vamos a ver al monstruo."
 context: >
-  Lo que decían Camarón de la Isla y Paco de Lucía cuando pasaban por Torremolinos
-  camino de algún sitio y decidían desviarse a ver bailar a Carrete en El Jaleo.
-  El Tabarin Club llegó a anunciarlo en sus carteles como «el monstruo gitano».
+  Lo decían Camarón y Paco de Lucía cuando pasaban camino de algún sitio y
+  decidían desviarse a verlo bailar. El apodo se le quedó: el Tabarin Club llegó
+  a imprimirlo en sus carteles.
+voice: artist
+when: "El Jaleo, Torremolinos, años setenta"
+year: 1970
+placeRef: el-jaleo
 verification: testimony
 status: published
 sourceRefs:

@@ -1,0 +1,127 @@
+---
+import { url } from '../lib/url';
+import VerifyBadge from './VerifyBadge.astro';
+import type { CollectionEntry } from 'astro:content';
+
+/**
+ * Ficha de una función: el año grande, el título, dónde y el cartel cuando el
+ * archivo lo tiene. La usan por igual la obra propia y los homenajes.
+ */
+interface Props {
+  show: CollectionEntry<'performances'>;
+  year: number;
+  day: string | null;
+  poster: { src: string; attributes: { width?: number; height?: number } } | null;
+  posterAlt?: string;
+}
+
+const { show, year, day, poster, posterAlt = '' } = Astro.props;
+---
+
+<li class:list={['work', poster && 'work--with-poster']}>
+  <a class="work__link" href={url(`/espectaculos/${show.id}`)}>
+    {
+      poster && (
+        <span class="work__poster">
+          <img
+            src={poster.src}
+            width={poster.attributes.width}
+            height={poster.attributes.height}
+            alt={posterAlt}
+            loading="lazy"
+            decoding="async"
+          />
+        </span>
+      )
+    }
+    <span class="work__body">
+      <span class="work__year">{year || '—'}</span>
+      <span class="work__title">{show.data.title}</span>
+      {show.data.venue && <span class="work__venue">{show.data.venue}</span>}
+      {day && <span class="work__day">{day}</span>}
+      <span class="work__desc">{show.data.description}</span>
+      <span class="work__badge">
+        <VerifyBadge level={show.data.verification} />
+      </span>
+    </span>
+  </a>
+</li>
+
+<style>
+  .work {
+    display: flex;
+  }
+  .work__link {
+    display: grid;
+    gap: var(--space-md);
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    padding: var(--space-md);
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--duration-fast) var(--ease-standard);
+  }
+  .work__link:hover {
+    border-color: var(--color-accent);
+  }
+  /* Con cartel, la pieza va al lado y manda ella. */
+  .work--with-poster .work__link {
+    grid-template-columns: minmax(6rem, 9rem) 1fr;
+  }
+  .work__poster {
+    display: block;
+    align-self: start;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-charcoal) 70%, black);
+  }
+  .work__poster img {
+    width: 100%;
+    height: 100%;
+    /* Un cartel recortado pierde el título: se enseña entero. */
+    object-fit: contain;
+  }
+  .work__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    min-width: 0;
+  }
+  .work__year {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1;
+    color: var(--color-accent);
+    letter-spacing: 0.02em;
+  }
+  .work__title {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: var(--leading-snug);
+    color: var(--color-paper);
+    text-wrap: balance;
+  }
+  .work__venue {
+    font-size: var(--step--1);
+    color: var(--color-text-soft);
+  }
+  .work__day {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+  .work__desc {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+  }
+  .work__badge {
+    margin-top: auto;
+    padding-top: var(--space-xs);
+  }
+</style>

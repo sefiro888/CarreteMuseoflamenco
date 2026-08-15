@@ -6,6 +6,7 @@ description: >
   Mano a mano con Estrella Morente en la tercera sesión del ciclo «Singulares», de
   Málaga en Flamenco. Fue el encuentro que más expectación generó del ciclo: agotó
   las entradas a los pocos días de ponerse a la venta.
+kind: appearance
 verification: documented
 status: published
 peopleRefs:

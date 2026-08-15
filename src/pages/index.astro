@@ -3,6 +3,7 @@ import { url } from '../lib/url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import { rooms } from '../lib/rooms';
+import { maestroIds } from '../lib/maestros';
 import { getRoomImage } from '../lib/room-images';
 import { getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
@@ -59,14 +60,38 @@ const presentacionImg = presentacion?.data.image
   ? await getImage({ src: presentacion.data.image, width: 900, format: 'webp', quality: 78 })
   : null;
 
+/**
+ * La entrada al museo no puede ser las cuatro primeras salas del recorrido:
+ * las cuatro son biografía seguida y dan la impresión de que esto es solo un
+ * relato. Se eligen a mano cuatro puertas de naturaleza distinta —el relato de
+ * la vida, verlo bailar, la gente con la que bailó y el material— y cada una
+ * enseña cuánto hay dentro, que es lo que invita a entrar.
+ */
+const hitos = (await getCollection('timeline')).length;
+const piezasDeVideo = (await getCollection('videos')).filter((v) => v.data.status === 'published').length;
+const maestros = maestroIds.length;
+const piezasDeArchivo = media.filter((m) => m.data.image).length;
+
+const PUERTAS: { slug: string; cuenta: () => number; unidad: string }[] = [
+  { slug: '/vida/yo-no-se-la-eda-que-tengo', cuenta: () => hitos, unidad: 'hitos de su vida' },
+  { slug: '/videos', cuenta: () => piezasDeVideo, unidad: 'vídeos para verlo bailar' },
+  { slug: '/maestros', cuenta: () => maestros, unidad: 'nombres que se cruzaron con él' },
+  { slug: '/archivo', cuenta: () => piezasDeArchivo, unidad: 'piezas del archivo' },
+];
+
 const teaser = await Promise.all(
-  rooms.slice(1, 5).map(async (room) => {
+  PUERTAS.map(async ({ slug, cuenta, unidad }) => {
+    const room = rooms.find((r) => r.slug === slug);
+    if (!room) throw new Error(`La portada apunta a una sala que no existe: ${slug}`);
     const art = getRoomImage(room.slug);
     // Las tarjetas van a un tercio de ancho: no hace falta servir el original.
     const thumb = art ? await getImage({ src: art.image, width: 720, format: 'webp', quality: 74 }) : null;
-    return { room, art, thumb };
+    return { room, art, thumb, dato: `${cuenta()} ${unidad}` };
   }),
 );
+
+/** La portada es la primera entrada de `rooms`; las salas son las demás. */
+const numeroDeSalas = rooms.length - 1;
 ---
 
 <BaseLayout title="Carrete de Málaga · Al compás de una vida">
@@ -200,10 +225,18 @@ const teaser = await Promise.all(
   <Compas />
 
   <section class="section section--tight container">
-    <p class="eyebrow">Empieza a recorrer el museo</p>
+    <header class="puertas__head">
+      <p class="eyebrow">Empieza a recorrer el museo</p>
+      <h2>Cuatro puertas de entrada</h2>
+      <p class="puertas__intro">
+        El museo tiene {numeroDeSalas} salas y se puede recorrer en orden, como se camina
+        un museo de verdad. Si prefieres entrar por donde te apetezca, estas cuatro llevan a
+        sitios distintos: el relato, el baile, la gente y el material.
+      </p>
+    </header>
     <div class="card-grid">
       {
-        teaser.map(({ room, art, thumb }) => (
+        teaser.map(({ room, art, thumb, dato }) => (
           <a class="card teaser-card" href={url(room.slug)}>
             {thumb && (
               <span class="teaser-card__media">
@@ -221,13 +254,14 @@ const teaser = await Promise.all(
             <span class="teaser-card__body">
               <h3>{room.title.es}</h3>
               <p>{room.summary.es}</p>
+              <span class="teaser-card__dato">{dato}</span>
             </span>
           </a>
         ))
       }
     </div>
     <p style="margin-top: var(--space-lg);">
-      <a class="btn" href={url("/salas")}>Ver el plano completo del museo (19 salas)</a>
+      <a class="btn" href={url('/salas')}>Ver el plano completo del museo ({numeroDeSalas} salas)</a>
     </p>
   </section>
 </BaseLayout>
@@ -432,6 +466,19 @@ const teaser = await Promise.all(
 
   /* La tarjeta pasa a ser una fotografía con su texto debajo: el padding lo
      pone el cuerpo, no la tarjeta, para que la imagen llegue a los bordes. */
+  .puertas__head {
+    max-width: var(--prose-max);
+    margin-bottom: var(--space-lg);
+  }
+  .puertas__head h2 {
+    margin-bottom: var(--space-2xs);
+  }
+  .puertas__intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
   .teaser-card {
     text-decoration: none;
     color: inherit;
@@ -475,8 +522,30 @@ const teaser = await Promise.all(
   }
 
   .teaser-card__body {
-    display: block;
+    /* En columna para que el dato se pegue abajo y las cuatro tarjetas
+       terminen a la misma altura aunque el título ocupe tres líneas. */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--space-2xs);
     padding: var(--space-sm) var(--space-md) var(--space-md);
+  }
+
+  .teaser-card__body h3 {
+    text-wrap: balance;
+  }
+
+  .teaser-card__body p {
+    margin: 0;
+  }
+
+  .teaser-card__dato {
+    margin-top: auto;
+    padding-top: var(--space-xs);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-accent);
   }
 
   .teaser-card h3 {

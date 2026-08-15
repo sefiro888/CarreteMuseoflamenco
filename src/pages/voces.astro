@@ -3,45 +3,550 @@ import { url } from '../lib/url';
 import RoomLayout from '../layouts/RoomLayout.astro';
 import VerifyBadge from '../components/VerifyBadge.astro';
 import { getCollection, getEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 
-const testimonials = await getCollection('testimonials');
-const withPeople = await Promise.all(
-  testimonials.map(async (item) => ({
-    item,
-    person: item.data.personRef ? await getEntry(item.data.personRef) : null,
-  })),
+/**
+ * La sala de las voces tenía doce fichas iguales en fila y orden de fichero, de
+ * modo que las dos de Camarón salían juntas y la placa de una estatua pesaba lo
+ * mismo que lo que le dijo Farruco en un tablao. No son la misma cosa: aquí van
+ * separadas por quién habla —un artista, una institución, un cartel, él mismo—
+ * y dentro de cada bloque en orden cronológico, que es como se cuenta una vida.
+ */
+
+type Voice = 'artist' | 'billing' | 'public' | 'self';
+
+const all = (await getCollection('testimonials')).filter((item) => item.data.status !== 'draft');
+
+const resolved = await Promise.all(
+  all.map(async (item) => {
+    const person = item.data.personRef ? await getEntry(item.data.personRef) : null;
+    const place = item.data.placeRef ? await getEntry(item.data.placeRef) : null;
+    const mediaEntry = item.data.mediaRef ? await getEntry(item.data.mediaRef) : null;
+
+    // El retrato de quien habla, cuando el archivo lo tiene: una voz con cara
+    // se lee distinto que un nombre suelto.
+    const portrait = person?.data.portrait
+      ? await getImage({ src: person.data.portrait, width: 220, height: 220, fit: 'cover', format: 'webp', quality: 76 })
+      : null;
+
+    // El recorte o el cartel donde consta la frase.
+    const clipping = mediaEntry?.data.image
+      ? await getImage({ src: mediaEntry.data.image, width: 720, format: 'webp', quality: 74 })
+      : null;
+
+    return {
+      id: item.id,
+      data: item.data,
+      person,
+      place,
+      mediaEntry,
+      portrait,
+      clipping,
+      /** Una frase de cuatro palabras y una anécdota de seis líneas no pueden
+       * componerse igual: el cuerpo de letra lo decide la propia cita. */
+      size: item.data.quote.length < 34 ? 'xl' : item.data.quote.length < 96 ? 'lg' : 'md',
+    };
+  }),
 );
+
+const byYear = (a: (typeof resolved)[number], b: (typeof resolved)[number]) =>
+  (a.data.year ?? 9999) - (b.data.year ?? 9999);
+
+/** Las que aún no tienen fuente publicada salen aparte, y lo dicen. */
+const pending = resolved.filter((v) => v.data.verification === 'pending-research').sort(byYear);
+const confirmed = resolved.filter((v) => v.data.verification !== 'pending-research');
+
+const featured = confirmed.find((v) => v.data.featured) ?? null;
+const pick = (voice: Voice) =>
+  confirmed.filter((v) => v.data.voice === voice && v !== featured).sort(byYear);
+
+const allBlocks: { voice: Voice; title: string; intro: string; items: typeof resolved }[] = [
+  {
+    voice: 'artist',
+    title: 'Los que lo vieron bailar',
+    intro:
+      'Lo que le dijeron, en un camerino o en la barra de un tablao, algunos de los que sabían de lo que hablaban.',
+    items: pick('artist'),
+  },
+  {
+    voice: 'billing',
+    title: 'Así lo anunciaban',
+    intro:
+      'Un cartel también es una voz: es el nombre que le pusieron los que lo contrataban, de Torremolinos a Oslo.',
+    items: pick('billing'),
+  },
+  {
+    voice: 'public',
+    title: 'Lo que quedó escrito',
+    intro: 'Lo dicho desde un escenario oficial o grabado en una placa, que ya no se puede desdecir.',
+    items: pick('public'),
+  },
+  {
+    voice: 'self',
+    title: 'Y lo que dice él',
+    intro:
+      'La sala se llama «lo que dijeron de él», pero la voz que mejor lo explica sigue siendo la suya.',
+    items: pick('self'),
+  },
+];
+
+const blocks = allBlocks.filter((block) => block.items.length > 0);
+
+const total = resolved.length;
 ---
 
 <RoomLayout
   slug="/voces"
   eyebrow="Lo que dijeron de él"
   title="Lo que dijeron de él"
-  summary="Testimonios de artistas y personalidades sobre Carrete."
+  summary="Un bailaor al que casi nadie escribió, contado por los que sí hablaron de él."
 >
   <div class="prose">
     <p>
-      Estas son las frases que, según la memoria familiar, distintos artistas han
-      dedicado a Carrete a lo largo de los años. Ninguna se presenta como un hecho
-      cerrado: cada una indica su nivel de verificación, y muchas siguen esperando
-      una fuente publicada que las confirme de forma independiente.
+      Carrete pasó cincuenta años bailando en sitios donde no había crítica ni programa de
+      mano. De aquellos años no queda casi papel, pero quedan frases: {total} en total, entre
+      lo que le dijeron los maestros, lo que escribieron los carteles que lo anunciaban, lo
+      que acabó grabado en una placa y lo que dice él mismo. Cada una lleva su nivel de
+      verificación, y las que la familia recuerda sin fuente publicada están al final, sin
+      disimular.
     </p>
   </div>
 
-  <div class="card-grid section--tight">
-    {
-      withPeople.map(({ item, person }) => (
-        <figure class="card quote" style="border-left: none;">
-          <blockquote>
-            <p>«{item.data.quote}»</p>
-          </blockquote>
-          <figcaption class="quote-cite">
-            {person ? <a href={url(`/personas/${person.id}`)}>{person.data.name}</a> : item.data.personNameFallback}
-            {item.data.context && <span> — {item.data.context}</span>}
-          </figcaption>
-          <VerifyBadge level={item.data.verification} />
-        </figure>
-      ))
-    }
-  </div>
+  {
+    featured && (
+      <figure class="opening">
+        {featured.portrait && (
+          <img
+            class="opening__portrait"
+            src={featured.portrait.src}
+            width={featured.portrait.attributes.width}
+            height={featured.portrait.attributes.height}
+            alt={`Retrato de ${featured.person?.data.name ?? ''}`}
+            loading="eager"
+            decoding="async"
+          />
+        )}
+        <blockquote class="opening__quote">
+          <p>«{featured.data.quote}»</p>
+        </blockquote>
+        <figcaption class="opening__cite">
+          <span class="opening__name">
+            {featured.person ? (
+              <a href={url(`/personas/${featured.person.id}`)}>{featured.person.data.name}</a>
+            ) : (
+              featured.data.personNameFallback
+            )}
+          </span>
+          {featured.data.when && <span class="opening__when">{featured.data.when}</span>}
+        </figcaption>
+        {featured.data.context && <p class="opening__context">{featured.data.context}</p>}
+      </figure>
+    )
+  }
+
+  {
+    blocks.map((block) => (
+      <section class="voices" aria-labelledby={`voces-${block.voice}`}>
+        <header class="voices__head">
+          <h2 id={`voces-${block.voice}`}>{block.title}</h2>
+          <p>{block.intro}</p>
+        </header>
+
+        <div class:list={['voices__grid', `voices__grid--${block.voice}`]}>
+          {block.items.map((v) => (
+            <figure class:list={['voice', `voice--${v.size}`, v.clipping && 'voice--has-image']}>
+              {v.clipping && (
+                <a class="voice__clipping" href={url('/archivo')}>
+                  <img
+                    src={v.clipping.src}
+                    width={v.clipping.attributes.width}
+                    height={v.clipping.attributes.height}
+                    alt={v.mediaEntry?.data.alt ?? v.mediaEntry?.data.title ?? ''}
+                    loading="lazy"
+                    decoding="async"
+                    style={`object-position:${v.mediaEntry?.data.focal ?? 'center'}`}
+                  />
+                </a>
+              )}
+
+              <blockquote class="voice__quote">
+                <p>{v.data.voice === 'billing' ? v.data.quote : `«${v.data.quote}»`}</p>
+              </blockquote>
+
+              {v.data.translation && <p class="voice__translation">{v.data.translation}</p>}
+
+              <figcaption class="voice__cite">
+                {v.portrait && (
+                  <img
+                    class="voice__portrait"
+                    src={v.portrait.src}
+                    width={v.portrait.attributes.width}
+                    height={v.portrait.attributes.height}
+                    alt={`Retrato de ${v.person?.data.name ?? ''}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+                <span class="voice__who">
+                  <span class="voice__name">
+                    {v.person ? (
+                      <a href={url(`/personas/${v.person.id}`)}>{v.person.data.name}</a>
+                    ) : (
+                      v.data.personNameFallback
+                    )}
+                  </span>
+                  {v.data.when && <span class="voice__when">{v.data.when}</span>}
+                </span>
+              </figcaption>
+
+              {v.data.context && <p class="voice__context">{v.data.context}</p>}
+
+              <footer class="voice__foot">
+                <VerifyBadge level={v.data.verification} />
+                {v.place && (
+                  <a class="voice__place" href={url(`/lugares/${v.place.id}`)}>
+                    {v.place.data.name}
+                  </a>
+                )}
+              </footer>
+            </figure>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    pending.length > 0 && (
+      <section class="voices voices--pending" aria-labelledby="voces-pendientes">
+        <header class="voices__head">
+          <h2 id="voces-pendientes">Lo que la familia recuerda y aún no hemos podido confirmar</h2>
+          <p>
+            Estas frases circulan en la memoria familiar y se repiten de boca en boca, pero no
+            hemos localizado todavía dónde se dijeron ni quién las recogió por escrito. Se
+            publican como lo que son: pistas abiertas. Si sabes de una grabación, una entrevista
+            o un recorte que las sitúe, en <a href={url('/creditos')}>créditos y fuentes</a> está
+            quién lleva el archivo.
+          </p>
+        </header>
+
+        <ul class="pending-list">
+          {pending.map((v) => (
+            <li class="pending-item">
+              <p class="pending-item__quote">«{v.data.quote}»</p>
+              <p class="pending-item__cite">
+                {v.person ? (
+                  <a href={url(`/personas/${v.person.id}`)}>{v.person.data.name}</a>
+                ) : (
+                  v.data.personNameFallback
+                )}
+              </p>
+              {v.data.context && <p class="pending-item__context">{v.data.context}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <p class="voices__more">
+    Lo que escribieron los periódicos está en la <a href={url('/hemeroteca')}>hemeroteca</a>, y
+    lo que dijo la ciudad, en <a href={url('/estatua')}>la estatua</a>.
+  </p>
 </RoomLayout>
+
+<style>
+  /* ---------- La cita que abre la sala ---------- */
+  .opening {
+    margin: var(--space-xl) 0 var(--space-2xl);
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    display: grid;
+    gap: var(--space-sm);
+    justify-items: center;
+    text-align: center;
+  }
+  .opening__portrait {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    border: 1px solid var(--color-border-strong);
+  }
+  .opening__quote {
+    margin: 0;
+    max-width: 32ch;
+  }
+  .opening__quote p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-4);
+    line-height: var(--leading-tight);
+    color: var(--color-paper);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .opening__cite {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+  .opening__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-accent);
+  }
+  .opening__name :global(a) {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+  .opening__when,
+  .opening__context {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+  .opening__context {
+    max-width: 46ch;
+    line-height: var(--leading-normal);
+    margin: 0;
+  }
+
+  /* ---------- Bloques ---------- */
+  .voices {
+    margin-bottom: var(--space-2xl);
+  }
+  .voices__head {
+    max-width: var(--prose-max);
+    margin-bottom: var(--space-lg);
+  }
+  .voices__head h2 {
+    margin-bottom: var(--space-2xs);
+  }
+  .voices__head p {
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+    margin: 0;
+  }
+
+  .voices__grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    align-items: start;
+  }
+  /* Los carteles piden marco ancho: la imagen manda. */
+  .voices__grid--billing {
+    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  }
+
+  /* ---------- Una voz ---------- */
+  .voice {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  /* La comilla de apertura, marca de agua. */
+  .voice::before {
+    content: '“';
+    position: absolute;
+    top: 0.6rem;
+    right: 0.7rem;
+    font-family: var(--font-display);
+    font-size: 4.5rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    pointer-events: none;
+  }
+  .voice__quote {
+    margin: 0;
+  }
+  .voice__quote p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    line-height: var(--leading-snug);
+    color: var(--color-paper);
+    text-wrap: pretty;
+  }
+  .voice--xl .voice__quote p {
+    font-size: var(--step-3);
+    line-height: var(--leading-tight);
+  }
+  .voice--lg .voice__quote p {
+    font-size: var(--step-2);
+  }
+  .voice--md .voice__quote p {
+    font-size: var(--step-1);
+  }
+
+  /* Un cartel no es una cita: se compone en versal, no en cursiva. */
+  .voices__grid--billing .voice__quote p {
+    font-style: normal;
+    letter-spacing: 0.02em;
+    color: var(--color-accent);
+  }
+  .voice__translation {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .voice__clipping {
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-charcoal) 70%, black);
+  }
+  .voice__clipping img {
+    width: 100%;
+    height: 100%;
+    /* Un cartel o un recorte se leen enteros: nunca se recortan a un marco. */
+    object-fit: contain;
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+  /* En los carteles la pieza manda: va al lado del texto, no encima. */
+  .voices__grid--billing .voice--has-image {
+    display: grid;
+    grid-template-columns: minmax(7rem, 11rem) 1fr;
+    column-gap: var(--space-md);
+    align-items: start;
+  }
+  .voices__grid--billing .voice--has-image > .voice__clipping {
+    grid-row: 1 / span 5;
+  }
+  .voices__grid--billing .voice--has-image::before {
+    content: none;
+  }
+  .voice__clipping:hover img {
+    transform: scale(1.03);
+  }
+
+  .voice__cite {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .voice__portrait {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+    filter: grayscale(1) contrast(1.05);
+    border: 1px solid var(--color-border);
+  }
+  .voice__who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .voice__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-accent);
+  }
+  .voice__name :global(a) {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
+  .voice__name :global(a:hover) {
+    border-bottom-color: var(--color-accent);
+  }
+  .voice__when {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+  .voice__context {
+    margin: 0;
+    font-size: var(--step--1);
+    line-height: var(--leading-normal);
+    color: var(--color-text-soft);
+  }
+  .voice__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-sm);
+    margin-top: auto;
+    padding-top: var(--space-2xs);
+  }
+  .voice__place {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- Pendientes ---------- */
+  .voices--pending {
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+  }
+  .pending-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  }
+  .pending-item {
+    padding-left: var(--space-sm);
+    border-left: 2px dashed color-mix(in srgb, var(--color-paper) 30%, transparent);
+  }
+  .pending-item__quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-2);
+    line-height: var(--leading-snug);
+    color: color-mix(in srgb, var(--color-paper) 78%, transparent);
+    margin: 0 0 var(--space-3xs);
+  }
+  .pending-item__cite {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+  .pending-item__context {
+    margin: var(--space-3xs) 0 0;
+    font-size: var(--step--1);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+  }
+
+  .voices__more {
+    max-width: var(--prose-max);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  @media (max-width: 40rem) {
+    .opening__quote p {
+      font-size: var(--step-3);
+    }
+    .voices__grid,
+    .voices__grid--billing {
+      grid-template-columns: 1fr;
+    }
+    /* En una columna el cartel va arriba y entero, no en una tira lateral. */
+    .voices__grid--billing .voice--has-image {
+      display: flex;
+    }
+    .voices__grid--billing .voice--has-image > .voice__clipping {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

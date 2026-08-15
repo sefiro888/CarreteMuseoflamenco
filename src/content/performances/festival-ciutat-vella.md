@@ -6,6 +6,7 @@ description: >
   Carrete cerró el 18º Festival Flamenco de Ciutat Vella de Barcelona con dos
   actuaciones en el CCCB, el viernes 20 en el Hall y el sábado 21 en el escenario
   principal, junto al guitarrista Juan Ramón Caro.
+kind: appearance
 verification: documented
 status: published
 placeRef: barcelona

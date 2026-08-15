@@ -6,6 +6,7 @@ description: >
   Homenaje a Carrete en la decimoctava edición del Festival Flamenco «Niño de las
   Moras», en el barrio malagueño de El Palo, con entrada gratuita y Carrete y su
   cuadro flamenco al baile.
+kind: tribute
 verification: documented
 status: published
 sourceRefs:

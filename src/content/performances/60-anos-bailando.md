@@ -6,6 +6,7 @@ description: >
   Espectáculo que resume seis décadas de baile en cien minutos y siete partes.
   Se estrenó el 1 de julio de 2015 como función inaugural del festival Terral de
   Málaga, con dirección y coreografía del propio Carrete junto a Paco Roji.
+kind: work
 verification: documented
 status: published
 peopleRefs:

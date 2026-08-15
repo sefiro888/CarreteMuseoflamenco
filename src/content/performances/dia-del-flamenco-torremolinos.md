@@ -7,6 +7,7 @@ description: >
   de la celebración del Día Internacional del Flamenco en Torremolinos, el 16 de
   noviembre de 2023 a las seis de la tarde, en la misma plaza donde ocho meses
   antes se había inaugurado su estatua.
+kind: appearance
 verification: documented
 status: published
 placeRef: torremolinos

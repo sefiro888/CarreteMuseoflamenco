@@ -7,6 +7,8 @@ description: >
   de una veintena de artistas en escena. Se celebró el domingo 12 de febrero de
   2023 a las siete de la tarde, con entrada gratuita mediante invitación, y
   reunió a más de mil personas.
+kind: tribute
+mediaRef: 2023-02-12-cartel-del-homenaje-en-torremolinos
 verification: documented
 status: published
 placeRef: torremolinos

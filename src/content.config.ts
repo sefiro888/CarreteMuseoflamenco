@@ -113,6 +113,15 @@ const performances = defineCollection({
     peopleRefs: z.array(reference('people')).default([]),
     /** Fecha ISO (YYYY-MM-DD) de una actuación futura confirmada, para la agenda. */
     upcomingDate: z.string().date().optional(),
+    /**
+     * No es lo mismo un montaje suyo que una gala en la que lo homenajean o una
+     * noche suelta en un festival. La sala de la obra los separa:
+     * «work» = espectáculo propio, «tribute» = homenaje que le hacen,
+     * «appearance» = participación, encuentro o festival.
+     */
+    kind: z.enum(['work', 'tribute', 'appearance']).default('appearance'),
+    /** Cartel o fotografía de la función, cuando el archivo la tiene. */
+    mediaRef: reference('media').optional(),
   }),
 });
 
@@ -135,6 +144,24 @@ const testimonials = defineCollection({
     personNameFallback: z.string().optional(),
     quote: z.string(),
     context: z.string().optional(),
+    /**
+     * Quién habla. La sala de las voces mezclaba cosas que no son lo mismo:
+     * lo que le dijo un maestro en un tablao, lo que grabaron en una placa,
+     * cómo lo anunciaba un cartel y lo que dice él de sí mismo. Cada una se
+     * lee distinto y ahora va en su bloque.
+     */
+    voice: z.enum(['artist', 'public', 'billing', 'self']).default('artist'),
+    /** Cómo se cita la escena: «El Jaleo, Torremolinos, años sesenta». */
+    when: z.string().optional(),
+    /** Año para ordenar dentro de cada bloque; sin él, la ficha va al final. */
+    year: z.number().optional(),
+    /** La cita que abre la sala, a toda anchura. Solo una. */
+    featured: z.boolean().default(false),
+    /** Traducción, cuando el cartel no está en español. */
+    translation: z.string().optional(),
+    placeRef: reference('places').optional(),
+    /** El recorte o el cartel donde consta la frase. */
+    mediaRef: reference('media').optional(),
   }),
 });
 

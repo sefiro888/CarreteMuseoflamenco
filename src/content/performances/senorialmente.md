@@ -7,6 +7,8 @@ description: >
   Málaga, el 9 de mayo de 2018 a las ocho de la tarde. Una treintena de artistas
   bailaron, cantaron y tocaron en su honor durante tres horas, con él sentado en un
   trono en el centro del escenario.
+kind: tribute
+mediaRef: 2018-05-09-senorialmente
 verification: documented
 status: published
 peopleRefs:

@@ -8,6 +8,7 @@ description: >
   Luis Ortiz Nuevo y dirección escénica de Pepa Gamboa, cuenta su vida en siete
   secuencias de baile. Se estrenó el 7 de julio de 2007 —el siete del siete del
   siete— en la segunda Bienal de Flamenco de Málaga.
+kind: work
 verification: documented
 status: published
 sourceRefs:

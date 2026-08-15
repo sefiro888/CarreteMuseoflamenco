@@ -6,6 +6,9 @@ context: >
   Revista La Flamenca. Es la mejor síntesis de un baile autodidacta que aprendió
   mirando a Fred Astaire, a Carmen Amaya, a Antonio, a Farruco, a Gades y a Pilar
   López sin pasar por academia alguna.
+voice: self
+when: "Entrevista en Revista La Flamenca"
+year: 2009
 verification: documented
 status: published
 sourceRefs:

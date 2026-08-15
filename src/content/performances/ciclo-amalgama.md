@@ -7,6 +7,7 @@ description: >
   miércoles 11 de junio de 2025 a las ocho de la tarde. Bajo el título «La gracia
   y el baile», Carrete y Farruquito conversaron sobre el baile flamenco junto al
   escritor y humorista Julio Muñoz «Rancio».
+kind: appearance
 verification: documented
 status: published
 placeRef: sevilla

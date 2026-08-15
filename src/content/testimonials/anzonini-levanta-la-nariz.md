@@ -2,9 +2,12 @@
 personNameFallback: "Anzonini del Puerto"
 quote: "Para bailar, levanta la nariz."
 context: >
-  El consejo que le dio Anzonini del Puerto en los tablaos de Madrid, a
-  principios de los años sesenta. Carrete lo repite señalándose el perfil: «con
+  El consejo que le dio cuando coincidieron en los tablaos de Madrid. Carrete lo repite señalándose el perfil: «con
   la picota que yo tengo… no se me ha olvidado nunca».
+voice: artist
+when: "Tablaos de Madrid, primeros años sesenta"
+year: 1962
+placeRef: madrid
 verification: testimony
 status: published
 sourceRefs:

@@ -1,10 +1,58 @@
 ---
 import { url } from '../../lib/url';
 import RoomLayout from '../../layouts/RoomLayout.astro';
-import VerifyBadge from '../../components/VerifyBadge.astro';
-import { getCollection } from 'astro:content';
+import ShowCard from '../../components/ShowCard.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 
-const performances = await getCollection('performances');
+/**
+ * Las fichas salían en orden alfabético de fichero y sin fecha, de modo que una
+ * charla de 2025 iba delante del montaje que lo cambió todo en 2007. Aquí van
+ * separadas por lo que son —obra suya, homenaje que le hacen, participación— y
+ * dentro de cada bloque de lo más reciente a lo más antiguo.
+ */
+
+type Kind = 'work' | 'tribute' | 'appearance';
+
+const performances = (await getCollection('performances')).filter(
+  (show) => show.data.status === 'published',
+);
+
+/** El año que sitúa la función: de la fecha exacta o de lo que diga la aproximada. */
+const yearOf = (show: (typeof performances)[number]) => {
+  const raw = show.data.dateExact ?? show.data.dateApprox ?? '';
+  const match = raw.match(/(\d{4})/);
+  return match ? Number(match[1]) : 0;
+};
+
+const resolved = await Promise.all(
+  performances.map(async (show) => {
+    const mediaEntry = show.data.mediaRef ? await getEntry(show.data.mediaRef) : null;
+    const poster = mediaEntry?.data.image
+      ? await getImage({ src: mediaEntry.data.image, width: 640, format: 'webp', quality: 76 })
+      : null;
+    return { show, mediaEntry, poster, year: yearOf(show) };
+  }),
+);
+
+const byYearDesc = (a: (typeof resolved)[number], b: (typeof resolved)[number]) => b.year - a.year;
+const pick = (kind: Kind) => resolved.filter((r) => r.show.data.kind === kind).sort(byYearDesc);
+
+const works = pick('work');
+/**
+ * El montaje de 2007 no es una función más: es el que lo sacó del tablao y lo
+ * puso en un teatro a los sesenta y siete años. Abre la sala aparte, y por eso
+ * no vuelve a salir en la rejilla.
+ */
+const hallmarkId = 'yo-no-se-la-eda-que-tengo';
+const hallmark = works.find((w) => w.show.id === hallmarkId) ?? null;
+const otherWorks = works.filter((w) => w.show.id !== hallmarkId);
+const tributes = pick('tribute');
+const appearances = pick('appearance');
+
+const years = resolved.map((r) => r.year).filter(Boolean);
+const firstYear = Math.min(...years);
+const lastYear = Math.max(...years);
 
 const today = new Date().toISOString().slice(0, 10);
 const upcoming = performances
@@ -12,79 +60,338 @@ const upcoming = performances
   .sort((a, b) => (a.data.upcomingDate ?? '').localeCompare(b.data.upcomingDate ?? ''));
 
 const dateFormatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const dayFormatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' });
+
+/** Fecha legible bajo el año grande: «12 de febrero», o la aproximada tal cual. */
+const dayOf = (show: (typeof performances)[number]) => {
+  if (show.data.dateExact) return dayFormatter.format(new Date(`${show.data.dateExact}T00:00:00`));
+  return show.data.dateApprox ?? null;
+};
 ---
 
 <RoomLayout
   slug="/espectaculos"
   eyebrow="Espectáculos y obras"
   title="Espectáculos y obras"
-  summary="Fichas de sus espectáculos principales."
+  summary="Lo que ha montado, lo que le han montado y las noches sueltas de una carrera larguísima."
 >
-  <div class="card-grid">
-    {
-      performances.map((show) => (
-        <a class="card" style="text-decoration:none; color:inherit;" href={url(`/espectaculos/${show.id}`)}>
-          <h3>{show.data.title}</h3>
-          {show.data.venue && <p class="eyebrow">{show.data.venue}</p>}
-          <p>{show.data.description}</p>
-          <VerifyBadge level={show.data.verification} />
-        </a>
-      ))
-    }
+  <div class="prose">
+    <p>
+      Carrete bailó cincuenta años en tablaos antes de estrenar un espectáculo con su
+      nombre en un teatro. Ocurrió en 2007, a los sesenta y siete. Desde entonces el museo
+      tiene documentadas {resolved.length} funciones entre {firstYear} y {lastYear}: sus
+      montajes, las galas con las que la profesión y su ciudad le devolvieron el favor, y
+      los festivales y encuentros a los que sigue yendo.
+    </p>
   </div>
 
-  <div class="section--tight">
-    <h2>Agenda de próximas actuaciones</h2>
-    {
-      upcoming.length > 0 ? (
-        <ul class="agenda-list">
+  {
+    upcoming.length > 0 && (
+      <section class="agenda" aria-labelledby="agenda">
+        <h2 id="agenda">Próximas actuaciones</h2>
+        <ul class="agenda__list">
           {upcoming.map((show) => (
-            <li class="agenda-list__item">
-              <span class="agenda-list__date">
+            <li class="agenda__item">
+              <span class="agenda__date">
                 {dateFormatter.format(new Date(`${show.data.upcomingDate}T00:00:00`))}
               </span>
-              <span class="agenda-list__title">{show.data.title}</span>
-              {show.data.venue && <span class="agenda-list__venue">{show.data.venue}</span>}
+              <a class="agenda__title" href={url(`/espectaculos/${show.id}`)}>
+                {show.data.title}
+              </a>
+              {show.data.venue && <span class="agenda__venue">{show.data.venue}</span>}
             </li>
           ))}
         </ul>
-      ) : (
-        <p class="prose">
-          No hay actuaciones futuras anunciadas todavía. En cuanto la familia o Paco Roji confirmen
-          una fecha, aparecerá aquí automáticamente.
-        </p>
+      </section>
+    )
+  }
+
+  <section class="shows" aria-labelledby="obra-propia">
+    <header class="shows__head">
+      <h2 id="obra-propia">Sus espectáculos</h2>
+      <p>Los montajes en los que el espectáculo es él. De la última función hacia atrás.</p>
+    </header>
+
+    {
+      hallmark && (
+        <a class="hallmark" href={url(`/espectaculos/${hallmark.show.id}`)}>
+          <span class="hallmark__year">{hallmark.year}</span>
+          <span class="hallmark__main">
+            <span class="hallmark__label">El estreno que lo cambió todo</span>
+            <span class="hallmark__title">{hallmark.show.data.title}</span>
+            {hallmark.show.data.venue && (
+              <span class="hallmark__venue">{hallmark.show.data.venue}</span>
+            )}
+            <span class="hallmark__desc">{hallmark.show.data.description}</span>
+          </span>
+        </a>
       )
     }
-  </div>
+
+    <ol class="works">
+      {
+        otherWorks.map(({ show, mediaEntry, poster, year }) => (
+          <ShowCard
+            show={show}
+            year={year}
+            day={dayOf(show)}
+            poster={poster}
+            posterAlt={mediaEntry?.data.alt ?? ''}
+          />
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="shows" aria-labelledby="homenajes">
+    <header class="shows__head">
+      <h2 id="homenajes">Los homenajes</h2>
+      <p>
+        Las noches en las que el escenario se llenó de gente para devolverle algo. En una de
+        ellas, treinta artistas; en otra, una ciudad entera.
+      </p>
+    </header>
+
+    <ol class="works works--tribute">
+      {
+        tributes.map(({ show, mediaEntry, poster, year }) => (
+          <ShowCard
+            show={show}
+            year={year}
+            day={dayOf(show)}
+            poster={poster}
+            posterAlt={mediaEntry?.data.alt ?? ''}
+          />
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="shows" aria-labelledby="participaciones">
+    <header class="shows__head">
+      <h2 id="participaciones">Festivales, encuentros y participaciones</h2>
+      <p>
+        Noches sueltas, ciclos y coloquios a los que sigue yendo con más de ochenta años.
+        Cada una tiene su ficha.
+      </p>
+    </header>
+
+    <ol class="appearances">
+      {
+        appearances.map(({ show, year }) => (
+          <li class="appearance">
+            <span class="appearance__year">{year || '—'}</span>
+            <span class="appearance__main">
+              <a class="appearance__title" href={url(`/espectaculos/${show.id}`)}>
+                {show.data.title}
+              </a>
+              {show.data.venue && <span class="appearance__venue">{show.data.venue}</span>}
+            </span>
+            {dayOf(show) && <span class="appearance__day">{dayOf(show)}</span>}
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <p class="shows__note">
+    {
+      upcoming.length === 0
+        ? 'No hay actuaciones futuras anunciadas todavía: en cuanto la familia o Paco Roji confirmen una fecha, aparecerá aquí arriba. '
+        : ''
+    }
+    Faltan funciones por documentar, sobre todo de los años de tablao, cuando nadie
+    imprimía programas de mano. Lo que se va confirmando entra en la <a
+      href={url('/hemeroteca')}>hemeroteca</a
+    > y en esta sala.
+  </p>
 </RoomLayout>
 
 <style>
-  .agenda-list {
+  /* ---------- Agenda ---------- */
+  .agenda {
+    margin: 0 0 var(--space-2xl);
+    padding: var(--space-md);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+  }
+  .agenda h2 {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--step-2);
+  }
+  .agenda__list {
     list-style: none;
     padding: 0;
+    margin: 0;
     display: grid;
-    gap: var(--space-sm);
+    gap: var(--space-xs);
   }
-  .agenda-list__item {
+  .agenda__item {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-sm);
     align-items: baseline;
-    padding: var(--space-sm);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-raised);
+    gap: var(--space-2xs) var(--space-sm);
   }
-  .agenda-list__date {
+  .agenda__date {
     font-family: var(--font-display);
     color: var(--color-accent);
-    min-width: 12rem;
+    min-width: 11rem;
   }
-  .agenda-list__title {
+  .agenda__title {
     font-weight: 600;
   }
-  .agenda-list__venue {
+  .agenda__venue {
     color: var(--color-text-muted);
     font-size: var(--step--1);
+  }
+
+  /* ---------- Bloques ---------- */
+  .shows {
+    margin-bottom: var(--space-2xl);
+  }
+  .shows__head {
+    max-width: var(--prose-max);
+    margin-bottom: var(--space-lg);
+  }
+  .shows__head h2 {
+    margin-bottom: var(--space-2xs);
+  }
+  .shows__head p {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  /* ---------- Obra y homenajes ---------- */
+  .works {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  }
+  /* ---------- La pieza principal ---------- */
+  .hallmark {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-md) var(--space-lg);
+    align-items: start;
+    margin-bottom: var(--space-lg);
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+  }
+  .hallmark:hover .hallmark__title {
+    color: var(--color-accent);
+  }
+  .hallmark__year {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    line-height: 0.9;
+    color: color-mix(in srgb, var(--color-accent) 70%, transparent);
+  }
+  .hallmark__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    max-width: 46ch;
+  }
+  .hallmark__label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--color-accent);
+  }
+  .hallmark__title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: var(--leading-tight);
+    color: var(--color-paper);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .hallmark__venue {
+    font-size: var(--step--1);
+    color: var(--color-text-soft);
+  }
+  .hallmark__desc {
+    margin-top: var(--space-2xs);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+  }
+
+  /* Una ficha con cartel necesita el doble de sitio que una de solo texto. */
+  @media (min-width: 60rem) {
+    .works :global(.work--with-poster) {
+      grid-column: span 2;
+    }
+  }
+
+  /* ---------- Participaciones: lista, no tarjetas ---------- */
+  .appearances {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .appearance {
+    display: grid;
+    grid-template-columns: 5rem 1fr auto;
+    gap: var(--space-2xs) var(--space-md);
+    align-items: baseline;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .appearance__year {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-accent);
+  }
+  .appearance__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+  .appearance__title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .appearance__title:hover {
+    border-bottom-color: var(--color-accent);
+  }
+  .appearance__venue {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+  .appearance__day {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+
+  .shows__note {
+    max-width: var(--prose-max);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 40rem) {
+    .works {
+      grid-template-columns: 1fr;
+    }
+    .appearance {
+      grid-template-columns: 4rem 1fr;
+    }
+    .appearance__day {
+      grid-column: 2;
+      text-align: left;
+    }
   }
 </style>

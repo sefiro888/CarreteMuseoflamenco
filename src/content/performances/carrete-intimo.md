@@ -7,6 +7,7 @@ description: >
   dentro del Ciclo Flamenco Caja BBK y del programa Málaga en Flamenco. Se
   representó el viernes 12 de junio de 2009 a las ocho de la tarde, con entrada
   gratuita por invitación.
+kind: work
 verification: documented
 status: published
 sourceRefs:

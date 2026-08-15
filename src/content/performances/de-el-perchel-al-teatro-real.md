@@ -6,6 +6,7 @@ description: >
   Espectáculo que traza el recorrido de Carrete desde el barrio malagueño de El
   Perchel hasta el Teatro Real de Madrid. Sesión única el 21 de julio de 2022 a
   las siete de la tarde, en el Salón de Baile del teatro.
+kind: work
 verification: documented
 status: published
 peopleRefs:

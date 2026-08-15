@@ -6,6 +6,8 @@ description: >
   documental rodado en Nueva York en abril de 2022, dirigido por Jorge Peña, y
   desde entonces ha seguido girando por salas y festivales.
 venue: "Nueva York, y después en gira"
+kind: work
+mediaRef: cartel-de-quijote-en-nueva-york
 verification: documented
 status: published
 placeRef: nueva-york

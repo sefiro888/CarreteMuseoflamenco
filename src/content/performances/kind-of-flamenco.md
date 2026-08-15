@@ -6,6 +6,7 @@ description: >
   Concierto sobre la música de Miles Davis con José Losada «Carrete» al baile,
   junto a Roberto Cantero (saxo), Tony Romero (piano), Oliver Sierra (bajo),
   Miguelo Batum (batería) y Tony Cantero (guitarra).
+kind: work
 verification: documented
 status: published
 sourceRefs:
