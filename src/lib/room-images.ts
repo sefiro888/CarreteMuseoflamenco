@@ -47,7 +47,7 @@ const SPECS: Record<string, RoomImageSpec> = {
     focal: 'center 25%',
   },
   '/vida/malaga-el-perchel-y-los-vargas': {
-    file: '1954-carrete-con-los-vargas-en-el-refugio-archivo-paco-roji',
+    file: '1954-tablao-el-refugio',
     alt: 'Un Carrete adolescente baila sobre un escenario rodeado de bailaoras y un guitarrista, ante el público sentado a las mesas del tablao El Refugio.',
     caption: 'Carrete con Los Vargas en el tablao El Refugio, 1954. Es la fotografía más antigua que conserva el archivo.',
     credit: 'Archivo Paco Roji',

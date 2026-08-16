@@ -1,17 +1,18 @@
 ---
-title: "Tablao El Refugio"
+title: "Carrete con Los Vargas en el Refugio"
 type: photo
 image: "../../assets/archivo/1954-tablao-el-refugio.jpg"
-alt: "Tablao El Refugio. Fotografía del archivo familiar, 1954."
+alt: "Carrete con Los Vargas en el Refugio. Fotografía del archivo de Paco Roji, 1954."
 dateApprox: "1954"
 placeRef: el-refugio
+peopleRefs:
+  - los-vargas
 focal: "center"
 verification: documented
 status: published
-owner: "Archivo familiar Losada"
+owner: "Paco Roji"
 publishPermission: true
-credit: "Archivo familiar Losada"
-rightsNote: "Autoría concreta pendiente de identificar."
+credit: "Archivo Paco Roji"
 sourceRefs:
   - archivo-familiar-losada
 ---
