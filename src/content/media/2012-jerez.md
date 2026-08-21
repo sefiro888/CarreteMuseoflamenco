@@ -1,5 +1,5 @@
 ---
-title: "Jerez"
+title: "Camino de Jerez, con las guitarras"
 type: photo
 image: "../../assets/archivo/2012-jerez.jpg"
 alt: "Jerez. Fotografía del archivo familiar, 2012."

@@ -1,8 +1,8 @@
 ---
-title: "FF Jerez"
+title: "En el Festival de Jerez"
 type: photo
 image: "../../assets/archivo/2012-ff-jerez-foto-javier-fergo.jpg"
-alt: "FF Jerez. Fotografía del archivo familiar, 2012."
+alt: "Carrete sentado en el escenario, con guitarra al fondo, en el Festival de Jerez. Fotografía de Javier Fergó, 2012."
 dateApprox: "2012"
 placeRef: jerez
 focal: "center"

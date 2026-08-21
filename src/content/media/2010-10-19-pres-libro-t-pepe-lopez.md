@@ -1,8 +1,8 @@
 ---
-title: "Pres Libro T Pepe López"
+title: "Presentación de un libro, Taberna Pepe López"
 type: photo
 image: "../../assets/archivo/2010-10-19-pres-libro-t-pepe-lopez.jpg"
-alt: "Pres Libro T Pepe López. Fotografía del archivo familiar, 19 de octubre de 2010."
+alt: "Grupo posando tras la presentación de un libro en la Taberna Pepe López. Fotografía del archivo familiar, 19 de octubre de 2010."
 dateExact: "2010-10-19"
 placeRef: el-jaleo
 focal: "center"

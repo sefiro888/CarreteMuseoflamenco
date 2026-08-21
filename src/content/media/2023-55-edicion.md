@@ -1,9 +1,9 @@
 ---
-title: "Edición"
+title: "Con el equipo, en el 55 Festival de Cine Documental de Cádiz"
 type: photo
 image: "../../assets/archivo/2023-55-edicion.jpg"
-alt: "Edición. Fotografía del archivo familiar, 2023."
-dateApprox: "2023"
+alt: "Carrete sentado, rodeado del equipo del festival, en una calle de Cádiz. Fotografía del archivo familiar, 2023."
+dateApprox: "septiembre de 2023"
 focal: "center"
 verification: documented
 status: published

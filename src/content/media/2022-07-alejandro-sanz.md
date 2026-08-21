@@ -1,5 +1,5 @@
 ---
-title: "Alejandro Sanz"
+title: "Con Alejandro Sanz"
 type: photo
 image: "../../assets/archivo/2022-07-alejandro-sanz.jpg"
 alt: "Alejandro Sanz. Fotografía del archivo familiar, julio de 2022."

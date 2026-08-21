@@ -1,8 +1,8 @@
 ---
-title: "Hje Gloria Vargas"
+title: "Homenaje a Gloria Vargas, Teatro Cervantes"
 type: photo
 image: "../../assets/archivo/2013-02-11-hje-gloria-vargas.jpg"
-alt: "Hje Gloria Vargas. Fotografía del archivo familiar, 11 de febrero de 2013."
+alt: "Cartel del homenaje a la bailaora malagueña Gloria Vargas, con Carrete y Pepito Vargas al baile. Teatro Cervantes, 11 de febrero de 2013."
 dateExact: "2013-02-11"
 focal: "center 30%"
 verification: documented

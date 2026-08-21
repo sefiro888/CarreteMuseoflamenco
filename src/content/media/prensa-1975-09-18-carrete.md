@@ -1,8 +1,8 @@
 ---
-title: "Carrete"
+title: "Las cosas del Carrete son inenarrables"
 type: press
 image: "../../assets/hemeroteca/1975-09-18-carrete.jpg"
-alt: "Carrete. Recorte de prensa del archivo familiar, 18 de septiembre de 1975."
+alt: "Columna de cotilleos del Diario Sur sobre una anécdota de Carrete en la plaza de la Gamba Alegre. 18 de septiembre de 1975."
 filePath: "/hemeroteca/1975-09-18-carrete.pdf"
 pages: 1
 dateExact: "1975-09-18"

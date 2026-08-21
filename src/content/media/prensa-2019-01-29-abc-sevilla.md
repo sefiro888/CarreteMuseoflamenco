@@ -1,5 +1,5 @@
 ---
-title: "Abc sevilla"
+title: "ABC Sevilla"
 type: press
 image: "../../assets/hemeroteca/2019-01-29-abc-sevilla.jpg"
 alt: "Abc sevilla. Recorte de prensa del archivo familiar, 29 de enero de 2019."

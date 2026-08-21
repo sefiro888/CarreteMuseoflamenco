@@ -1,8 +1,8 @@
 ---
-title: "Memoriales"
+title: "Con dos amigos, junto al Mercado de la Merced"
 type: photo
 image: "../../assets/archivo/2005-memoriales.jpg"
-alt: "Memoriales. Fotografía en blanco y negro del archivo familiar, 2005."
+alt: "Carrete con dos amigos, junto al Mercado de la Merced. Fotografía del archivo familiar, 2005."
 dateApprox: "2005"
 focal: "center"
 verification: documented

@@ -1,5 +1,5 @@
 ---
-title: "Embajada flamenca a Noruega 12 01 1969"
+title: "Embajada flamenca a Noruega"
 type: photo
 image: "../../assets/archivo/1969-embajada-flamenca-a-noruega-12-01-1969.jpg"
 alt: "Embajada flamenca a Noruega 12 01 1969. Fotografía en blanco y negro del archivo familiar, 1969."

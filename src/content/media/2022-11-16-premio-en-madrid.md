@@ -1,10 +1,10 @@
 ---
-title: "Premio en Madrid"
+title: "Premio en el Corral de la Morería"
 type: photo
 image: "../../assets/archivo/2022-11-16-premio-en-madrid.jpg"
-alt: "Premio en Madrid. Fotografía en blanco y negro del archivo familiar, 16 de noviembre de 2022."
+alt: "Carrete recibe un premio de manos de una mujer, ante el rótulo del Corral de la Morería. Archivo familiar, 16 de noviembre de 2022."
 dateExact: "2022-11-16"
-placeRef: madrid
+placeRef: corral-de-la-moreria
 focal: "center"
 verification: documented
 status: published

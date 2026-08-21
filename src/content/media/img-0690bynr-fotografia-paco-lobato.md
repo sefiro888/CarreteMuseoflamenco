@@ -1,8 +1,8 @@
 ---
-title: "IMG 0690bynR"
+title: "Carrete bailando, con las manos abiertas"
 type: photo
 image: "../../assets/archivo/img-0690bynr-fotografia-paco-lobato.jpg"
-alt: "IMG 0690bynR. Fotografía en blanco y negro del archivo familiar."
+alt: "Carrete bailando de perfil, con los brazos extendidos y las manos abiertas. Fotografía de Paco Lobato."
 featured: true
 focal: "center"
 verification: documented

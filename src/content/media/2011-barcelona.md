@@ -1,8 +1,8 @@
 ---
-title: "Barcelona"
+title: "En un ensayo, Barcelona"
 type: photo
 image: "../../assets/archivo/2011-barcelona.jpg"
-alt: "Barcelona. Fotografía en blanco y negro del archivo familiar, 2011."
+alt: "Una bailaora lanza un bastón sobre un escenario, en un ensayo en Barcelona. Archivo familiar, 2011."
 dateApprox: "2011"
 placeRef: barcelona
 focal: "center"

@@ -1,5 +1,5 @@
 ---
-title: "FF El Palo"
+title: "En el Festival Flamenco de El Palo"
 type: photo
 image: "../../assets/archivo/2023-07-ff-el-palo.jpg"
 alt: "FF El Palo. Fotografía del archivo familiar, julio de 2023."

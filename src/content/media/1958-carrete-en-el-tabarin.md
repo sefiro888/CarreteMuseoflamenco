@@ -1,5 +1,5 @@
 ---
-title: "Carrete en el Tabarin"
+title: "Carrete en el Tabarín"
 type: photo
 image: "../../assets/archivo/1958-carrete-en-el-tabarin.jpg"
 alt: "Carrete en el Tabarin. Fotografía del archivo familiar, 1958."

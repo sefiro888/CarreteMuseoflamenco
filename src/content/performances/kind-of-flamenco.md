@@ -7,6 +7,7 @@ description: >
   junto a Roberto Cantero (saxo), Tony Romero (piano), Oliver Sierra (bajo),
   Miguelo Batum (batería) y Tony Cantero (guitarra).
 kind: work
+mediaRef: 2012-11-05-f-jazz
 verification: documented
 status: published
 sourceRefs:

@@ -1,9 +1,9 @@
 ---
-title: "Casa Patas"
+title: "Cartel de la programación de Casa Patas 2012"
 type: photo
 image: "../../assets/archivo/2012-casa-patas.jpg"
-alt: "Casa Patas. Fotografía del archivo familiar, 2012."
-dateApprox: "2012"
+alt: "Cartel de la programación de Casa Patas 2012, con Carrete de Málaga como cabeza de cartel de noviembre. Archivo familiar."
+dateApprox: "noviembre de 2012"
 placeRef: casa-patas
 focal: "center 30%"
 verification: documented

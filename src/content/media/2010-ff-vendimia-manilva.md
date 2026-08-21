@@ -1,8 +1,8 @@
 ---
-title: "FF Vendimia Manilva"
+title: "En la Vendimia de Manilva"
 type: photo
 image: "../../assets/archivo/2010-ff-vendimia-manilva.jpg"
-alt: "FF Vendimia Manilva. Fotografía del archivo familiar, 2010."
+alt: "Carrete bailando con bastón sobre el escenario de La Vendimia, Manilva. Fotografía del archivo familiar, 2010."
 dateApprox: "2010"
 focal: "center"
 verification: documented
