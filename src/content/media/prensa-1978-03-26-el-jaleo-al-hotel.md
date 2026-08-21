@@ -1,8 +1,8 @@
 ---
-title: "El jaleo al hotel"
+title: "El Jaleo al hotel"
 type: press
 image: "../../assets/hemeroteca/1978-03-26-el-jaleo-al-hotel.jpg"
-alt: "El jaleo al hotel. Recorte de prensa del archivo familiar, 26 de marzo de 1978."
+alt: "El Jaleo al hotel. Recorte de prensa del archivo familiar, 26 de marzo de 1978."
 filePath: "/hemeroteca/1978-03-26-el-jaleo-al-hotel.pdf"
 pages: 1
 dateExact: "1978-03-26"

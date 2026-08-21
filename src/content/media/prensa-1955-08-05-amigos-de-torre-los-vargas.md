@@ -1,8 +1,8 @@
 ---
-title: "Amigos de torre los vargas"
+title: "Amigos de Los Vargas"
 type: press
 image: "../../assets/hemeroteca/1955-08-05-amigos-de-torre-los-vargas.jpg"
-alt: "Amigos de torre los vargas. Recorte de prensa del archivo familiar, 5 de agosto de 1955."
+alt: "Recorte sobre Los Vargas y sus amigos. Archivo familiar, 5 de agosto de 1955."
 filePath: "/hemeroteca/1955-08-05-amigos-de-torre-los-vargas.pdf"
 pages: 1
 dateExact: "1955-08-05"

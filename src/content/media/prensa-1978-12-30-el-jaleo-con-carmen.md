@@ -1,8 +1,8 @@
 ---
-title: "El jaleo con carmen"
+title: "El Jaleo con Carmen"
 type: press
 image: "../../assets/hemeroteca/1978-12-30-el-jaleo-con-carmen.jpg"
-alt: "El jaleo con carmen. Recorte de prensa del archivo familiar, 30 de diciembre de 1978."
+alt: "El Jaleo con Carmen. Recorte de prensa del archivo familiar, 30 de diciembre de 1978."
 filePath: "/hemeroteca/1978-12-30-el-jaleo-con-carmen.pdf"
 pages: 1
 dateExact: "1978-12-30"

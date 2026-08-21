@@ -54,10 +54,17 @@ export function byDate(a: MediaEntry, b: MediaEntry): number {
   return da.localeCompare(db);
 }
 
-/** Solo las piezas publicables y con imagen que mostrar. */
+/**
+ * Solo las piezas publicables y con imagen que mostrar en la rejilla general
+ * del archivo. `showInArchive: false` no las oculta del sitio: siguen
+ * apareciendo en la ficha de su lugar y en el mapa, que buscan por
+ * placeRef sin pasar por esta función.
+ */
 export async function getPublishedMedia(): Promise<MediaEntry[]> {
   const all = await getCollection('media');
-  return all.filter((item) => item.data.status === 'published' && item.data.image);
+  return all.filter(
+    (item) => item.data.status === 'published' && item.data.image && item.data.showInArchive,
+  );
 }
 
 export interface PreparedMedia {

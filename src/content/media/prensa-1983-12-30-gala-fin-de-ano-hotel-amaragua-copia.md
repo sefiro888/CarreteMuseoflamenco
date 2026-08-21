@@ -1,8 +1,8 @@
 ---
-title: "Gala fin de ano hotel amaragua copia"
+title: "Gala de fin de año, Hotel Amaragua"
 type: press
 image: "../../assets/hemeroteca/1983-12-30-gala-fin-de-ano-hotel-amaragua-copia.jpg"
-alt: "Gala fin de ano hotel amaragua copia. Recorte de prensa del archivo familiar, 30 de diciembre de 1983."
+alt: "Gala de fin de año en el Hotel Amaragua. Recorte de prensa del archivo familiar, 30 de diciembre de 1983."
 filePath: "/hemeroteca/1983-12-30-gala-fin-de-ano-hotel-amaragua-copia.pdf"
 pages: 1
 dateExact: "1983-12-30"

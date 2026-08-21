@@ -1,8 +1,8 @@
 ---
-title: "Carrete y carmen cartel"
+title: "Cartel de Carrete y Carmen"
 type: press
 image: "../../assets/hemeroteca/1974-07-07-carrete-y-carmen-cartel.jpg"
-alt: "Carrete y carmen cartel. Recorte de prensa del archivo familiar, 7 de julio de 1974."
+alt: "Cartel anunciando a Carrete y Carmen. Recorte de prensa del archivo familiar, 7 de julio de 1974."
 filePath: "/hemeroteca/1974-07-07-carrete-y-carmen-cartel.pdf"
 pages: 1
 dateExact: "1974-07-07"

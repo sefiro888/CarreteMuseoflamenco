@@ -1,8 +1,8 @@
 ---
-title: "Yo no se la eda que tengo. Carrete y familia"
+title: "Yo no sé la edá que tengo. Carrete y familia"
 type: photo
 image: "../../assets/archivo/2007-yo-no-se-la-eda-que-tengo-carrete-y-familia.jpg"
-alt: "Yo no se la eda que tengo. Carrete y familia. Fotografía del archivo familiar, 2007."
+alt: "Carrete con su familia, en torno al estreno de «Yo no sé la edá que tengo». Fotografía del archivo familiar, 2007."
 dateApprox: "2007"
 focal: "center"
 verification: documented

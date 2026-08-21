@@ -1,8 +1,8 @@
 ---
-title: "Entrevista carmen 1"
+title: "Entrevista a Carmen"
 type: press
 image: "../../assets/hemeroteca/1975-01-31-entrevista-carmen-1.jpg"
-alt: "Entrevista carmen 1. Recorte de prensa del archivo familiar, 31 de enero de 1975."
+alt: "Entrevista a Carmen. Recorte de prensa del archivo familiar, 31 de enero de 1975."
 filePath: "/hemeroteca/1975-01-31-entrevista-carmen-1.pdf"
 pages: 1
 dateExact: "1975-01-31"

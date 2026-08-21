@@ -1,8 +1,8 @@
 ---
-title: "El jaleo tv holandesa"
+title: "El Jaleo, TV holandesa"
 type: press
 image: "../../assets/hemeroteca/1967-11-19-el-jaleo-tv-holandesa.jpg"
-alt: "El jaleo tv holandesa. Recorte de prensa del archivo familiar, 19 de noviembre de 1967."
+alt: "El Jaleo, visto por la televisión holandesa. Recorte de prensa del archivo familiar, 19 de noviembre de 1967."
 filePath: "/hemeroteca/1967-11-19-el-jaleo-tv-holandesa.pdf"
 pages: 1
 dateExact: "1967-11-19"

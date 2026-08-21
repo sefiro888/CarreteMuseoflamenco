@@ -3,6 +3,7 @@ import { url } from '../lib/url';
 import RoomLayout from '../layouts/RoomLayout.astro';
 import MapExplorer from '../components/MapExplorer.tsx';
 import MapaMundi from '../components/MapaMundi.astro';
+import PlaceListCard from '../components/PlaceListCard.astro';
 import { getMapPlaces } from '../lib/places';
 import '../styles/map.css';
 
@@ -60,19 +61,7 @@ const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
         torremolinos
           .sort((a, b) => (a.journeyOrder ?? 99) - (b.journeyOrder ?? 99))
           .map((place) => (
-            <li class="place-list__item">
-              <a href={url(`/lugares/${place.id}`)}>
-                <h3>{place.name}</h3>
-                <p class="place-list__kind">{place.kind}</p>
-                {place.yearOpened && <p class="place-list__years">Desde {place.yearOpened}</p>}
-                <p class="place-list__desc">{place.description}</p>
-                {place.photoCount > 0 && (
-                  <p class="place-list__count">
-                    {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'} en el archivo
-                  </p>
-                )}
-              </a>
-            </li>
+            <PlaceListCard place={place} years={place.yearOpened ? `Desde ${place.yearOpened}` : null} />
           ))
       }
     </ul>
@@ -85,22 +74,7 @@ const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
       llevó a sus hijos al cuartel porque no tenía dónde dejarlos.
     </p>
     <ul class="place-list">
-      {
-        espana.map((place) => (
-          <li class="place-list__item">
-            <a href={url(`/lugares/${place.id}`)}>
-              <h3>{place.name}</h3>
-              <p class="place-list__kind">{place.kind}</p>
-              <p class="place-list__desc">{place.description}</p>
-              {place.photoCount > 0 && (
-                <p class="place-list__count">
-                  {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'} en el archivo
-                </p>
-              )}
-            </a>
-          </li>
-        ))
-      }
+      {espana.map((place) => <PlaceListCard place={place} />)}
     </ul>
   </div>
 
@@ -116,23 +90,7 @@ const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
       {
         fuera
           .sort((a, b) => (a.journeyOrder ?? 99) - (b.journeyOrder ?? 99))
-          .map((place) => (
-            <li class="place-list__item">
-              <a href={url(`/lugares/${place.id}`)}>
-                <h3>{place.name}</h3>
-                <p class="place-list__kind">{place.kind}</p>
-                {place.dateRange && (
-                  <p class="place-list__years">{place.dateRange}</p>
-                )}
-                <p class="place-list__desc">{place.description}</p>
-                {place.photoCount > 0 && (
-                  <p class="place-list__count">
-                    {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'} en el archivo
-                  </p>
-                )}
-              </a>
-            </li>
-          ))
+          .map((place) => <PlaceListCard place={place} years={place.dateRange} />)
       }
     </ul>
     <p class="prose mapa__nota">
@@ -152,13 +110,9 @@ const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
     grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   }
 
-  .place-list__item {
-    background: var(--color-bg-raised);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-  }
-
-  .place-list--mundo .place-list__item {
+  /* Las salas fuera de España llevan un borde dorado tenue: son la misma
+     historia, pero el salto de escala merece notarse. */
+  .place-list--mundo :global(.place-card__link) {
     border-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
   }
 
@@ -166,52 +120,5 @@ const fuera = mundo.filter((p) => EXTRANJERO.has(p.id));
     font-size: var(--step--1);
     color: var(--color-text-muted);
     margin-top: var(--space-md);
-  }
-
-  .place-list__item:hover {
-    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
-  }
-
-  .place-list__item a {
-    display: block;
-    padding: var(--space-sm);
-    text-decoration: none;
-    color: inherit;
-    height: 100%;
-  }
-
-  .place-list__item h3 {
-    font-size: var(--step-1);
-    margin: 0 0 var(--space-3xs);
-    color: var(--color-text);
-  }
-
-  .place-list__kind {
-    margin: 0;
-    font-size: var(--step--1);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-accent);
-  }
-
-  .place-list__years {
-    margin: var(--space-3xs) 0 0;
-    font-size: var(--step--1);
-    color: var(--color-text-muted);
-  }
-
-  .place-list__desc {
-    margin: var(--space-2xs) 0 0;
-    font-size: var(--step--1);
-    color: var(--color-text-soft);
-    line-height: var(--leading-snug);
-  }
-
-  .place-list__count {
-    margin: var(--space-2xs) 0 0;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-text-muted);
   }
 </style>

@@ -1,8 +1,8 @@
 ---
-title: "El jaleo gala fin de ano"
+title: "El Jaleo, gala de fin de año"
 type: press
 image: "../../assets/hemeroteca/1967-12-31-el-jaleo-gala-fin-de-ano.jpg"
-alt: "El jaleo gala fin de ano. Recorte de prensa del archivo familiar, 31 de diciembre de 1967."
+alt: "El Jaleo, gala de fin de año. Recorte de prensa del archivo familiar, 31 de diciembre de 1967."
 filePath: "/hemeroteca/1967-12-31-el-jaleo-gala-fin-de-ano.pdf"
 pages: 1
 dateExact: "1967-12-31"

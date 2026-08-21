@@ -1,0 +1,162 @@
+---
+import { url } from '../lib/url';
+import type { MapPlace } from '../lib/map-types';
+
+/**
+ * Ficha de un lugar en las listas bajo el mapa. Antes eran solo texto —nombre,
+ * tipo, descripción— sin ninguna de las fotos que el propio archivo ya tiene
+ * asociadas a ese sitio. Ahora la foto más antigua del lugar hace de cabecera,
+ * en blanco y negro hasta que el ratón se acerca, como en el resto del museo.
+ */
+interface Props {
+  place: MapPlace;
+  years?: string | null;
+}
+
+const { place, years = null } = Astro.props;
+const cover = place.photos[0] ?? null;
+---
+
+<li class="place-card">
+  <a class="place-card__link" href={url(`/lugares/${place.id}`)}>
+    <span class="place-card__media" class:list={{ 'place-card__media--empty': !cover }}>
+      {
+        cover && (
+          <img
+            src={cover.thumb}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            style={`object-position:${cover.focal ?? 'center'};`}
+          />
+        )
+      }
+      {
+        place.photoCount > 0 && (
+          <span class="place-card__count">
+            {place.photoCount} {place.photoCount === 1 ? 'pieza' : 'piezas'}
+          </span>
+        )
+      }
+    </span>
+    <span class="place-card__body">
+      <span class="place-card__kind">{place.kind}</span>
+      <h3>{place.name}</h3>
+      {years && <span class="place-card__years">{years}</span>}
+      <p class="place-card__desc">{place.description}</p>
+    </span>
+  </a>
+</li>
+
+<style>
+  .place-card {
+    display: flex;
+  }
+
+  .place-card__link {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    background: var(--color-bg-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition:
+      border-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .place-card__link:hover,
+  .place-card__link:focus-visible {
+    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .place-card__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    background: color-mix(in srgb, var(--color-charcoal) 80%, black);
+  }
+
+  .place-card__media--empty {
+    /* Sin foto todavía: un fondo con textura sutil en vez de un hueco vacío. */
+    background:
+      linear-gradient(135deg, transparent 48%, color-mix(in srgb, var(--color-paper) 6%, transparent) 48% 52%, transparent 52%),
+      color-mix(in srgb, var(--color-charcoal) 85%, black);
+    background-size: 12px 12px, auto;
+  }
+
+  .place-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.85) contrast(1.02);
+    transition:
+      transform var(--duration-slow) var(--ease-standard),
+      filter var(--duration-slow) var(--ease-standard);
+  }
+
+  .place-card__link:hover .place-card__media img,
+  .place-card__link:focus-visible .place-card__media img {
+    transform: scale(1.06);
+    filter: grayscale(0) contrast(1);
+  }
+
+  .place-card__count {
+    position: absolute;
+    right: var(--space-2xs);
+    bottom: var(--space-2xs);
+    padding: 0.2em 0.6em;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ivory);
+    background: color-mix(in srgb, var(--color-black-warm) 68%, transparent);
+    border-radius: 999px;
+    backdrop-filter: blur(2px);
+  }
+
+  .place-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--space-3xs);
+    padding: var(--space-sm);
+  }
+
+  .place-card__body h3 {
+    font-size: var(--step-1);
+    margin: 0;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+
+  .place-card__kind {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+  }
+
+  .place-card__years {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .place-card__desc {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-soft);
+    line-height: var(--leading-snug);
+    /* Tres líneas como mucho: la ficha completa está a un clic. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

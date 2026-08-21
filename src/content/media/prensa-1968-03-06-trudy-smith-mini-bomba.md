@@ -1,8 +1,8 @@
 ---
-title: "Trudy smith mini bomba"
+title: "Trudy Smith, «mini bomba»"
 type: press
 image: "../../assets/hemeroteca/1968-03-06-trudy-smith-mini-bomba.jpg"
-alt: "Trudy smith mini bomba. Recorte de prensa del archivo familiar, 6 de marzo de 1968."
+alt: "Trudy Smith, «mini bomba». Recorte de prensa del archivo familiar, 6 de marzo de 1968."
 filePath: "/hemeroteca/1968-03-06-trudy-smith-mini-bomba.pdf"
 pages: 1
 dateExact: "1968-03-06"

@@ -1,8 +1,8 @@
 ---
-title: "Amas de casa holandesas y carrete"
+title: "Amas de casa holandesas y Carrete"
 type: press
 image: "../../assets/hemeroteca/1968-03-17-amas-de-casa-holandesas-y-carrete.jpg"
-alt: "Amas de casa holandesas y carrete. Recorte de prensa del archivo familiar, 17 de marzo de 1968."
+alt: "Amas de casa holandesas y Carrete. Recorte de prensa del archivo familiar, 17 de marzo de 1968."
 filePath: "/hemeroteca/1968-03-17-amas-de-casa-holandesas-y-carrete.pdf"
 pages: 1
 dateExact: "1968-03-17"

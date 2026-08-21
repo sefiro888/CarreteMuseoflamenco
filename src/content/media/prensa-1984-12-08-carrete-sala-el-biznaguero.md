@@ -1,8 +1,8 @@
 ---
-title: "Carrete sala el biznaguero"
+title: "Carrete, Sala El Biznaguero"
 type: press
 image: "../../assets/hemeroteca/1984-12-08-carrete-sala-el-biznaguero.jpg"
-alt: "Carrete sala el biznaguero. Recorte de prensa del archivo familiar, 8 de diciembre de 1984."
+alt: "Carrete en la Sala El Biznaguero. Recorte de prensa del archivo familiar, 8 de diciembre de 1984."
 filePath: "/hemeroteca/1984-12-08-carrete-sala-el-biznaguero.pdf"
 pages: 1
 dateExact: "1984-12-08"

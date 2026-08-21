@@ -1,8 +1,8 @@
 ---
-title: "Joaquin y al pelae"
+title: "Joaquín y «El Pelaé»"
 type: press
 image: "../../assets/hemeroteca/1979-12-02-joaquin-y-al-pelae.jpg"
-alt: "Joaquin y al pelae. Recorte de prensa del archivo familiar, 2 de diciembre de 1979."
+alt: "Joaquín y «El Pelaé». Recorte de prensa del archivo familiar, 2 de diciembre de 1979."
 filePath: "/hemeroteca/1979-12-02-joaquin-y-al-pelae.pdf"
 pages: 1
 dateExact: "1979-12-02"

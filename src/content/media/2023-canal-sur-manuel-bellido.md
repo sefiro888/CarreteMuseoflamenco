@@ -1,5 +1,5 @@
 ---
-title: "Canal Sur MaNuel Bellido"
+title: "Canal Sur, Manuel Bellido"
 type: photo
 image: "../../assets/archivo/2023-canal-sur-manuel-bellido.jpg"
 alt: "Canal Sur MaNuel Bellido. Fotografía del archivo familiar, 2023."

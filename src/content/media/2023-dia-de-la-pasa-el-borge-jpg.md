@@ -1,5 +1,5 @@
 ---
-title: "Dia de la Pasa El Borge.jpg"
+title: "Día de la Pasa, El Borge"
 type: photo
 image: "../../assets/archivo/2023-dia-de-la-pasa-el-borge-jpg.jpg"
 alt: "Dia de la Pasa El Borge.jpg. Fotografía del archivo familiar, 2023."

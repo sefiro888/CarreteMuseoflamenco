@@ -1,5 +1,5 @@
 ---
-title: "Presentaciónn lbr Marbella"
+title: "Presentación de libro en Marbella"
 type: photo
 image: "../../assets/archivo/2010-11-02-presentacionn-lbr-marbella.jpg"
 alt: "Presentaciónn lbr Marbella. Fotografía del archivo familiar, 2 de noviembre de 2010."

@@ -1,8 +1,8 @@
 ---
-title: "Gtg con pv y caracolillo"
+title: "Gran Taberna Gitana, con Pepito Vargas y Caracolillo"
 type: press
 image: "../../assets/hemeroteca/1964-11-24-gtg-con-pv-y-caracolillo.jpg"
-alt: "Gtg con pv y caracolillo. Recorte de prensa del archivo familiar, 24 de noviembre de 1964."
+alt: "En la Gran Taberna Gitana, con Pepito Vargas y Caracolillo. Recorte de prensa del archivo familiar, 24 de noviembre de 1964."
 filePath: "/hemeroteca/1964-11-24-gtg-con-pv-y-caracolillo.pdf"
 pages: 1
 dateExact: "1964-11-24"

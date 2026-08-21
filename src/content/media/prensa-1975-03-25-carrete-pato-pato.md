@@ -1,8 +1,8 @@
 ---
-title: "Carrete pato pato"
+title: "Carrete, Pato-Pato"
 type: press
 image: "../../assets/hemeroteca/1975-03-25-carrete-pato-pato.jpg"
-alt: "Carrete pato pato. Recorte de prensa del archivo familiar, 25 de marzo de 1975."
+alt: "Anuncio de Carrete en Pato-Pato. Recorte de prensa del archivo familiar, 25 de marzo de 1975."
 filePath: "/hemeroteca/1975-03-25-carrete-pato-pato.pdf"
 pages: 1
 dateExact: "1975-03-25"

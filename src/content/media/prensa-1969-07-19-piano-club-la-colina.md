@@ -1,8 +1,8 @@
 ---
-title: "Piano club la colina"
+title: "Piano Club La Colina"
 type: press
 image: "../../assets/hemeroteca/1969-07-19-piano-club-la-colina.jpg"
-alt: "Piano club la colina. Recorte de prensa del archivo familiar, 19 de julio de 1969."
+alt: "Piano Club La Colina. Recorte de prensa del archivo familiar, 19 de julio de 1969."
 filePath: "/hemeroteca/1969-07-19-piano-club-la-colina.pdf"
 pages: 1
 dateExact: "1969-07-19"

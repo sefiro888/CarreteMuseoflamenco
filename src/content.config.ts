@@ -195,6 +195,14 @@ const media = defineCollection({
       durationSeconds: z.number().optional(),
       /** Número de páginas, para los recortes de prensa. */
       pages: z.number().optional(),
+      /**
+       * Piezas que documentan un tablao concreto (el edificio, un anuncio, un
+       * cartel) se leen mejor en la ficha de ese lugar que perdidas entre
+       * doscientas fotos sueltas del archivo general. `false` las saca de la
+       * rejilla de /archivo sin dejar de aparecer en la ficha de su lugar
+       * (que las busca por placeRef) ni en el mapa.
+       */
+      showInArchive: z.boolean().default(true),
     }),
 });
 

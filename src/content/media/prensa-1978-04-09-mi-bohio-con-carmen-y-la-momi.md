@@ -1,8 +1,8 @@
 ---
-title: "Mi bohio con carmen y la momi"
+title: "Mi bohío con Carmen y la Momi"
 type: press
 image: "../../assets/hemeroteca/1978-04-09-mi-bohio-con-carmen-y-la-momi.jpg"
-alt: "Mi bohio con carmen y la momi. Recorte de prensa del archivo familiar, 9 de abril de 1978."
+alt: "Mi bohío con Carmen y la Momi. Recorte de prensa del archivo familiar, 9 de abril de 1978."
 filePath: "/hemeroteca/1978-04-09-mi-bohio-con-carmen-y-la-momi.pdf"
 pages: 1
 dateExact: "1978-04-09"

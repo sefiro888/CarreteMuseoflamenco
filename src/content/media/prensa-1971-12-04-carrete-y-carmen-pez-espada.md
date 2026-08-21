@@ -1,8 +1,8 @@
 ---
-title: "Carrete y carmen pez espada"
+title: "Carrete y Carmen, Pez Espada"
 type: press
 image: "../../assets/hemeroteca/1971-12-04-carrete-y-carmen-pez-espada.jpg"
-alt: "Carrete y carmen pez espada. Recorte de prensa del archivo familiar, 4 de diciembre de 1971."
+alt: "Carrete y Carmen en el Pez Espada. Recorte de prensa del archivo familiar, 4 de diciembre de 1971."
 filePath: "/hemeroteca/1971-12-04-carrete-y-carmen-pez-espada.pdf"
 pages: 1
 dateExact: "1971-12-04"

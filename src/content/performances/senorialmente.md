@@ -8,7 +8,7 @@ description: >
   bailaron, cantaron y tocaron en su honor durante tres horas, con él sentado en un
   trono en el centro del escenario.
 kind: tribute
-mediaRef: 2018-05-09-senorialmente
+mediaRef: 2018-05-09-espectaculo-senorialmente-teatro-cervantes
 verification: documented
 status: published
 peopleRefs:

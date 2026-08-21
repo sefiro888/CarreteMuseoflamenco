@@ -1,8 +1,8 @@
 ---
-title: "Carrete y vaijeros de boda"
+title: "Carrete y viajeros de boda"
 type: press
 image: "../../assets/hemeroteca/1968-05-01-carrete-y-vaijeros-de-boda.jpg"
-alt: "Carrete y vaijeros de boda. Recorte de prensa del archivo familiar, 1 de mayo de 1968."
+alt: "Carrete y viajeros de boda. Recorte de prensa del archivo familiar, 1 de mayo de 1968."
 filePath: "/hemeroteca/1968-05-01-carrete-y-vaijeros-de-boda.pdf"
 pages: 1
 dateExact: "1968-05-01"
