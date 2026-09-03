@@ -1,9 +1,14 @@
 ---
-title: "Ciclo Amalgama"
+title: "Cartel del Ciclo Amalgama, Sevilla"
 type: photo
 image: "../../assets/archivo/2025-06-11-ciclo-amalgama.jpg"
-alt: "Ciclo Amalgama. Fotografía del archivo familiar, 11 de junio de 2025."
+alt: >
+  Cartel del Ciclo Amalgama, «Palabra de los flamencos», del Ayuntamiento de
+  Sevilla, con la colaboración de la Bienal de Flamenco. 11 de junio de 2025.
 dateExact: "2025-06-11"
+placeRef: sevilla
+peopleRefs:
+  - farruquito
 focal: "center 30%"
 verification: documented
 status: published
