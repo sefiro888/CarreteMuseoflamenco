@@ -12,7 +12,7 @@ export const rooms: Room[] = [
   },
   {
     slug: '/vida/yo-no-se-la-eda-que-tengo',
-    title: { es: 'Yo no sé la edá que tengo', en: "I don't know my own age" },
+    title: { es: 'Carretillo', en: 'Carretillo' },
     summary: {
       es: 'Una fecha de nacimiento discutida y una línea temporal que se reconstruye a pedazos.',
       en: 'A disputed birth date and a timeline reconstructed piece by piece.',
