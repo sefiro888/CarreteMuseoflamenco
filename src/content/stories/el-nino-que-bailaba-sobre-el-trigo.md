@@ -31,6 +31,10 @@ con su madre, Carmen «La Carreta». Le tocó crecer en los años más duros de 
 posguerra española, cuando bailar no era todavía un oficio sino, muchas veces, una
 forma de ayudar en casa.
 
+De niño lo llamaban **«Carretillo»**, diminutivo del apodo de su madre. El libro «Al
+compás de la vida» recoge ese primer nombre: años después, ya subido a los tablaos,
+se quedaría en «Carrete».
+
 De niño baila sobre las espigas de trigo para separar el grano, un gesto de trabajo
 campesino que el Instituto Andaluz del Flamenco recoge como origen simbólico de su
 nombre artístico y de su historia. También baila en la calle, a cambio de comida o
